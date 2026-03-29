@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-test",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Built-in test command for running Jest tests in single-package projects and monorepo child packages",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",

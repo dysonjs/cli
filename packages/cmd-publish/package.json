@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-publish",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Built-in publish command for manually publishing the current npm package",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",

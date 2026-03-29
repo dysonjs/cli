@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-add",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Built-in add command for creating child packages in monorepo projects",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
