@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "paths": {
+      "@dysonic/*": [
+        "packages/*/src",
+        "editors/*/src",
+        "node_modules/@dysonic/*"
+      ]
+    },
+    "preserveSymlinks": true,
+    "resolveJsonModule": true,
+    "rootDir": ".",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "target": "esnext",
+    "types": ["jest", "node", "resize-observer-browser"],
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "CommonJS"
+    }
+  }
+}

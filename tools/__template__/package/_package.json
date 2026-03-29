@@ -1,0 +1,28 @@
+{
+  "name": "@dysonic/{{ name }}",
+  {{#if private}}
+  "private": true,
+  {{/if}}
+  "version": "0.0.0",
+  "description": "{{ desc }}",
+  "main": "{{ PKG_MAIN }}",
+  "module": "{{ PKG_MODULE }}",
+  "types": "{{ PKG_TYPES }}",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": {{ sideEffects }},
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "ts-node-script ../../tools/scripts/build.ts --mode cjs",
+    "build:esm": "ts-node-script ../../tools/scripts/build.ts --mode esm",
+    "build:cli": "ts-node-script ../../tools/scripts/build-cli.ts --src ./src/cli.ts --dest-file ./dist/cli.js",
+    "test": "ts-node-script ../../tools/scripts/test.ts --verbose --color",
+    "test:coverage": "ts-node-script ../../tools/scripts/test.ts --coverage",
+    "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
+    "prebuild": "rimraf dist"
+  }
+}
