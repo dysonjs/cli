@@ -1,0 +1,37 @@
+{
+  "name": "@dysonic/dy-cli",
+  "version": "0.0.0",
+  "description": "dy-cli 命令行工具，统一对外提供命令行入口和能力，默认加载内置命令包实现（如：build、create、publish 等），支持传入自定义实现的命令包",
+  "bin": {
+    "dy-cli": "dist/cli.js"
+  },
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:esm && npm run build:cli",
+    "build:cjs": "ts-node-script ../../tools/scripts/build.ts --mode cjs",
+    "build:esm": "ts-node-script ../../tools/scripts/build.ts --mode esm",
+    "build:cli": "ts-node-script ../../tools/scripts/build-cli.ts --src ./src/cli.ts --dest-file ./dist/cli.js",
+    "test": "ts-node-script ../../tools/scripts/test.ts --verbose --color",
+    "test:coverage": "ts-node-script ../../tools/scripts/test.ts --coverage",
+    "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
+    "prebuild": "rimraf dist"
+  },
+  "dependencies": {
+    "@dysonic/dy-cli-core": "workspace:*",
+    "@dysonic/dy-cli-cmd-add": "workspace:*",
+    "@dysonic/dy-cli-cmd-build": "workspace:*",
+    "@dysonic/dy-cli-cmd-create": "workspace:*",
+    "@dysonic/dy-cli-cmd-publish": "workspace:*",
+    "@dysonic/dy-cli-cmd-test": "workspace:*",
+    "commander": "~12.1.0"
+  }
+}
