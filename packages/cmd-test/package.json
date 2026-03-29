@@ -1,7 +1,7 @@
 {
   "name": "@dysonic/dy-cli-cmd-test",
   "version": "0.0.0",
-  "description": "默认内置的测试命令，负责运行 single 项目和 monorepo 子包中的 Jest 单测",
+  "description": "Built-in test command for running Jest tests in single-package projects and monorepo child packages",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",

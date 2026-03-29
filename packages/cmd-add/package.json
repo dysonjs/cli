@@ -1,7 +1,7 @@
 {
   "name": "@dysonic/dy-cli-cmd-add",
   "version": "0.0.0",
-  "description": "默认内置的添加命令，负责在 monorepo 项目中创建子包",
+  "description": "Built-in add command for creating child packages in monorepo projects",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",

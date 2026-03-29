@@ -1,7 +1,7 @@
 {
   "name": "@dysonic/dy-cli",
   "version": "0.0.0",
-  "description": "dy-cli 命令行工具，统一对外提供命令行入口和能力，默认加载内置命令包实现（如：build、create、publish 等），支持传入自定义实现的命令包",
+  "description": "CLI entry package for dy-cli, mounting built-in commands and exposing the public command-line interface",
   "bin": {
     "dy-cli": "dist/cli.js"
   },

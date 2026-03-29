@@ -1,7 +1,7 @@
 {
   "name": "@dysonic/dy-cli-cmd-create",
   "version": "0.0.0",
-  "description": "默认内置的创建命令，暂时仅支持创建项目（如：monorepo 项目、单包项目等）",
+  "description": "Built-in create command for scaffolding monorepo and single-package projects",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
