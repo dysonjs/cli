@@ -5,12 +5,16 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import * as jestRunner from 'jest';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import execa from 'execa';
 
 import { TestCommand } from '../src';
 
 jest.mock('jest', () => ({
   run: jest.fn(() => Promise.resolve()),
 }));
+
+jest.mock('execa', () => jest.fn(() => Promise.resolve()));
 
 function createTempDir(name: string) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `${name}-`));
@@ -146,5 +150,38 @@ describe('@dysonic/dy-cli-cmd-test', () => {
     await expect(command.parseAsync(['node', 'test', '--cwd', workspace])).rejects.toMatchObject({
       code: 'CONFIG_NOT_FOUND',
     });
+  });
+
+  test('should run workspace tests from monorepo root when --workspace is provided', async () => {
+    const workspace = createTempDir('dy-cli-test-workspace');
+    const packageDir = path.join(workspace, 'packages/button');
+    const command = new TestCommand();
+
+    await fs.ensureDir(packageDir);
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      workspaces: ['packages/*'],
+    });
+    await fs.writeJSON(path.join(packageDir, 'package.json'), {
+      name: '@dysonic/button',
+      version: '0.0.0',
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      'export default { commands: { test: {} } };',
+    );
+    await fs.writeFile(path.join(workspace, 'jest.config.js'), 'module.exports = {};');
+
+    await command.parseAsync(['node', 'test', '--cwd', packageDir, '--workspace', '--coverage']);
+
+    expect(execa).toHaveBeenCalledWith(
+      'pnpm',
+      ['-r', '--stream', '--workspace-concurrency', '8', 'run', 'test:coverage'],
+      expect.objectContaining({
+        cwd: workspace,
+      }),
+    );
+    expect(jestRunner.run).not.toHaveBeenCalled();
   });
 });

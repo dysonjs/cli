@@ -1,6 +1,7 @@
 import {
   AbstractCommand,
   BuildCommandArgs,
+  BuildCommandBinConfig,
   BuildCommandConfig,
   BuildTarget,
   CommandOption,
@@ -10,6 +11,7 @@ import {
   loadNearestExternalRunCommandsConfig,
 } from '@dysonic/dy-cli-core';
 
+import { BuildBinTask } from '../tasks/build-bin-task';
 import { BuildPackageTask } from '../tasks/build-package-task';
 import { BuildTypesTask } from '../tasks/build-types-task';
 import { BuildUmdTask } from '../tasks/build-umd-task';
@@ -23,8 +25,10 @@ export class BuildCommand extends AbstractCommand<BuildCommandConfig, BuildComma
   public getOptions(): CommandOption[] {
     return [
       ['--mode <mode>', 'Specify the build mode'],
+      ['--workspace', 'Run build for all workspace packages'],
       ['--types', 'Build declaration files'],
       ['--umd', 'Build UMD bundle'],
+      ['--bin', 'Build executable bin output'],
       ['--name <name>', 'Specify the global name for UMD bundle'],
       ['--externals <externals>', 'Specify external package names for UMD bundle'],
       ['--globals <globals>', 'Specify global aliases for UMD externals'],
@@ -46,6 +50,11 @@ export class BuildCommand extends AbstractCommand<BuildCommandConfig, BuildComma
       return;
     }
 
+    if (this.config.target === 'bin') {
+      await new BuildBinTask(this.config).run();
+      return;
+    }
+
     await new BuildPackageTask(this.config).run();
   }
 
@@ -56,26 +65,37 @@ export class BuildCommand extends AbstractCommand<BuildCommandConfig, BuildComma
   ): BuildCommandConfig {
     this.validateTargetArgs(args);
 
-    if (!getExternalConfigDir(cwd, true)) {
+    const configDir = getExternalConfigDir(cwd, true);
+
+    if (!configDir) {
       throw new DyCliError('CONFIG_NOT_FOUND', `No dy.config file found at '${cwd}'.`);
     }
 
     const buildConfig = config.commands?.build;
+    const target = this.resolveBuildTarget(args);
 
     return {
       cwd,
-      target: this.resolveBuildTarget(args),
+      target,
       mode: args.mode ?? buildConfig?.mode,
+      workspace: Boolean(args.workspace ?? false),
+      workspaceRoot: configDir,
+      workspaceConcurrency: buildConfig?.workspaceConcurrency ?? 8,
       name: args.name ?? buildConfig?.umd?.name,
       externals: this.parseExternals(args.externals ?? buildConfig?.umd?.externals),
       globals: this.parseGlobals(
         typeof args.globals !== 'undefined' ? args.globals : buildConfig?.umd?.globals,
       ),
+      bin: target === 'bin' ? this.resolveBinConfig(buildConfig?.bin) : undefined,
     };
   }
 
   private validateTargetArgs(args: BuildCommandArgs) {
-    const selectedTargets = [args.types ? 'types' : null, args.umd ? 'umd' : null].filter(Boolean);
+    const selectedTargets = [
+      args.types ? 'types' : null,
+      args.umd ? 'umd' : null,
+      args.bin ? 'bin' : null,
+    ].filter(Boolean);
 
     if (selectedTargets.length > 1) {
       throw new DyCliError('INVALID_ARGUMENT', 'Only one build target can be specified at a time.');
@@ -89,6 +109,10 @@ export class BuildCommand extends AbstractCommand<BuildCommandConfig, BuildComma
 
     if (args.umd) {
       return 'umd';
+    }
+
+    if (args.bin) {
+      return 'bin';
     }
 
     return 'default';
@@ -129,6 +153,18 @@ export class BuildCommand extends AbstractCommand<BuildCommandConfig, BuildComma
 
       return acc;
     }, {});
+  }
+
+  private resolveBinConfig(bin?: Partial<BuildCommandBinConfig>) {
+    if (!bin) {
+      return undefined;
+    }
+
+    return {
+      entry: bin.entry,
+      output: bin.output,
+      banner: bin.banner,
+    };
   }
 }
 

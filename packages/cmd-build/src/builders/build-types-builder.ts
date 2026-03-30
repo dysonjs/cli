@@ -19,6 +19,7 @@ export class BuildTypesBuilder extends AbstractBuilder {
         /\.(less|scss|css)$/,
         ...this.getPeerDependencies(pkg),
         ...this.getDependencies(pkg),
+        ...this.getNodeBuiltins(),
       ],
     });
 

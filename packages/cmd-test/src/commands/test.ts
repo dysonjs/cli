@@ -25,6 +25,7 @@ export class TestCommand extends AbstractCommand<TestCommandConfig, TestCommandA
   public getOptions(): CommandOption[] {
     return [
       ['--config <config>', 'Specify the Jest config path'],
+      ['--workspace', 'Run tests for all workspace packages'],
       ['--coverage', 'Collect coverage'],
       ['--watch', 'Run tests in watch mode'],
       ['--update-snapshot', 'Update Jest snapshots'],
@@ -66,6 +67,9 @@ export class TestCommand extends AbstractCommand<TestCommandConfig, TestCommandA
       coverage: Boolean(args.coverage ?? testConfig?.coverage ?? false),
       watch: Boolean(args.watch ?? testConfig?.watch ?? false),
       updateSnapshot: Boolean(args.updateSnapshot ?? testConfig?.updateSnapshot ?? false),
+      workspace: Boolean(args.workspace ?? false),
+      workspaceRoot: configDir,
+      workspaceConcurrency: testConfig?.workspaceConcurrency ?? 8,
     };
   }
 }

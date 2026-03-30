@@ -106,6 +106,35 @@ export async function runPackageScript(
   });
 }
 
+export async function runWorkspaceScript(
+  cwd: string,
+  scriptName: string,
+  args: string[] = [],
+  workspaceConcurrency = 8,
+  env: NodeJS.ProcessEnv = {},
+) {
+  const commandArgs = [
+    '-r',
+    '--stream',
+    '--workspace-concurrency',
+    String(workspaceConcurrency),
+    'run',
+    scriptName,
+  ];
+
+  if (args.length > 0) {
+    commandArgs.push('--', ...args);
+  }
+
+  await execa('pnpm', commandArgs, {
+    cwd,
+    env: {
+      ...process.env,
+      ...env,
+    },
+  });
+}
+
 export function resolveTargetDir(cwd: string, targetDir: string) {
   return path.resolve(cwd, targetDir);
 }

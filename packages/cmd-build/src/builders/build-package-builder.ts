@@ -28,6 +28,7 @@ export class BuildPackageBuilder extends AbstractBuilder {
         file: this.resolveOutputPath(pkg.main, 'dist/index.cjs.js'),
         format: 'cjs' as const,
         exports: 'auto' as const,
+        interop: 'auto' as const,
         sourcemap: false,
         inlineDynamicImports: true,
       },
@@ -36,7 +37,7 @@ export class BuildPackageBuilder extends AbstractBuilder {
     const bundle = await Rollup.rollup({
       strictDeprecations: true,
       input,
-      external: [...this.getDependencies(pkg), ...this.getPeerDependencies(pkg)],
+      external: this.createExternalPredicate(pkg),
       output,
       plugins: [
         extensions({
