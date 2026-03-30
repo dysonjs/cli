@@ -1,0 +1,29 @@
+import { defineConfig } from '@dysonic/dy-cli-core';
+
+export default defineConfig({
+  commands: {
+    create: {
+      defaultTemplateType: '{{defaultTemplateType}}',
+      templates: {
+{{templatesBlock}}
+      },
+    },
+    add: {
+      destDir: 'packages',
+    },
+    build: {
+      mode: '{{buildMode}}',
+      umd: {
+        name: '{{umdName}}',
+      },
+    },
+    test: {
+      config: './jest.config.js',
+    },
+    publish: {
+      access: 'public',
+      betaTag: 'beta',
+      workspaceConcurrency: 8,
+    },
+  },
+});

@@ -1,0 +1,33 @@
+{
+  "name": "@dysonic/dy-cli-core",
+  "version": "0.0.5",
+  "description": "Core package providing shared command contracts, execution abstractions, and helper utilities for dy-cli",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "dependencies": {
+    "commander": "12.1.0",
+    "execa": "5.1.1",
+    "fs-extra": "10.1.0",
+    "ts-node": "10.2.0"
+  },
+  "scripts": {
+    "build": "pnpm exec dy-cli build",
+    "build:types": "pnpm exec dy-cli build --types",
+    "test": "pnpm exec dy-cli test",
+    "test:coverage": "pnpm exec dy-cli test --coverage",
+    "publish": "pnpm exec dy-cli publish",
+    "publish:dry-run": "pnpm exec dy-cli publish --dry-run",
+    "publish:beta": "pnpm exec dy-cli publish --tag beta",
+    "publish:beta:dry-run": "pnpm exec dy-cli publish --tag beta --dry-run",
+    "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
+    "prebuild": "rimraf dist"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "paths": {
+      "@dysonic/dy-cli": ["packages/cli/src"],
+      "@dysonic/dy-cli-cmd-add": ["packages/cmd-add/src"],
+      "@dysonic/dy-cli-core": ["packages/core/src"],
+      "@dysonic/dy-cli-cmd-build": ["packages/cmd-build/src"],
+      "@dysonic/dy-cli-cmd-create": ["packages/cmd-create/src"],
+      "@dysonic/dy-cli-cmd-publish": ["packages/cmd-publish/src"],
+      "@dysonic/dy-cli-cmd-test": ["packages/cmd-test/src"]
+    },
+    "preserveSymlinks": true,
+    "resolveJsonModule": true,
+    "rootDir": ".",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "target": "esnext",
+    "types": ["jest", "node", "resize-observer-browser"],
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "CommonJS"
+    }
+  }
+}

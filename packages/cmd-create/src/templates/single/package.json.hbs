@@ -1,0 +1,30 @@
+{
+  "name": "{{projectName}}",
+  "private": false,
+  "version": "0.0.0",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "browser": "dist/index.umd.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "dy-cli build",
+    "build:types": "dy-cli build --types",
+    "build:umd": "dy-cli build --umd",
+    "test": "dy-cli test",
+    "test:coverage": "dy-cli test --coverage",
+    "publish": "dy-cli publish",
+    "publish:dry-run": "dy-cli publish --dry-run",
+    "publish:beta": "dy-cli publish --tag beta",
+    "publish:beta:dry-run": "dy-cli publish --tag beta --dry-run"
+  },
+  "devDependencies": {
+    "@dysonic/dy-cli": "latest",
+    "@dysonic/dy-cli-core": "latest",
+    "@types/jest": "~26.0.24",
+    "jest": "~27.5.1",
+    "ts-jest": "~27.1.5"
+  }
+}
