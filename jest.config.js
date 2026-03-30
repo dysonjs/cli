@@ -13,6 +13,15 @@ module.exports = {
     resources: 'usable',
   },
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
+  moduleNameMapper: {
+    '^@dysonic/dy-cli$': path.resolve(ROOT_DIR, 'packages/cli/src'),
+    '^@dysonic/dy-cli-core$': path.resolve(ROOT_DIR, 'packages/core/src'),
+    '^@dysonic/dy-cli-cmd-add$': path.resolve(ROOT_DIR, 'packages/cmd-add/src'),
+    '^@dysonic/dy-cli-cmd-build$': path.resolve(ROOT_DIR, 'packages/cmd-build/src'),
+    '^@dysonic/dy-cli-cmd-create$': path.resolve(ROOT_DIR, 'packages/cmd-create/src'),
+    '^@dysonic/dy-cli-cmd-publish$': path.resolve(ROOT_DIR, 'packages/cmd-publish/src'),
+    '^@dysonic/dy-cli-cmd-test$': path.resolve(ROOT_DIR, 'packages/cmd-test/src'),
+  },
   modulePathIgnorePatterns: ['<rootDir>/.*/__mocks__', '<rootDir>/dist'],
   collectCoverageFrom: ['<rootDir>/src/**/*.[jt]s?(x)', '!<rootDir>/src/**/*.d.ts'],
   coverageThreshold: {

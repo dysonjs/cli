@@ -8,18 +8,21 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "boot": "pnpm i",
-    "build": "pnpm -r --stream --workspace-concurrency 8 build",
-    "build:types": "pnpm -r --stream --workspace-concurrency 8 build:types",
-    "build:umd": "pnpm -r --stream --workspace-concurrency 8 build:umd",
+    "add": "dy-cli add",
+    "build": "dy-cli build --workspace",
+    "build:types": "dy-cli build --workspace --types",
+    "build:umd": "dy-cli build --workspace --umd",
     "clean": "pnpm -r --stream --workspace-concurrency 8 --parallel clean",
     "lint": "eslint '*/**/*.{js,ts,jsx,tsx}'",
     "prepare": "husky install",
     "prettier": "prettier --write .",
-    "version": "pnpm changeset version",
-    "version:beta": "pnpm changeset pre enter beta && pnpm changeset version",
-    "version:beta:exit": "pnpm changeset pre exit",
-    "test": "cross-env NODE_ENV=test pnpm -r --workspace-concurrency 8 --stream test",
-    "test:coverage": "pnpm -r --workspace-concurrency 8 --stream test:coverage"
+    "release": "dy-cli publish --workspace",
+    "release:beta": "dy-cli publish --workspace --beta",
+    "version": "dy-cli publish --version",
+    "version:beta": "dy-cli publish --version --beta",
+    "version:beta:exit": "dy-cli publish --version --beta-exit",
+    "test": "dy-cli test --workspace",
+    "test:coverage": "dy-cli test --workspace --coverage"
   },
   "lint-staged": {
     "**/*.{js,ts,jsx,tsx}": [

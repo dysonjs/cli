@@ -35,6 +35,13 @@ export class PublishProjectTask extends AbstractTask<PublishCommandConfig> {
       access: undefined,
       otp: undefined,
       registry: undefined,
+      beta: false,
+      betaExit: false,
+      workspace: false,
+      version: false,
+      betaTag: 'beta',
+      workspaceRoot: undefined,
+      workspaceConcurrency: 8,
     };
   }
 

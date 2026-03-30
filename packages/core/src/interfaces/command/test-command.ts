@@ -5,6 +5,7 @@ export interface TestCommandExternalConfig {
   coverage?: boolean;
   watch?: boolean;
   updateSnapshot?: boolean;
+  workspaceConcurrency?: number;
 }
 
 export interface TestCommandArgs extends BaseCommandArgs {
@@ -12,6 +13,7 @@ export interface TestCommandArgs extends BaseCommandArgs {
   coverage?: boolean;
   watch?: boolean;
   updateSnapshot?: boolean;
+  workspace?: boolean;
 }
 
 export interface TestCommandConfig extends BaseCommandConfig {
@@ -19,4 +21,7 @@ export interface TestCommandConfig extends BaseCommandConfig {
   coverage: boolean;
   watch: boolean;
   updateSnapshot: boolean;
+  workspace: boolean;
+  workspaceRoot?: string;
+  workspaceConcurrency: number;
 }

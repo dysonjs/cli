@@ -8,6 +8,8 @@ export interface PublishCommandExternalConfig {
   access?: PublishAccess;
   otp?: string;
   registry?: string;
+  betaTag?: string;
+  workspaceConcurrency?: number;
 }
 
 export interface PublishCommandArgs extends BaseCommandArgs {
@@ -16,6 +18,10 @@ export interface PublishCommandArgs extends BaseCommandArgs {
   access?: string;
   otp?: string;
   registry?: string;
+  beta?: boolean;
+  betaExit?: boolean;
+  workspace?: boolean;
+  version?: boolean;
 }
 
 export interface PublishCommandConfig extends BaseCommandConfig {
@@ -24,4 +30,11 @@ export interface PublishCommandConfig extends BaseCommandConfig {
   access?: PublishAccess;
   otp?: string;
   registry?: string;
+  beta: boolean;
+  betaExit: boolean;
+  workspace: boolean;
+  version: boolean;
+  betaTag: string;
+  workspaceRoot?: string;
+  workspaceConcurrency: number;
 }

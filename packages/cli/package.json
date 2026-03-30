@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "CLI entry package for dy-cli, mounting built-in commands and exposing the public command-line interface",
   "bin": {
     "dy-cli": "dist/cli.js"
@@ -16,12 +16,15 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "build": "npm run build:cjs && npm run build:esm && npm run build:cli",
-    "build:cjs": "ts-node-script ../../tools/scripts/build.ts --mode cjs",
-    "build:esm": "ts-node-script ../../tools/scripts/build.ts --mode esm",
-    "build:cli": "ts-node-script ../../tools/scripts/build-cli.ts --src ./src/cli.ts --dest-file ./dist/cli.js",
-    "test": "ts-node-script ../../tools/scripts/test.ts --verbose --color",
-    "test:coverage": "ts-node-script ../../tools/scripts/test.ts --coverage",
+    "build": "pnpm exec dy-cli build && pnpm run build:bin",
+    "build:types": "pnpm exec dy-cli build --types",
+    "build:bin": "pnpm exec dy-cli build --bin",
+    "test": "pnpm exec dy-cli test",
+    "test:coverage": "pnpm exec dy-cli test --coverage",
+    "publish": "pnpm exec dy-cli publish",
+    "publish:dry-run": "pnpm exec dy-cli publish --dry-run",
+    "publish:beta": "pnpm exec dy-cli publish --tag beta",
+    "publish:beta:dry-run": "pnpm exec dy-cli publish --tag beta --dry-run",
     "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
     "prebuild": "rimraf dist"
   },
@@ -32,6 +35,6 @@
     "@dysonic/dy-cli-cmd-create": "workspace:*",
     "@dysonic/dy-cli-cmd-publish": "workspace:*",
     "@dysonic/dy-cli-cmd-test": "workspace:*",
-    "commander": "~12.1.0"
+    "commander": "12.1.0"
   }
 }

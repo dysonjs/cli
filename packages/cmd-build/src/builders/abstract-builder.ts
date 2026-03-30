@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
+import { builtinModules } from 'module';
 import { camelCase, upperFirst } from 'lodash';
 
 import { DyCliError } from '@dysonic/dy-cli-core';
@@ -11,8 +12,31 @@ export interface BuildPackageManifest {
   module?: string;
   types?: string;
   browser?: string;
+  bin?: string | Record<string, string>;
   dependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
+}
+
+function resolveBarePackageName(moduleId: string) {
+  if (moduleId.startsWith('@')) {
+    return moduleId.split('/').slice(0, 2).join('/');
+  }
+
+  return moduleId.split('/')[0];
+}
+
+export function shouldExternalizeModuleId(moduleId: string) {
+  if (
+    !moduleId ||
+    moduleId.startsWith('.') ||
+    moduleId.startsWith('\0') ||
+    path.isAbsolute(moduleId)
+  ) {
+    return false;
+  }
+
+  const packageName = resolveBarePackageName(moduleId);
+  return packageName === '@dysonic/dy-cli' || packageName.startsWith('@dysonic/dy-cli-');
 }
 
 export abstract class AbstractBuilder {
@@ -47,7 +71,22 @@ export abstract class AbstractBuilder {
   }
 
   protected resolveTsConfigPath() {
-    return path.join(this.cwd, 'tsconfig.json');
+    let currentDir = this.cwd;
+
+    while (true) {
+      const tsconfigPath = path.join(currentDir, 'tsconfig.json');
+
+      if (fs.existsSync(tsconfigPath)) {
+        return tsconfigPath;
+      }
+
+      const parentDir = path.dirname(currentDir);
+      if (parentDir === currentDir) {
+        return path.join(this.cwd, 'tsconfig.json');
+      }
+
+      currentDir = parentDir;
+    }
   }
 
   protected getDependencies(pkg: BuildPackageManifest) {
@@ -58,8 +97,39 @@ export abstract class AbstractBuilder {
     return Object.keys(pkg.peerDependencies || {});
   }
 
+  protected getNodeBuiltins() {
+    return builtinModules.flatMap((moduleName) => [moduleName, `node:${moduleName}`]);
+  }
+
+  protected createExternalPredicate(pkg: BuildPackageManifest) {
+    const externalPackages = new Set([
+      ...this.getDependencies(pkg),
+      ...this.getPeerDependencies(pkg),
+      ...this.getNodeBuiltins(),
+    ]);
+
+    return (moduleId: string) => {
+      const packageName = resolveBarePackageName(moduleId);
+
+      return externalPackages.has(packageName) || shouldExternalizeModuleId(moduleId);
+    };
+  }
+
   protected resolveOutputPath(outputPath: string | undefined, fallback: string) {
     return path.resolve(this.cwd, outputPath ?? fallback);
+  }
+
+  protected resolvePackageBinOutput(pkg: BuildPackageManifest) {
+    if (!pkg.bin) {
+      return null;
+    }
+
+    if (typeof pkg.bin === 'string') {
+      return pkg.bin;
+    }
+
+    const output = Object.values(pkg.bin)[0];
+    return output ?? null;
   }
 
   protected resolveUmdName(pkg: BuildPackageManifest, name?: string) {
