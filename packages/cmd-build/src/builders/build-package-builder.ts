@@ -1,3 +1,5 @@
+/// <reference path="../types/rollup-plugins.d.ts" />
+
 import fs from 'fs-extra';
 import path from 'path';
 import Rollup from 'rollup';

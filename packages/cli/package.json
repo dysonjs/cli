@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli",
-  "version": "0.0.5",
+  "version": "1.0.0-beta.0",
   "description": "CLI entry package for dy-cli, mounting built-in commands and exposing the public command-line interface",
   "bin": {
     "dy-cli": "dist/cli.js"
@@ -16,15 +16,6 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "build": "pnpm exec dy-cli build && pnpm run build:bin",
-    "build:types": "pnpm exec dy-cli build --types",
-    "build:bin": "pnpm exec dy-cli build --bin",
-    "test": "pnpm exec dy-cli test",
-    "test:coverage": "pnpm exec dy-cli test --coverage",
-    "publish": "pnpm exec dy-cli publish",
-    "publish:dry-run": "pnpm exec dy-cli publish --dry-run",
-    "publish:beta": "pnpm exec dy-cli publish --tag beta",
-    "publish:beta:dry-run": "pnpm exec dy-cli publish --tag beta --dry-run",
     "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
     "prebuild": "rimraf dist"
   },
@@ -33,8 +24,10 @@
     "@dysonic/dy-cli-cmd-add": "workspace:*",
     "@dysonic/dy-cli-cmd-build": "workspace:*",
     "@dysonic/dy-cli-cmd-create": "workspace:*",
+    "@dysonic/dy-cli-cmd-install": "workspace:*",
     "@dysonic/dy-cli-cmd-publish": "workspace:*",
     "@dysonic/dy-cli-cmd-test": "workspace:*",
+    "@dysonic/dy-cli-cmd-version": "workspace:*",
     "commander": "12.1.0"
   }
 }

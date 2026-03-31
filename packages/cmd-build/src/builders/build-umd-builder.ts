@@ -1,3 +1,5 @@
+/// <reference path="../types/rollup-plugins.d.ts" />
+
 import Rollup from 'rollup';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import extensions from 'rollup-plugin-extensions';

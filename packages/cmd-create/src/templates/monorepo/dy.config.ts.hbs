@@ -1,6 +1,9 @@
-import { defineConfig } from '@dysonic/dy-cli-core';
-
-export default defineConfig({
+export default {
+  project: {
+    type: 'monorepo',
+    packageDir: 'packages',
+    versionStrategy: 'fixed',
+  },
   commands: {
     create: {
       defaultTemplateType: '{{defaultTemplateType}}',
@@ -20,10 +23,13 @@ export default defineConfig({
     test: {
       config: './jest.config.js',
     },
+    version: {
+      betaTag: 'beta',
+    },
     publish: {
       access: 'public',
       betaTag: 'beta',
       workspaceConcurrency: 8,
     },
   },
-});
+};

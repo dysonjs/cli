@@ -1,4 +1,5 @@
 import { BaseCommandArgs, BaseCommandConfig } from '../base';
+import { ProjectContext } from '../project';
 
 export interface TestCommandExternalConfig {
   config?: string;
@@ -24,4 +25,5 @@ export interface TestCommandConfig extends BaseCommandConfig {
   workspace: boolean;
   workspaceRoot?: string;
   workspaceConcurrency: number;
+  projectContext: ProjectContext;
 }

@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { register } from 'ts-node';
-import execa from 'execa';
 
 import { DyCliError } from '../errors/dy-cli-error';
 import { ExternalRunCommandsConfig } from '../interfaces';
+import { runManagedPackageScript } from './package-manager';
 import { EXTERNAL_CONFIG_FILE_NAME } from './constants';
 
 let isTsNodeRegistered = false;
@@ -97,42 +97,7 @@ export async function runPackageScript(
     throw new DyCliError('SCRIPT_NOT_DEFINED', `Script '${scriptName}' is not defined.`);
   }
 
-  await execa('npm', ['run', scriptName], {
-    cwd,
-    env: {
-      ...process.env,
-      ...env,
-    },
-  });
-}
-
-export async function runWorkspaceScript(
-  cwd: string,
-  scriptName: string,
-  args: string[] = [],
-  workspaceConcurrency = 8,
-  env: NodeJS.ProcessEnv = {},
-) {
-  const commandArgs = [
-    '-r',
-    '--stream',
-    '--workspace-concurrency',
-    String(workspaceConcurrency),
-    'run',
-    scriptName,
-  ];
-
-  if (args.length > 0) {
-    commandArgs.push('--', ...args);
-  }
-
-  await execa('pnpm', commandArgs, {
-    cwd,
-    env: {
-      ...process.env,
-      ...env,
-    },
-  });
+  await runManagedPackageScript(cwd, scriptName, [], env);
 }
 
 export function resolveTargetDir(cwd: string, targetDir: string) {

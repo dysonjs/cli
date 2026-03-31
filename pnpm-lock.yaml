@@ -167,12 +167,18 @@ importers:
       '@dysonic/dy-cli-cmd-create':
         specifier: workspace:*
         version: link:../cmd-create
+      '@dysonic/dy-cli-cmd-install':
+        specifier: workspace:*
+        version: link:../cmd-install
       '@dysonic/dy-cli-cmd-publish':
         specifier: workspace:*
         version: link:../cmd-publish
       '@dysonic/dy-cli-cmd-test':
         specifier: workspace:*
         version: link:../cmd-test
+      '@dysonic/dy-cli-cmd-version':
+        specifier: workspace:*
+        version: link:../cmd-version
       '@dysonic/dy-cli-core':
         specifier: workspace:*
         version: link:../core
@@ -267,6 +273,12 @@ importers:
         specifier: 10.1.0
         version: 10.1.0
 
+  packages/cmd-install:
+    dependencies:
+      '@dysonic/dy-cli-core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/cmd-publish:
     dependencies:
       '@dysonic/dy-cli-core':
@@ -287,6 +299,15 @@ importers:
       jest:
         specifier: 27.5.1
         version: 27.5.1(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))
+
+  packages/cmd-version:
+    dependencies:
+      '@dysonic/dy-cli-core':
+        specifier: workspace:*
+        version: link:../core
+      fs-extra:
+        specifier: 10.1.0
+        version: 10.1.0
 
   packages/core:
     dependencies:

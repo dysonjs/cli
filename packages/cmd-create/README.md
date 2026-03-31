@@ -1,5 +1,15 @@
 # @dysonic/dy-cli-cmd-create
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["CreateCommand"]
+  command --> task["CreateProjectTask"]
+  task --> templates["monorepo / single templates"]
+  templates --> output["dy.config.ts / package.json / README"]
+```
+
 `@dysonic/dy-cli-cmd-create` implements the `dy-cli create` command.
 
 It initializes project scaffolds for two project types:
@@ -12,13 +22,13 @@ For the Chinese version, see `README_ZH.md`.
 ## Role
 
 This package is responsible only for project creation.
-It does not handle follow-up package creation, build, test, or publish flows.
+It does not execute follow-up flows itself, but it does lay down the default `dy-cli` workflow for install, add, build, test, version, and publish.
 
 Generated projects include:
 
 - `dy.config.ts`
 - project-type-specific templates
-- default entrypoints for later `build / test / publish` flows
+- default entrypoints for later `dy-cli` flows
 
 ## Main Contents
 

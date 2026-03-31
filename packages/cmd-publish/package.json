@@ -1,7 +1,7 @@
 {
   "name": "@dysonic/dy-cli-cmd-publish",
-  "version": "0.0.5",
-  "description": "Built-in publish command for manually publishing the current npm package",
+  "version": "1.0.0-beta.0",
+  "description": "Built-in publish command for dy-cli package publishing",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -18,14 +18,6 @@
     "fs-extra": "10.1.0"
   },
   "scripts": {
-    "build": "pnpm exec dy-cli build",
-    "build:types": "pnpm exec dy-cli build --types",
-    "test": "pnpm exec dy-cli test",
-    "test:coverage": "pnpm exec dy-cli test --coverage",
-    "publish": "pnpm exec dy-cli publish",
-    "publish:dry-run": "pnpm exec dy-cli publish --dry-run",
-    "publish:beta": "pnpm exec dy-cli publish --tag beta",
-    "publish:beta:dry-run": "pnpm exec dy-cli publish --tag beta --dry-run",
     "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
     "prebuild": "rimraf dist"
   }

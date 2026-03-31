@@ -4,8 +4,10 @@ import { DyCliError, log } from '@dysonic/dy-cli-core';
 import { add } from '@dysonic/dy-cli-cmd-add';
 import { build } from '@dysonic/dy-cli-cmd-build';
 import { create } from '@dysonic/dy-cli-cmd-create';
+import { install } from '@dysonic/dy-cli-cmd-install';
 import { publish } from '@dysonic/dy-cli-cmd-publish';
 import { test } from '@dysonic/dy-cli-cmd-test';
+import { version } from '@dysonic/dy-cli-cmd-version';
 
 import pkg from '../package.json';
 
@@ -16,9 +18,11 @@ export function createProgram() {
     .name('dy-cli')
     .version(pkg.version)
     .addCommand(create)
+    .addCommand(install)
     .addCommand(add)
     .addCommand(build)
     .addCommand(test)
+    .addCommand(version)
     .addCommand(publish);
 
   return program;

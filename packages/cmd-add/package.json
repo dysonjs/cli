@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-add",
-  "version": "0.0.5",
+  "version": "1.0.0-beta.0",
   "description": "Built-in add command for creating child packages in monorepo projects",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -19,14 +19,6 @@
     "inquirer": "8.2.6"
   },
   "scripts": {
-    "build": "pnpm exec dy-cli build",
-    "build:types": "pnpm exec dy-cli build --types",
-    "test": "pnpm exec dy-cli test",
-    "test:coverage": "pnpm exec dy-cli test --coverage",
-    "publish": "pnpm exec dy-cli publish",
-    "publish:dry-run": "pnpm exec dy-cli publish --dry-run",
-    "publish:beta": "pnpm exec dy-cli publish --tag beta",
-    "publish:beta:dry-run": "pnpm exec dy-cli publish --tag beta --dry-run",
     "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
     "prebuild": "rimraf dist"
   }

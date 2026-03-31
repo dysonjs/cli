@@ -1,5 +1,15 @@
 # @dysonic/dy-cli
 
+## 架构图
+
+```mermaid
+flowchart LR
+  binary["dy-cli 可执行入口"] --> cliPkg["cli 包"]
+  cliPkg --> program["createProgram"]
+  program --> commands["内置 cmd-* 命令包"]
+  commands --> core["共享 core 能力"]
+```
+
 `@dysonic/dy-cli` 是整个项目对外发布的 CLI 入口包。
 
 它的职责很单一：
@@ -11,9 +21,11 @@
 当前默认挂载的命令有：
 
 - `create`
+- `install`
 - `add`
 - `build`
 - `test`
+- `version`
 - `publish`
 
 ## 包定位
@@ -39,9 +51,11 @@
 
 - `@dysonic/dy-cli-core`
 - `@dysonic/dy-cli-cmd-create`
+- `@dysonic/dy-cli-cmd-install`
 - `@dysonic/dy-cli-cmd-add`
 - `@dysonic/dy-cli-cmd-build`
 - `@dysonic/dy-cli-cmd-test`
+- `@dysonic/dy-cli-cmd-version`
 - `@dysonic/dy-cli-cmd-publish`
 
 它本身不应该反向被 `cmd-*` 或 `core` 依赖。

@@ -1,24 +1,27 @@
-import execa from 'execa';
-
-import { AbstractTask, PublishCommandConfig, runWorkspaceScript } from '@dysonic/dy-cli-core';
+import {
+  AbstractTask,
+  PublishCommandConfig,
+  runChangesetCommand,
+  runProjectCommand,
+} from '@dysonic/dy-cli-core';
 
 export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
   public async run(): Promise<void> {
-    const cwd = this.config.workspaceRoot ?? this.config.cwd ?? process.cwd();
+    const cwd = this.config.projectContext.rootDir;
 
-    await runWorkspaceScript(cwd, 'build', [], this.config.workspaceConcurrency);
-    await runWorkspaceScript(cwd, 'test', [], this.config.workspaceConcurrency, {
+    await runProjectCommand(this.config.projectContext, 'build');
+    await runProjectCommand(this.config.projectContext, 'test', [], {
       NODE_ENV: 'test',
     });
 
-    const publishArgs = ['changeset', 'publish'];
+    const publishArgs = ['publish'];
     const tag = this.resolveTag();
 
     if (tag) {
       publishArgs.push('--tag', tag);
     }
 
-    await execa('pnpm', publishArgs, { cwd });
+    await runChangesetCommand(cwd, publishArgs);
   }
 
   protected getDefaultConfig(): PublishCommandConfig {
@@ -30,12 +33,21 @@ export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
       otp: undefined,
       registry: undefined,
       beta: false,
-      betaExit: false,
       workspace: false,
-      version: false,
       betaTag: 'beta',
       workspaceRoot: undefined,
       workspaceConcurrency: 8,
+      projectContext: {
+        cwd: process.cwd(),
+        rootDir: process.cwd(),
+        type: 'single',
+        packageDir: 'packages',
+        versionStrategy: undefined,
+        packageDirs: [],
+        targetPackageDirs: [process.cwd()],
+        currentPackageDir: process.cwd(),
+        isRoot: true,
+      },
     };
   }
 

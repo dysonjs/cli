@@ -1,8 +1,19 @@
 # @dysonic/dy-cli-cmd-build
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["BuildCommand"]
+  command --> tasks["package / types / umd / bin tasks"]
+  tasks --> builders["Rollup builders"]
+  tasks --> resolver["project resolver"]
+  builders --> output["dist outputs"]
+```
+
 `@dysonic/dy-cli-cmd-build` implements the `dy-cli build` command.
 
-It builds the current npm package and supports:
+It builds project packages and supports:
 
 - default package build
 - declaration output build
@@ -40,9 +51,11 @@ dy-cli build --umd
 ## Supported Capabilities
 
 - builds ESM / CJS by default
+- also emits the executable output by default when the package declares `bin`
 - builds declaration files with `--types`
 - builds UMD bundles with `--umd`
 - reads UMD settings from `dy.config.ts`
+- builds all child packages by default when executed at a monorepo root
 - searches upward for the nearest `dy.config.ts` in monorepo child package scenarios
 
 ## Design Notes

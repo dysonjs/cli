@@ -8,6 +8,7 @@ import {
   getExternalConfigDir,
   getNearestFilePath,
   loadNearestExternalRunCommandsConfig,
+  resolveProjectContext,
   TestCommandArgs,
   TestCommandConfig,
 } from '@dysonic/dy-cli-core';
@@ -70,6 +71,7 @@ export class TestCommand extends AbstractCommand<TestCommandConfig, TestCommandA
       workspace: Boolean(args.workspace ?? false),
       workspaceRoot: configDir,
       workspaceConcurrency: testConfig?.workspaceConcurrency ?? 8,
+      projectContext: resolveProjectContext(cwd, config),
     };
   }
 }

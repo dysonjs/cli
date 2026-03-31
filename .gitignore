@@ -3,6 +3,7 @@
 .history
 .DS_Store
 .claude
+.worktrees/
 
 # Dependency directories
 node_modules/

@@ -1,5 +1,6 @@
 export * from './base';
 export * from './run-commands';
+export * from './project';
 export * from './model/command';
 export * from './model/task';
 export * from './command/create-command';
@@ -7,3 +8,5 @@ export * from './command/build-command';
 export * from './command/publish-command';
 export * from './command/test-command';
 export * from './command/add-command';
+export * from './command/install-command';
+export * from './command/version-command';

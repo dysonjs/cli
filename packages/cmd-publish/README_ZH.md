@@ -1,18 +1,25 @@
 # @dysonic/dy-cli-cmd-publish
 
+## 架构图
+
+```mermaid
+flowchart LR
+  user["用户"] --> command["PublishCommand"]
+  command --> tasks["单包任务 / 工作区任务"]
+  tasks --> project["npm publish"]
+  tasks --> workspace["build / test / changeset publish"]
+```
+
 `@dysonic/dy-cli-cmd-publish` 是 `dy-cli publish` 命令的实现包。
 
-它负责手动发布当前 npm 包。
+它负责发布项目包。
 
 ## 包定位
 
-这个包当前只处理“当前包发布”场景，不负责：
+这个包当前同时处理两类场景：
 
-- monorepo 根目录批量发布
-- changesets 版本管理流程
-- release orchestration
-
-也就是说，它聚焦的是包级别 `npm publish`。
+- `single` 项目或 monorepo 子包的当前包发布
+- fixed monorepo 根目录下的整组子包发布
 
 ## 主要内容
 
@@ -39,10 +46,10 @@ dy-cli publish --tag beta
 
 ## 行为约束
 
-- 进入当前包目录后执行
+- 在 monorepo 根目录执行时，默认发布整组子包
 - 在 monorepo 子包里会向上查找最近的 `dy.config.ts`
 - `private: true` 的包会被拒绝发布
 
 ## 设计说明
 
-这个包已经从“执行某个 publish 脚本”重构成了真正的发布命令实现，命令内部直接调用 `npm publish`。
+这个包已经从“执行某个 publish 脚本”重构成了真正的发布命令实现，用户只需要面向 `dy-cli publish`。

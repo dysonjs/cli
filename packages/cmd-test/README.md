@@ -1,8 +1,19 @@
 # @dysonic/dy-cli-cmd-test
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["TestCommand"]
+  command --> task["RunTestTask"]
+  task --> resolver["project resolver"]
+  task --> jest["Jest execution"]
+  task --> workspace["workspace fan-out"]
+```
+
 `@dysonic/dy-cli-cmd-test` implements the `dy-cli test` command.
 
-It runs Jest tests for the current package.
+It runs Jest tests for project packages.
 
 For the Chinese version, see `README_ZH.md`.
 
@@ -35,7 +46,8 @@ dy-cli test --update-snapshot
 
 - searches upward for the nearest `dy.config.ts`
 - resolves the Jest config automatically
-- runs tests for the current package
+- runs tests for all child packages by default at a monorepo root
+- runs tests for the current package in single projects or monorepo child packages
 - supports coverage, watch mode, and snapshot update mode
 
 ## Design Notes

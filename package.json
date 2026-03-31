@@ -6,22 +6,21 @@
     "packages/*"
   ],
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "boot": "pnpm i",
-    "add": "pnpm exec dy-cli add",
-    "build": "pnpm exec dy-cli build --workspace",
-    "build:types": "pnpm exec dy-cli build --workspace --types",
+    "boot": "dy-cli install",
+    "add": "dy-cli add",
+    "build": "dy-cli build",
+    "build:types": "dy-cli build --types",
     "clean": "pnpm -r --stream --workspace-concurrency 8 --parallel clean",
     "lint": "eslint '*/**/*.{js,ts,jsx,tsx}'",
     "prepare": "husky install",
     "prettier": "prettier --write .",
-    "release": "pnpm exec dy-cli publish --workspace",
-    "version": "pnpm exec dy-cli publish --version",
-    "version:beta": "pnpm exec dy-cli publish --version --beta",
-    "version:beta:exit": "pnpm exec dy-cli publish --version --beta-exit",
-    "release:beta": "pnpm exec dy-cli publish --workspace --beta",
-    "test": "pnpm exec dy-cli test --workspace",
-    "test:coverage": "pnpm exec dy-cli test --workspace --coverage"
+    "release": "dy-cli publish",
+    "version": "dy-cli version",
+    "version:beta": "dy-cli version --beta",
+    "version:beta:exit": "dy-cli version --beta-exit",
+    "release:beta": "dy-cli publish --beta",
+    "test": "dy-cli test",
+    "test:coverage": "dy-cli test --coverage"
   },
   "lint-staged": {
     "**/*.{js,ts,jsx,tsx}": [
@@ -30,8 +29,7 @@
     ]
   },
   "engines": {
-    "node": ">=18.20.8",
-    "pnpm": ">=10.8.0"
+    "node": ">=18.20.8"
   },
   "devDependencies": {
     "dy-cli": "npm:@dysonic/dy-cli@0.0.5",

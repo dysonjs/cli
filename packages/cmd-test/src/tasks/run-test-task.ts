@@ -1,44 +1,32 @@
 import * as jestRunner from 'jest';
 
-import { AbstractTask, TestCommandConfig, runWorkspaceScript } from '@dysonic/dy-cli-core';
+import { AbstractTask, TestCommandConfig, runProjectCommand } from '@dysonic/dy-cli-core';
 
 export class RunTestTask extends AbstractTask<TestCommandConfig> {
   public async run(): Promise<void> {
     process.env.NODE_ENV = 'test';
 
-    if (this.config.workspace) {
+    if (this.config.workspace || this.shouldRunWorkspaceByDefault()) {
       const args: string[] = [];
-      let scriptName = 'test';
-
-      if (this.config.coverage && !this.config.watch && !this.config.updateSnapshot) {
-        scriptName = 'test:coverage';
-      } else {
-        if (this.config.coverage) {
-          args.push('--coverage');
-        }
-
-        if (this.config.watch) {
-          args.push('--watch');
-        }
-
-        if (this.config.updateSnapshot) {
-          args.push('--update-snapshot');
-        }
+      if (this.config.coverage) {
+        args.push('--coverage');
       }
 
-      await runWorkspaceScript(
-        this.config.workspaceRoot ?? this.config.cwd ?? process.cwd(),
-        scriptName,
-        args,
-        this.config.workspaceConcurrency,
-        {
-          NODE_ENV: 'test',
-        },
-      );
+      if (this.config.watch) {
+        args.push('--watch');
+      }
+
+      if (this.config.updateSnapshot) {
+        args.push('--update-snapshot');
+      }
+
+      await runProjectCommand(this.config.projectContext, 'test', args, {
+        NODE_ENV: 'test',
+      });
       return;
     }
 
-    const argv = ['--rootDir', this.config.cwd ?? process.cwd(), '--config', this.config.config];
+    const argv = ['--rootDir', this.resolveExecutionDir(), '--config', this.config.config];
 
     if (this.config.coverage) {
       argv.push('--coverage');
@@ -65,6 +53,29 @@ export class RunTestTask extends AbstractTask<TestCommandConfig> {
       workspace: false,
       workspaceRoot: undefined,
       workspaceConcurrency: 8,
+      projectContext: {
+        cwd: process.cwd(),
+        rootDir: process.cwd(),
+        type: 'single',
+        packageDir: 'packages',
+        versionStrategy: undefined,
+        packageDirs: [],
+        targetPackageDirs: [process.cwd()],
+        currentPackageDir: process.cwd(),
+        isRoot: true,
+      },
     };
+  }
+
+  private shouldRunWorkspaceByDefault() {
+    return this.config.projectContext.type === 'monorepo' && this.config.projectContext.isRoot;
+  }
+
+  private resolveExecutionDir() {
+    if (this.config.projectContext.type === 'single') {
+      return this.config.projectContext.rootDir;
+    }
+
+    return this.config.projectContext.currentPackageDir ?? (this.config.cwd ?? process.cwd());
   }
 }
