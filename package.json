@@ -22,7 +22,7 @@
     "node": ">=18.20.8"
   },
   "devDependencies": {
-    "dy-cli": "npm:@dysonic/dy-cli@1.0.1",
+    "dy-cli": "npm:@dysonic/dy-cli@1.0.2",
     "@changesets/cli": "~2.28.1",
     "@types/jest": "~26.0.24",
     "@types/node": "~16.18.126",
