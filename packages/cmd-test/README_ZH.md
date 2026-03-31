@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-cmd-test
 
+## 架构图
+
+```mermaid
+flowchart LR
+  user["用户"] --> command["TestCommand"]
+  command --> task["RunTestTask"]
+  task --> resolver["项目上下文解析"]
+  task --> jest["Jest 执行"]
+  task --> workspace["工作区任务分发"]
+```
+
 `@dysonic/dy-cli-cmd-test` 是 `dy-cli test` 命令的实现包。
 
 它负责运行项目包的 Jest 单测。

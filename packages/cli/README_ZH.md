@@ -1,5 +1,15 @@
 # @dysonic/dy-cli
 
+## 架构图
+
+```mermaid
+flowchart LR
+  binary["dy-cli 可执行入口"] --> cliPkg["cli 包"]
+  cliPkg --> program["createProgram"]
+  program --> commands["内置 cmd-* 命令包"]
+  commands --> core["共享 core 能力"]
+```
+
 `@dysonic/dy-cli` 是整个项目对外发布的 CLI 入口包。
 
 它的职责很单一：

@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-cmd-build
 
+## 架构图
+
+```mermaid
+flowchart LR
+  user["用户"] --> command["BuildCommand"]
+  command --> tasks["package / types / umd / bin 任务"]
+  tasks --> builders["Rollup 构建器"]
+  tasks --> resolver["项目上下文解析"]
+  builders --> output["dist 构建产物"]
+```
+
 `@dysonic/dy-cli-cmd-build` 是 `dy-cli build` 命令的实现包。
 
 它负责构建项目包，支持：

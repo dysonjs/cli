@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-cmd-install
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["InstallCommand"]
+  command --> task["InstallProjectTask"]
+  task --> resolver["project resolver"]
+  task --> adapter["package manager adapter"]
+  adapter --> output["dependency installation"]
+```
+
 `@dysonic/dy-cli-cmd-install` implements the `dy-cli install` command.
 
 Its job is to install project dependencies through the unified `dy-cli` entry instead of asking users to choose a package-manager command directly.

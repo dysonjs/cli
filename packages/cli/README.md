@@ -1,5 +1,15 @@
 # @dysonic/dy-cli
 
+## Architecture
+
+```mermaid
+flowchart LR
+  binary["dy-cli executable"] --> cliPkg["cli package"]
+  cliPkg --> program["createProgram"]
+  program --> commands["built-in cmd-* packages"]
+  commands --> core["shared core contracts"]
+```
+
 `@dysonic/dy-cli` is the public CLI entry package for the project.
 
 Its responsibility is intentionally narrow:

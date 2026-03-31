@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-cmd-test
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["TestCommand"]
+  command --> task["RunTestTask"]
+  task --> resolver["project resolver"]
+  task --> jest["Jest execution"]
+  task --> workspace["workspace fan-out"]
+```
+
 `@dysonic/dy-cli-cmd-test` implements the `dy-cli test` command.
 
 It runs Jest tests for project packages.

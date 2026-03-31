@@ -1,5 +1,15 @@
 # @dysonic/dy-cli-cmd-publish
 
+## 架构图
+
+```mermaid
+flowchart LR
+  user["用户"] --> command["PublishCommand"]
+  command --> tasks["单包任务 / 工作区任务"]
+  tasks --> project["npm publish"]
+  tasks --> workspace["build / test / changeset publish"]
+```
+
 `@dysonic/dy-cli-cmd-publish` 是 `dy-cli publish` 命令的实现包。
 
 它负责发布项目包。

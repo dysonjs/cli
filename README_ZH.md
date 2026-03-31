@@ -1,5 +1,16 @@
 # dy-cli
 
+## 架构图
+
+```mermaid
+flowchart LR
+  user["用户"] --> binary["dy-cli 命令"]
+  binary --> cli["packages/cli"]
+  cli --> commands["cmd-create / cmd-install / cmd-add / cmd-build / cmd-test / cmd-version / cmd-publish"]
+  commands --> core["packages/core"]
+  commands --> outputs["项目文件 / 构建 / 测试 / 升版 / 发布结果"]
+```
+
 `dy-cli` 是一套命令优先的包项目工具。核心目标是让用户围绕 `dy-cli` 建立统一心智，而不是直接面向包管理器命令或项目内脚本。
 
 它支持两类项目：

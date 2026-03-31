@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-cmd-build
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["BuildCommand"]
+  command --> tasks["package / types / umd / bin tasks"]
+  tasks --> builders["Rollup builders"]
+  tasks --> resolver["project resolver"]
+  builders --> output["dist outputs"]
+```
+
 `@dysonic/dy-cli-cmd-build` implements the `dy-cli build` command.
 
 It builds project packages and supports:

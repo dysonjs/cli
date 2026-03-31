@@ -1,5 +1,15 @@
 # @dysonic/dy-cli-cmd-create
 
+## 架构图
+
+```mermaid
+flowchart LR
+  user["用户"] --> command["CreateCommand"]
+  command --> task["CreateProjectTask"]
+  task --> templates["monorepo / single 模板"]
+  templates --> output["dy.config.ts / package.json / README"]
+```
+
 `@dysonic/dy-cli-cmd-create` 是 `dy-cli create` 命令的实现包。
 
 它负责初始化项目骨架，当前支持两类项目：

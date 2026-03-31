@@ -1,5 +1,15 @@
 # @dysonic/dy-cli-cmd-create
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["CreateCommand"]
+  command --> task["CreateProjectTask"]
+  task --> templates["monorepo / single templates"]
+  templates --> output["dy.config.ts / package.json / README"]
+```
+
 `@dysonic/dy-cli-cmd-create` implements the `dy-cli create` command.
 
 It initializes project scaffolds for two project types:

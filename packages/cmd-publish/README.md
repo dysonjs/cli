@@ -1,5 +1,15 @@
 # @dysonic/dy-cli-cmd-publish
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["PublishCommand"]
+  command --> tasks["project task / workspace task"]
+  tasks --> project["npm publish"]
+  tasks --> workspace["build / test / changeset publish"]
+```
+
 `@dysonic/dy-cli-cmd-publish` implements the `dy-cli publish` command.
 
 It is responsible for publishing project packages.

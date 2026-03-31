@@ -1,5 +1,15 @@
 # @dysonic/dy-cli-cmd-version
 
+## 架构图
+
+```mermaid
+flowchart LR
+  user["用户"] --> command["VersionCommand"]
+  command --> task["VersionProjectTask"]
+  task --> single["single 项目 package.json 更新"]
+  task --> monorepo["changeset pre / version 流程"]
+```
+
 `@dysonic/dy-cli-cmd-version` 是 `dy-cli version` 命令的实现包。
 
 它把版本管理从 `publish` 中拆开，让用户把“准备版本”和“执行发布”视为两个独立步骤。

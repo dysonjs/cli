@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-core
 
+## 架构图
+
+```mermaid
+flowchart LR
+  commands["cmd-* 命令包"] --> abstractions["AbstractCommand / AbstractTask"]
+  commands --> helpers["helpers 与适配层"]
+  commands --> contracts["接口与错误模型"]
+  helpers --> resolver["项目上下文解析"]
+  helpers --> manager["包管理器适配层"]
+```
+
 `@dysonic/dy-cli-core` 是 `dy-cli` 的核心能力包。
 
 它负责提供：

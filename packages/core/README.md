@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-core
 
+## Architecture
+
+```mermaid
+flowchart LR
+  commands["cmd-* packages"] --> abstractions["AbstractCommand / AbstractTask"]
+  commands --> helpers["helpers and adapters"]
+  commands --> contracts["interfaces and errors"]
+  helpers --> resolver["project resolver"]
+  helpers --> manager["package manager adapter"]
+```
+
 `@dysonic/dy-cli-core` is the shared foundation package for `dy-cli`.
 
 It provides:

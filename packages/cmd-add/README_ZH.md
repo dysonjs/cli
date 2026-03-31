@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-cmd-add
 
+## 架构图
+
+```mermaid
+flowchart LR
+  user["用户"] --> command["AddCommand"]
+  command --> task["AddPackageTask"]
+  task --> resolver["项目上下文解析"]
+  task --> template["子包模板"]
+  template --> output["新的 monorepo 子包"]
+```
+
 `@dysonic/dy-cli-cmd-add` 是 `dy-cli add` 命令的实现包。
 
 它的职责是在 monorepo 项目里快速创建子包。

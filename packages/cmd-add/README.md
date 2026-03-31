@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-cmd-add
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["AddCommand"]
+  command --> task["AddPackageTask"]
+  task --> resolver["project resolver"]
+  task --> template["package template"]
+  template --> output["new monorepo child package"]
+```
+
 `@dysonic/dy-cli-cmd-add` implements the `dy-cli add` command.
 
 Its job is to create child packages inside a monorepo quickly.

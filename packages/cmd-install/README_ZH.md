@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-cmd-install
 
+## 架构图
+
+```mermaid
+flowchart LR
+  user["用户"] --> command["InstallCommand"]
+  command --> task["InstallProjectTask"]
+  task --> resolver["项目上下文解析"]
+  task --> adapter["包管理器适配层"]
+  adapter --> output["依赖安装"]
+```
+
 `@dysonic/dy-cli-cmd-install` 是 `dy-cli install` 命令的实现包。
 
 它的职责是把依赖安装统一收口到 `dy-cli` 入口，而不是让用户自己选择某个包管理器命令。

@@ -1,5 +1,16 @@
 # dy-cli
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> binary["dy-cli binary"]
+  binary --> cli["packages/cli"]
+  cli --> commands["cmd-create / cmd-install / cmd-add / cmd-build / cmd-test / cmd-version / cmd-publish"]
+  commands --> core["packages/core"]
+  commands --> outputs["project files / builds / tests / versions / publishes"]
+```
+
 `dy-cli` is a command-first toolkit for package projects. The intent is simple: users work through `dy-cli`, not through package-manager-specific scripts.
 
 It supports:

@@ -1,5 +1,15 @@
 # @dysonic/dy-cli-cmd-version
 
+## Architecture
+
+```mermaid
+flowchart LR
+  user["User"] --> command["VersionCommand"]
+  command --> task["VersionProjectTask"]
+  task --> single["single package.json update"]
+  task --> monorepo["changeset pre / version flow"]
+```
+
 `@dysonic/dy-cli-cmd-version` implements the `dy-cli version` command.
 
 It separates version management from `publish` so users can think about release preparation and release execution as two different steps.
