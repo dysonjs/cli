@@ -212,6 +212,8 @@ Options:
 - `--registry <registry>`: registry URL
 
 At a monorepo root, `publish` builds, tests, and releases all child packages by default. `publish` refuses to publish `private: true` packages.
+When the workspace is in Changesets prerelease mode, `publish` also requires every target package to already have at least one stable version on the registry. This prevents first-time prerelease packages from taking over the `latest` dist-tag.
+If you expose `dy-cli publish` through `package.json` scripts, avoid npm publish lifecycle names such as `prepublishOnly`, `publish`, or `postpublish`; use `release` instead.
 
 ## `dy.config.ts`
 

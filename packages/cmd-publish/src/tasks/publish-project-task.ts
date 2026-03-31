@@ -3,6 +3,8 @@ import execa from 'execa';
 import fs from 'fs-extra';
 import path from 'path';
 
+const NPM_PUBLISH_LIFECYCLE_EVENTS = new Set(['prepublishOnly', 'publish', 'postpublish']);
+
 export class PublishProjectTask extends AbstractTask<PublishCommandConfig> {
   public async run(): Promise<void> {
     const cwd = this.resolveExecutionDir();
@@ -18,6 +20,13 @@ export class PublishProjectTask extends AbstractTask<PublishCommandConfig> {
       throw new DyCliError(
         'PACKAGE_PRIVATE',
         `Package '${packageJSON.name ?? path.basename(cwd)}' is private and cannot be published.`,
+      );
+    }
+
+    if (NPM_PUBLISH_LIFECYCLE_EVENTS.has(process.env.npm_lifecycle_event ?? '')) {
+      throw new DyCliError(
+        'INVALID_ARGUMENT',
+        "dy-cli publish cannot run from npm publish lifecycle scripts because it recursively invokes 'npm publish'. Rename the script to 'release' and run that instead.",
       );
     }
 
@@ -85,6 +94,6 @@ export class PublishProjectTask extends AbstractTask<PublishCommandConfig> {
       return this.config.projectContext.rootDir;
     }
 
-    return this.config.projectContext.currentPackageDir ?? (this.config.cwd ?? process.cwd());
+    return this.config.projectContext.currentPackageDir ?? this.config.cwd ?? process.cwd();
   }
 }

@@ -16,6 +16,34 @@ function createTempDir(name: string) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `${name}-`));
 }
 
+async function snapshotDirTree(
+  rootDir: string,
+  relativeDir = '.',
+  snapshot: Record<string, string> = {},
+) {
+  const currentDir = path.join(rootDir, relativeDir);
+  const entries = (await fs.readdir(currentDir)).sort();
+
+  for (const entry of entries) {
+    if (['node_modules', '.git', 'coverage', 'dist'].includes(entry)) {
+      continue;
+    }
+
+    const relativePath = relativeDir === '.' ? entry : path.posix.join(relativeDir, entry);
+    const absolutePath = path.join(rootDir, relativePath);
+    const stats = await fs.stat(absolutePath);
+
+    if (stats.isDirectory()) {
+      await snapshotDirTree(rootDir, relativePath, snapshot);
+      continue;
+    }
+
+    snapshot[relativePath] = (await fs.readFile(absolutePath, 'utf8')).replace(/\r\n/g, '\n');
+  }
+
+  return snapshot;
+}
+
 describe('@dysonic/dy-cli-cmd-add', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -54,11 +82,15 @@ describe('@dysonic/dy-cli-cmd-add', () => {
 
     const packageDir = path.join(workspace, 'packages/button');
     const packageJSON = await fs.readJSON(path.join(packageDir, 'package.json'));
+    const sourceEntry = await fs.readFile(path.join(packageDir, 'src/index.ts'), 'utf8');
+    const packageSnapshot = await snapshotDirTree(packageDir);
 
     expect(await fs.pathExists(path.join(packageDir, 'src/index.ts'))).toBe(true);
     expect(await fs.pathExists(path.join(packageDir, 'test/index.test.ts'))).toBe(true);
     expect(await fs.pathExists(path.join(packageDir, 'tsconfig.json'))).toBe(true);
+    expect(sourceEntry).toContain('export {}');
     expect(packageJSON.name).toBe('@dysonic/button');
+    expect(packageJSON.license).toBe('MIT');
     expect(packageJSON.browser).toBe('dist/index.umd.js');
     expect(packageJSON.private).toBe(false);
     expect(packageJSON.scripts.build).toBeUndefined();
@@ -77,8 +109,11 @@ describe('@dysonic/dy-cli-cmd-add', () => {
       ['--write', packageDir],
       expect.objectContaining({
         cwd: workspace,
+        localDir: workspace,
+        preferLocal: true,
       }),
     );
+    expect(packageSnapshot).toMatchSnapshot('child package scaffold');
   });
 
   test('should prompt for missing package metadata', async () => {

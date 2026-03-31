@@ -24,7 +24,9 @@ export function detectPackageManager(cwd: string): PackageManagerName {
 
 export async function installDependencies(cwd: string) {
   const packageManager = detectPackageManager(cwd);
-  await execa(packageManager, ['install'], {
+  const args = packageManager === 'npm' ? ['install', '--legacy-peer-deps'] : ['install'];
+
+  await execa(packageManager, args, {
     cwd,
     stdio: 'inherit',
   });
@@ -102,4 +104,41 @@ export async function runChangesetCommand(cwd: string, args: string[]) {
   }
 
   await execa('npx', ['changeset', ...args], { cwd });
+}
+
+export async function hasPublishedStableVersion(packageName: string) {
+  const versions = await getPublishedPackageVersions(packageName);
+  return versions.some((version) => !version.includes('-'));
+}
+
+async function getPublishedPackageVersions(packageName: string): Promise<string[]> {
+  try {
+    const result = await execa('npm', ['view', packageName, 'versions', '--json'], {
+      stdio: 'pipe',
+    });
+
+    if (!result.stdout) {
+      return [];
+    }
+
+    const parsed = JSON.parse(result.stdout) as string | string[];
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch (error) {
+    const commandError = error as {
+      stdout?: string;
+      stderr?: string;
+      shortMessage?: string;
+    };
+    const combinedOutput = [
+      commandError.stdout ?? '',
+      commandError.stderr ?? '',
+      commandError.shortMessage ?? '',
+    ].join('\n');
+
+    if (combinedOutput.includes('E404') || combinedOutput.includes('404 Not Found')) {
+      return [];
+    }
+
+    throw error;
+  }
 }

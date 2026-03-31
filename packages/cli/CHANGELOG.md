@@ -1,5 +1,53 @@
 # @dysonic/dy-cli
 
+## 1.0.2
+
+### Patch Changes
+
+- Harden the dy-cli release flow, align generated templates with the unified command model, and add scaffold snapshot coverage for create and add workflows.
+- Updated dependencies
+  - @dysonic/dy-cli-cmd-add@1.0.2
+  - @dysonic/dy-cli-cmd-build@1.0.2
+  - @dysonic/dy-cli-cmd-create@1.0.2
+  - @dysonic/dy-cli-cmd-install@1.0.2
+  - @dysonic/dy-cli-cmd-publish@1.0.2
+  - @dysonic/dy-cli-cmd-test@1.0.2
+  - @dysonic/dy-cli-cmd-version@1.0.2
+  - @dysonic/dy-cli-core@1.0.2
+
+## 1.0.1
+
+### Patch Changes
+
+- Prevent prerelease publishing from assigning `latest` to packages that do not already have a stable release.
+- Updated dependencies
+  - @dysonic/dy-cli-cmd-add@1.0.1
+  - @dysonic/dy-cli-cmd-build@1.0.1
+  - @dysonic/dy-cli-cmd-create@1.0.1
+  - @dysonic/dy-cli-cmd-install@1.0.1
+  - @dysonic/dy-cli-cmd-publish@1.0.1
+  - @dysonic/dy-cli-cmd-test@1.0.1
+  - @dysonic/dy-cli-cmd-version@1.0.1
+  - @dysonic/dy-cli-core@1.0.1
+
+## 1.0.0
+
+### Major Changes
+
+- e9820a8: Unify the public dy-cli mental model around create, install, add, build, test, version, and publish.
+
+### Patch Changes
+
+- Updated dependencies [e9820a8]
+  - @dysonic/dy-cli-cmd-add@1.0.0
+  - @dysonic/dy-cli-cmd-build@1.0.0
+  - @dysonic/dy-cli-cmd-create@1.0.0
+  - @dysonic/dy-cli-cmd-install@1.0.0
+  - @dysonic/dy-cli-cmd-publish@1.0.0
+  - @dysonic/dy-cli-cmd-test@1.0.0
+  - @dysonic/dy-cli-cmd-version@1.0.0
+  - @dysonic/dy-cli-core@1.0.0
+
 ## 1.0.0-beta.0
 
 ### Major Changes

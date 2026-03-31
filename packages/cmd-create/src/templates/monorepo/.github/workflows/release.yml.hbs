@@ -39,6 +39,6 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          version: pnpm changeset version
-          publish: pnpm changeset publish
+          version: pnpm exec dy-cli version
+          publish: pnpm exec dy-cli publish
           title: Version Packages

@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@dysonic/dy-cli-cmd-add should create a child package in monorepo projects: child package scaffold 1`] = `
+Object {
+  "package.json": "{
+  \\"name\\": \\"@dysonic/button\\",
+  \\"private\\": false,
+  \\"version\\": \\"0.0.0\\",
+  \\"license\\": \\"MIT\\",
+  \\"description\\": \\"\\",
+  \\"main\\": \\"dist/index.cjs.js\\",
+  \\"module\\": \\"dist/index.esm.js\\",
+  \\"types\\": \\"dist/index.d.ts\\",
+  \\"browser\\": \\"dist/index.umd.js\\",
+  \\"files\\": [
+    \\"dist\\"
+  ],
+  \\"sideEffects\\": false,
+  \\"publishConfig\\": {
+    \\"registry\\": \\"https://registry.npmjs.org\\"
+  },
+  \\"scripts\\": {
+    \\"clean\\": \\"rimraf dist && rimraf coverage && rimraf node_modules\\",
+    \\"prebuild\\": \\"rimraf dist\\"
+  }
+}
+",
+  "src/index.ts": "export {};
+",
+  "test/index.test.ts": "test('title', () => {});
+",
+  "tsconfig.json": "{
+  \\"extends\\": \\"../../tsconfig.json\\",
+  \\"compilerOptions\\": {
+    \\"outDir\\": \\"dist\\",
+    \\"module\\": \\"esnext\\"
+  },
+  \\"include\\": [\\"src\\", \\"test\\"]
+}
+",
+}
+`;

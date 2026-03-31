@@ -1,14 +1,21 @@
 import {
   AbstractTask,
+  DyCliError,
   PublishCommandConfig,
+  hasPublishedStableVersion,
   runChangesetCommand,
   runProjectCommand,
 } from '@dysonic/dy-cli-core';
+import fs from 'fs-extra';
+import path from 'path';
+
+import { PublishProjectTask } from './publish-project-task';
 
 export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
   public async run(): Promise<void> {
     const cwd = this.config.projectContext.rootDir;
 
+    await this.assertPrereleasePackagesHaveStableReleases(cwd);
     await runProjectCommand(this.config.projectContext, 'build');
     await runProjectCommand(this.config.projectContext, 'test', [], {
       NODE_ENV: 'test',
@@ -19,6 +26,11 @@ export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
 
     if (tag) {
       publishArgs.push('--tag', tag);
+    }
+
+    if (this.config.dryRun) {
+      await this.runWorkspaceDryRun();
+      return;
     }
 
     await runChangesetCommand(cwd, publishArgs);
@@ -61,5 +73,76 @@ export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
     }
 
     return undefined;
+  }
+
+  private async assertPrereleasePackagesHaveStableReleases(cwd: string) {
+    if (!(await fs.pathExists(path.join(cwd, '.changeset/pre.json')))) {
+      return;
+    }
+
+    const packagesWithoutStableRelease: string[] = [];
+
+    for (const packageDir of this.config.projectContext.targetPackageDirs) {
+      const packageJSONPath = path.join(packageDir, 'package.json');
+
+      if (!(await fs.pathExists(packageJSONPath))) {
+        continue;
+      }
+
+      const packageJSON = (await fs.readJSON(packageJSONPath)) as {
+        name?: string;
+        private?: boolean;
+      };
+
+      if (packageJSON.private || !packageJSON.name) {
+        continue;
+      }
+
+      if (!(await hasPublishedStableVersion(packageJSON.name))) {
+        packagesWithoutStableRelease.push(packageJSON.name);
+      }
+    }
+
+    if (packagesWithoutStableRelease.length === 0) {
+      return;
+    }
+
+    throw new DyCliError(
+      'INVALID_ARGUMENT',
+      [
+        'Prerelease publishing is only allowed for packages that already have a stable release.',
+        `Missing stable releases: ${packagesWithoutStableRelease.join(', ')}.`,
+        'Publish a stable version first or exclude these packages from the prerelease batch.',
+      ].join(' '),
+    );
+  }
+
+  private async runWorkspaceDryRun() {
+    for (const packageDir of this.config.projectContext.targetPackageDirs) {
+      const packageJSONPath = path.join(packageDir, 'package.json');
+
+      if (!(await fs.pathExists(packageJSONPath))) {
+        continue;
+      }
+
+      const packageJSON = (await fs.readJSON(packageJSONPath)) as {
+        private?: boolean;
+      };
+
+      if (packageJSON.private) {
+        continue;
+      }
+
+      await new PublishProjectTask({
+        ...this.config,
+        cwd: packageDir,
+        dryRun: true,
+        projectContext: {
+          ...this.config.projectContext,
+          currentPackageDir: packageDir,
+          isRoot: false,
+        },
+      }).run();
+    }
   }
 }
