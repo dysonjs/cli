@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-publish",
-  "version": "0.0.5",
+  "version": "1.0.0-beta.0",
   "description": "Built-in publish command for dy-cli package publishing",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
