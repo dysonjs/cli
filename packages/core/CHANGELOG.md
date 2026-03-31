@@ -1,5 +1,11 @@
 # @dysonic/dy-cli-core
 
+## 1.0.2
+
+### Patch Changes
+
+- Harden the dy-cli release flow, align generated templates with the unified command model, and add scaffold snapshot coverage for create and add workflows.
+
 ## 1.0.1
 
 ### Patch Changes
