@@ -7,13 +7,12 @@ import { AbstractTask, AddCommandConfig, DyCliError } from '@dysonic/dy-cli-core
 
 export class AddPackageTask extends AbstractTask<AddCommandConfig> {
   public async run(): Promise<void> {
-    const workspaceRoot = this.config.cwd ?? process.cwd();
-    const workspaceConfigPath = path.join(workspaceRoot, 'pnpm-workspace.yaml');
+    const workspaceRoot = this.config.projectContext.rootDir;
 
-    if (!(await fs.pathExists(workspaceConfigPath))) {
+    if (this.config.projectContext.type !== 'monorepo') {
       throw new DyCliError(
         'CONFIG_NOT_FOUND',
-        `No pnpm-workspace.yaml found at '${workspaceRoot}', add only supports monorepo projects.`,
+        `Project '${workspaceRoot}' is not a monorepo, add only supports monorepo projects.`,
       );
     }
 
@@ -35,6 +34,17 @@ export class AddPackageTask extends AbstractTask<AddCommandConfig> {
       description: undefined,
       private: undefined,
       sideEffects: undefined,
+      projectContext: {
+        cwd: process.cwd(),
+        rootDir: process.cwd(),
+        type: 'single',
+        packageDir: 'packages',
+        versionStrategy: undefined,
+        packageDirs: [],
+        targetPackageDirs: [process.cwd()],
+        currentPackageDir: process.cwd(),
+        isRoot: true,
+      },
     };
   }
 

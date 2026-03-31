@@ -1,4 +1,5 @@
 import { BaseCommandArgs, BaseCommandConfig } from '../base';
+import { ProjectContext } from '../project';
 
 export interface AddCommandArgs extends BaseCommandArgs {
   destDir?: string;
@@ -14,4 +15,5 @@ export interface AddCommandConfig extends BaseCommandConfig {
   description?: string;
   private?: boolean;
   sideEffects?: boolean;
+  projectContext: ProjectContext;
 }

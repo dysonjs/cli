@@ -61,15 +61,17 @@ describe('@dysonic/dy-cli-cmd-add', () => {
     expect(packageJSON.name).toBe('@dysonic/button');
     expect(packageJSON.browser).toBe('dist/index.umd.js');
     expect(packageJSON.private).toBe(false);
-    expect(packageJSON.scripts.build).toBe('dy-cli build');
-    expect(packageJSON.scripts['build:types']).toBe('dy-cli build --types');
-    expect(packageJSON.scripts['build:umd']).toBe('dy-cli build --umd');
-    expect(packageJSON.scripts.test).toBe('dy-cli test');
-    expect(packageJSON.scripts['test:coverage']).toBe('dy-cli test --coverage');
-    expect(packageJSON.scripts.publish).toBe('dy-cli publish');
-    expect(packageJSON.scripts['publish:dry-run']).toBe('dy-cli publish --dry-run');
-    expect(packageJSON.scripts['publish:beta']).toBe('dy-cli publish --tag beta');
-    expect(packageJSON.scripts['publish:beta:dry-run']).toBe('dy-cli publish --tag beta --dry-run');
+    expect(packageJSON.scripts.build).toBeUndefined();
+    expect(packageJSON.scripts['build:types']).toBeUndefined();
+    expect(packageJSON.scripts['build:umd']).toBeUndefined();
+    expect(packageJSON.scripts.test).toBeUndefined();
+    expect(packageJSON.scripts['test:coverage']).toBeUndefined();
+    expect(packageJSON.scripts.publish).toBeUndefined();
+    expect(packageJSON.scripts['publish:dry-run']).toBeUndefined();
+    expect(packageJSON.scripts['publish:beta']).toBeUndefined();
+    expect(packageJSON.scripts['publish:beta:dry-run']).toBeUndefined();
+    expect(packageJSON.scripts.clean).toBe('rimraf dist && rimraf coverage && rimraf node_modules');
+    expect(packageJSON.scripts.prebuild).toBe('rimraf dist');
     expect(execa as unknown as jest.Mock).toHaveBeenCalledWith(
       'prettier',
       ['--write', packageDir],
@@ -89,6 +91,10 @@ describe('@dysonic/dy-cli-cmd-add', () => {
       workspaces: ['packages/*'],
     });
     await fs.writeFile(path.join(workspace, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n');
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      "export default { project: { type: 'monorepo' }, commands: { add: {} } };",
+    );
 
     (inquirer.prompt as unknown as jest.Mock).mockResolvedValue({
       packageName: 'card',
@@ -186,6 +192,10 @@ describe('@dysonic/dy-cli-cmd-add', () => {
       workspaces: ['packages/*'],
     });
     await fs.writeFile(path.join(workspace, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n');
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      "export default { project: { type: 'monorepo' }, commands: { add: {} } };",
+    );
     await fs.ensureDir(path.join(workspace, 'packages', 'dup'));
 
     (inquirer.prompt as unknown as jest.Mock).mockResolvedValue({
@@ -211,6 +221,10 @@ describe('@dysonic/dy-cli-cmd-add', () => {
       workspaces: ['packages/*'],
     });
     await fs.writeFile(path.join(workspace, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n');
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      "export default { project: { type: 'monorepo' }, commands: { add: {} } };",
+    );
 
     (inquirer.prompt as unknown as jest.Mock).mockResolvedValue({});
 
@@ -229,6 +243,10 @@ describe('@dysonic/dy-cli-cmd-add', () => {
       workspaces: ['packages/*'],
     });
     await fs.writeFile(path.join(workspace, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n');
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      "export default { project: { type: 'monorepo' }, commands: { add: {} } };",
+    );
     await fs.ensureDir(path.join(workspace, 'packages', 'taken'));
 
     const promptMock = inquirer.prompt as unknown as jest.Mock;
@@ -251,5 +269,42 @@ describe('@dysonic/dy-cli-cmd-add', () => {
     await command.parseAsync(['node', 'test', '--cwd', workspace]);
 
     expect(await fs.pathExists(path.join(workspace, 'packages/fresh'))).toBe(true);
+  });
+
+  test('should use project metadata instead of pnpm-workspace.yaml to recognize monorepo', async () => {
+    const workspace = createTempDir('dy-cli-add-project-metadata');
+    const command = new AddCommand();
+
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      workspaces: ['packages/*'],
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      [
+        'export default {',
+        '  project: {',
+        "    type: 'monorepo',",
+        "    packageDir: 'packages',",
+        '  },',
+        '  commands: {',
+        '    add: {',
+        "      destDir: 'packages',",
+        '    },',
+        '  },',
+        '};',
+      ].join('\n'),
+    );
+
+    (inquirer.prompt as unknown as jest.Mock).mockResolvedValue({
+      private: false,
+      description: '',
+      sideEffects: false,
+    });
+
+    await command.parseAsync(['node', 'test', 'button', '--cwd', workspace]);
+
+    expect(await fs.pathExists(path.join(workspace, 'packages/button/package.json'))).toBe(true);
   });
 });

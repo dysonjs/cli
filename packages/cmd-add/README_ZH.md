@@ -33,12 +33,13 @@ dy-cli add button
 dy-cli add --package-name card --description "Card component"
 ```
 
-新建出的子包会默认带上这些脚本入口：
+新建出的子包默认保持最小化：
 
-- `dy-cli build`
-- `dy-cli test`
-- `dy-cli publish`
+- 不再额外生成 `build`、`test`、`publish` 这类 package script
+- 子包的构建、测试、升版、发布统一通过全局 `dy-cli` 入口驱动
+
+命令会通过 `dy.config.ts` 里的项目元信息识别 monorepo，而不是依赖某个包管理器特有的工作区文件。
 
 ## 设计说明
 
-这个包的目标是让 monorepo 子包创建不再依赖项目内部额外脚本，而是统一走 `dy-cli add`。
+这个包的目标是让 monorepo 子包创建不再依赖项目内部额外脚本或每个子包自己的命令包装层，而是统一走 `dy-cli add`。

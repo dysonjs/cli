@@ -40,7 +40,7 @@ describe('@dysonic/dy-cli-cmd-create', () => {
       path.join(projectDir, 'packages/demo-app/package.json'),
     );
 
-    expect(await fs.pathExists(path.join(projectDir, 'pnpm-workspace.yaml'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, 'pnpm-workspace.yaml'))).toBe(false);
     expect(await fs.pathExists(path.join(projectDir, '.changeset/config.json'))).toBe(true);
     expect(await fs.pathExists(path.join(projectDir, '.github/workflows/release.yml'))).toBe(true);
     expect(await fs.pathExists(path.join(projectDir, 'tools/scripts/build.ts'))).toBe(false);
@@ -60,16 +60,16 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(packageJSON.name).toBe('demo-app');
     expect(packageJSON.workspaces).toEqual(['packages/*']);
     expect(packageJSON.scripts.add).toBe('dy-cli add');
-    expect(packageJSON.scripts.build).toBe('dy-cli build --workspace');
-    expect(packageJSON.scripts['build:types']).toBe('dy-cli build --workspace --types');
-    expect(packageJSON.scripts['build:umd']).toBe('dy-cli build --workspace --umd');
-    expect(packageJSON.scripts.test).toBe('dy-cli test --workspace');
-    expect(packageJSON.scripts['test:coverage']).toBe('dy-cli test --workspace --coverage');
-    expect(packageJSON.scripts.release).toBe('dy-cli publish --workspace');
-    expect(packageJSON.scripts['release:beta']).toBe('dy-cli publish --workspace --beta');
-    expect(packageJSON.scripts.version).toBe('dy-cli publish --version');
-    expect(packageJSON.scripts['version:beta']).toBe('dy-cli publish --version --beta');
-    expect(packageJSON.scripts['version:beta:exit']).toBe('dy-cli publish --version --beta-exit');
+    expect(packageJSON.scripts.build).toBe('dy-cli build');
+    expect(packageJSON.scripts['build:types']).toBe('dy-cli build --types');
+    expect(packageJSON.scripts['build:umd']).toBe('dy-cli build --umd');
+    expect(packageJSON.scripts.test).toBe('dy-cli test');
+    expect(packageJSON.scripts['test:coverage']).toBe('dy-cli test --coverage');
+    expect(packageJSON.scripts.release).toBe('dy-cli publish');
+    expect(packageJSON.scripts['release:beta']).toBe('dy-cli publish --beta');
+    expect(packageJSON.scripts.version).toBe('dy-cli version');
+    expect(packageJSON.scripts['version:beta']).toBe('dy-cli version --beta');
+    expect(packageJSON.scripts['version:beta:exit']).toBe('dy-cli version --beta-exit');
     expect(packageJSON.scripts.grant).toBeUndefined();
     expect(packageJSON.scripts.publish).toBeUndefined();
     expect(packageJSON.scripts['publish:dry-run']).toBeUndefined();
@@ -77,17 +77,23 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(packageJSON.scripts['publish:beta:dry-run']).toBeUndefined();
     expect(packageInnerJSON.name).toBe('@dysonic/demo-app');
     expect(packageInnerJSON.browser).toBe('dist/index.umd.js');
-    expect(packageInnerJSON.scripts.build).toBe('dy-cli build');
-    expect(packageInnerJSON.scripts['build:types']).toBe('dy-cli build --types');
-    expect(packageInnerJSON.scripts['build:umd']).toBe('dy-cli build --umd');
-    expect(packageInnerJSON.scripts.test).toBe('dy-cli test');
-    expect(packageInnerJSON.scripts['test:coverage']).toBe('dy-cli test --coverage');
-    expect(packageInnerJSON.scripts.publish).toBe('dy-cli publish');
-    expect(packageInnerJSON.scripts['publish:dry-run']).toBe('dy-cli publish --dry-run');
-    expect(packageInnerJSON.scripts['publish:beta']).toBe('dy-cli publish --tag beta');
-    expect(packageInnerJSON.scripts['publish:beta:dry-run']).toBe(
-      'dy-cli publish --tag beta --dry-run',
+    expect(packageInnerJSON.scripts.build).toBeUndefined();
+    expect(packageInnerJSON.scripts['build:types']).toBeUndefined();
+    expect(packageInnerJSON.scripts['build:umd']).toBeUndefined();
+    expect(packageInnerJSON.scripts.test).toBeUndefined();
+    expect(packageInnerJSON.scripts['test:coverage']).toBeUndefined();
+    expect(packageInnerJSON.scripts.publish).toBeUndefined();
+    expect(packageInnerJSON.scripts['publish:dry-run']).toBeUndefined();
+    expect(packageInnerJSON.scripts['publish:beta']).toBeUndefined();
+    expect(packageInnerJSON.scripts['publish:beta:dry-run']).toBeUndefined();
+    expect(packageInnerJSON.scripts.clean).toBe(
+      'rimraf dist && rimraf coverage && rimraf node_modules',
     );
+    expect(packageInnerJSON.scripts.prebuild).toBe('rimraf dist');
+    expect(configContent).toContain('project: {');
+    expect(configContent).toContain("type: 'monorepo'");
+    expect(configContent).toContain("packageDir: 'packages'");
+    expect(configContent).toContain("versionStrategy: 'fixed'");
     expect(configContent).toContain('commands: {');
     expect(configContent).toContain('create: {');
     expect(configContent).toContain("defaultTemplateType: 'monorepo'");
@@ -98,10 +104,13 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(configContent).toContain("destDir: 'packages'");
     expect(configContent).toContain('build: {');
     expect(configContent).toContain('test: {');
+    expect(configContent).toContain('version: {');
     expect(configContent).toContain('publish: {');
     expect(configContent).toContain("access: 'public'");
     expect(configContent).toContain("betaTag: 'beta'");
     expect(configContent).toContain('workspaceConcurrency: 8');
+    expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBeUndefined();
+    expect(packageJSON.devDependencies['@dysonic/dy-cli-core']).toBeUndefined();
     expect(packageJSON.devDependencies.execa).toBeUndefined();
     expect(packageJSON.devDependencies['fs-extra']).toBeUndefined();
     expect(packageJSON.devDependencies.lodash).toBeUndefined();
@@ -140,11 +149,17 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(packageJSON.scripts['publish:dry-run']).toBe('dy-cli publish --dry-run');
     expect(packageJSON.scripts['publish:beta']).toBe('dy-cli publish --tag beta');
     expect(packageJSON.scripts['publish:beta:dry-run']).toBe('dy-cli publish --tag beta --dry-run');
+    expect(configContent).toContain('project: {');
+    expect(configContent).toContain("type: 'single'");
     expect(configContent).toContain('commands: {');
     expect(configContent).toContain("defaultTemplateType: 'single'");
     expect(configContent).toContain('test: {');
+    expect(configContent).toContain('version: {');
     expect(configContent).toContain('publish: {');
     expect(configContent).toContain("access: 'public'");
+    expect(configContent).toContain("betaTag: 'beta'");
+    expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBeUndefined();
+    expect(packageJSON.devDependencies['@dysonic/dy-cli-core']).toBeUndefined();
   });
 
   test('should reject unsupported project types', async () => {

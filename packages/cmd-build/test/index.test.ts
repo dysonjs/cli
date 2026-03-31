@@ -219,6 +219,56 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     );
   });
 
+  test('should build executable bin output by default when the package declares bin', async () => {
+    const workspace = createTempDir('dy-cli-build-default-bin');
+    const command = new BuildCommand();
+
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-cli',
+      version: '0.0.0',
+      main: 'dist/index.cjs.js',
+      module: 'dist/index.esm.js',
+      types: 'dist/index.d.ts',
+      bin: {
+        'demo-cli': 'dist/cli.js',
+      },
+    });
+    await fs.writeJSON(path.join(workspace, 'tsconfig.json'), {
+      compilerOptions: {
+        target: 'ES2019',
+        module: 'ESNext',
+        moduleResolution: 'Node',
+        declaration: true,
+        esModuleInterop: true,
+        strict: false,
+        skipLibCheck: true,
+      },
+      include: ['src'],
+    });
+    await fs.ensureDir(path.join(workspace, 'src'));
+    await fs.writeFile(
+      path.join(workspace, 'src/index.ts'),
+      "export const packageBuildValue = 'package-success';\n",
+    );
+    await fs.writeFile(path.join(workspace, 'src/cli.ts'), "console.log('bin-success');\n");
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      ['export default {', '  commands: {', '    build: {},', '  },', '};'].join('\n'),
+    );
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace]);
+
+    await expect(fs.readFile(path.join(workspace, 'dist/index.cjs.js'), 'utf8')).resolves.toContain(
+      'package-success',
+    );
+    await expect(fs.readFile(path.join(workspace, 'dist/cli.js'), 'utf8')).resolves.toContain(
+      '#!/usr/bin/env node',
+    );
+    await expect(fs.readFile(path.join(workspace, 'dist/cli.js'), 'utf8')).resolves.toContain(
+      'bin-success',
+    );
+  });
+
   test('should build executable bin output when invoked outside the target cwd', async () => {
     const workspace = createTempDir('dy-cli-build-bin-outside-cwd');
     const command = new BuildCommand();
@@ -734,10 +784,41 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     await command.parseAsync(['node', 'test', '--cwd', packageDir, '--workspace', '--types']);
 
     expect(execa).toHaveBeenCalledWith(
-      'pnpm',
-      ['-r', '--stream', '--workspace-concurrency', '8', 'run', 'build:types'],
+      'dy-cli',
+      ['build', '--types'],
       expect.objectContaining({
-        cwd: workspace,
+        cwd: packageDir,
+      }),
+    );
+  });
+
+  test('should default to building all child packages when executed from monorepo root', async () => {
+    const workspace = createTempDir('dy-cli-build-workspace-default');
+    const packageDir = path.join(workspace, 'packages/button');
+    const command = new BuildCommand();
+
+    await fs.ensureDir(packageDir);
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      workspaces: ['packages/*'],
+    });
+    await fs.writeJSON(path.join(packageDir, 'package.json'), {
+      name: '@dysonic/button',
+      version: '0.0.0',
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      "export default { project: { type: 'monorepo' }, commands: { build: {} } };",
+    );
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace, '--types']);
+
+    expect(execa).toHaveBeenCalledWith(
+      'dy-cli',
+      ['build', '--types'],
+      expect.objectContaining({
+        cwd: packageDir,
       }),
     );
   });

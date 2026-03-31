@@ -2,20 +2,16 @@
 
 `@dysonic/dy-cli-cmd-publish` implements the `dy-cli publish` command.
 
-It is responsible for manually publishing the current npm package.
+It is responsible for publishing project packages.
 
 For the Chinese version, see `README_ZH.md`.
 
 ## Role
 
-This package only handles the “publish the current package” scenario.
-It does not handle:
+This package handles both:
 
-- monorepo root batch publishing
-- changesets version orchestration
-- release workflows
-
-So its scope is package-level `npm publish`.
+- package publishing for `single` projects and monorepo child packages
+- default full-release publishing when executed at a fixed monorepo root
 
 ## Main Contents
 
@@ -42,11 +38,11 @@ dy-cli publish --tag beta
 
 ## Behavior Constraints
 
-- run it from the current package directory
+- running it at a monorepo root publishes the full child-package set by default
 - in monorepo child packages, it searches upward for the nearest `dy.config.ts`
 - packages with `private: true` are rejected
 
 ## Design Notes
 
 This package has been refactored from a publish-script wrapper into a real publish command implementation.
-It calls `npm publish` directly inside the command flow.
+It stays behind the `dy-cli publish` entry instead of asking users to orchestrate registry publishing manually.

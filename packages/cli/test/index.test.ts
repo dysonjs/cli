@@ -5,12 +5,12 @@ import { DyCliError, log } from '@dysonic/dy-cli-core';
 import { createProgram, reportCliFailure, runCLI } from '../src';
 
 describe('@dysonic/dy-cli', () => {
-  test('should mount create, add, build, test and publish commands', () => {
+  test('should mount create, install, add, build, test, version and publish commands', () => {
     const program = createProgram();
     const commandNames = program.commands.map((command) => command.name());
 
     expect(commandNames).toEqual(
-      expect.arrayContaining(['create', 'add', 'build', 'test', 'publish']),
+      expect.arrayContaining(['create', 'install', 'add', 'build', 'test', 'version', 'publish']),
     );
   });
 

@@ -35,14 +35,6 @@
     "typescript": "5.8.3"
   },
   "scripts": {
-    "build": "pnpm exec dy-cli build",
-    "build:types": "pnpm exec dy-cli build --types",
-    "test": "pnpm exec dy-cli test",
-    "test:coverage": "pnpm exec dy-cli test --coverage",
-    "publish": "pnpm exec dy-cli publish",
-    "publish:dry-run": "pnpm exec dy-cli publish --dry-run",
-    "publish:beta": "pnpm exec dy-cli publish --tag beta",
-    "publish:beta:dry-run": "pnpm exec dy-cli publish --tag beta --dry-run",
     "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
     "prebuild": "rimraf dist"
   }

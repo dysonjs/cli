@@ -176,10 +176,43 @@ describe('@dysonic/dy-cli-cmd-test', () => {
     await command.parseAsync(['node', 'test', '--cwd', packageDir, '--workspace', '--coverage']);
 
     expect(execa).toHaveBeenCalledWith(
-      'pnpm',
-      ['-r', '--stream', '--workspace-concurrency', '8', 'run', 'test:coverage'],
+      'dy-cli',
+      ['test', '--coverage'],
       expect.objectContaining({
-        cwd: workspace,
+        cwd: packageDir,
+      }),
+    );
+    expect(jestRunner.run).not.toHaveBeenCalled();
+  });
+
+  test('should default to running child package tests from monorepo root', async () => {
+    const workspace = createTempDir('dy-cli-test-workspace-default');
+    const packageDir = path.join(workspace, 'packages/button');
+    const command = new TestCommand();
+
+    await fs.ensureDir(packageDir);
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      workspaces: ['packages/*'],
+    });
+    await fs.writeJSON(path.join(packageDir, 'package.json'), {
+      name: '@dysonic/button',
+      version: '0.0.0',
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      "export default { project: { type: 'monorepo' }, commands: { test: {} } };",
+    );
+    await fs.writeFile(path.join(workspace, 'jest.config.js'), 'module.exports = {};');
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace, '--coverage']);
+
+    expect(execa).toHaveBeenCalledWith(
+      'dy-cli',
+      ['test', '--coverage'],
+      expect.objectContaining({
+        cwd: packageDir,
       }),
     );
     expect(jestRunner.run).not.toHaveBeenCalled();

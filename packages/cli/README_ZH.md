@@ -11,9 +11,11 @@
 当前默认挂载的命令有：
 
 - `create`
+- `install`
 - `add`
 - `build`
 - `test`
+- `version`
 - `publish`
 
 ## 包定位
@@ -39,9 +41,11 @@
 
 - `@dysonic/dy-cli-core`
 - `@dysonic/dy-cli-cmd-create`
+- `@dysonic/dy-cli-cmd-install`
 - `@dysonic/dy-cli-cmd-add`
 - `@dysonic/dy-cli-cmd-build`
 - `@dysonic/dy-cli-cmd-test`
+- `@dysonic/dy-cli-cmd-version`
 - `@dysonic/dy-cli-cmd-publish`
 
 它本身不应该反向被 `cmd-*` 或 `core` 依赖。

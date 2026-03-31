@@ -1,20 +1,15 @@
-import { AbstractTask, BuildCommandConfig, runWorkspaceScript } from '@dysonic/dy-cli-core';
+import { AbstractTask, BuildCommandConfig, runProjectCommand } from '@dysonic/dy-cli-core';
 
 import { BuildBinBuilder } from '../builders';
 
 export class BuildBinTask extends AbstractTask<BuildCommandConfig> {
   public async run(): Promise<void> {
-    if (this.config.workspace) {
-      await runWorkspaceScript(
-        this.config.workspaceRoot ?? this.config.cwd ?? process.cwd(),
-        'build:bin',
-        [],
-        this.config.workspaceConcurrency,
-      );
+    if (this.config.workspace || this.shouldRunWorkspaceByDefault()) {
+      await runProjectCommand(this.config.projectContext, 'build', ['--bin']);
       return;
     }
 
-    const builder = new BuildBinBuilder(this.config.cwd ?? process.cwd(), this.config.bin);
+    const builder = new BuildBinBuilder(this.resolveExecutionDir(), this.config.bin);
     await builder.build();
   }
 
@@ -30,6 +25,29 @@ export class BuildBinTask extends AbstractTask<BuildCommandConfig> {
       externals: undefined,
       globals: undefined,
       bin: undefined,
+      projectContext: {
+        cwd: process.cwd(),
+        rootDir: process.cwd(),
+        type: 'single',
+        packageDir: 'packages',
+        versionStrategy: undefined,
+        packageDirs: [],
+        targetPackageDirs: [process.cwd()],
+        currentPackageDir: process.cwd(),
+        isRoot: true,
+      },
     };
+  }
+
+  private shouldRunWorkspaceByDefault() {
+    return this.config.projectContext.type === 'monorepo' && this.config.projectContext.isRoot;
+  }
+
+  private resolveExecutionDir() {
+    if (this.config.projectContext.type === 'single') {
+      return this.config.projectContext.rootDir;
+    }
+
+    return this.config.projectContext.currentPackageDir ?? (this.config.cwd ?? process.cwd());
   }
 }

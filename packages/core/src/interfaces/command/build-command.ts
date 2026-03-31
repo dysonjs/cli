@@ -1,4 +1,5 @@
 import { BaseCommandArgs, BaseCommandConfig } from '../base';
+import { ProjectContext } from '../project';
 
 export type BuildTarget = 'default' | 'types' | 'umd' | 'bin';
 
@@ -42,4 +43,5 @@ export interface BuildCommandConfig extends BaseCommandConfig {
   externals?: string[];
   globals?: Record<string, string>;
   bin?: BuildCommandBinConfig;
+  projectContext: ProjectContext;
 }

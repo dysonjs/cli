@@ -9,6 +9,7 @@ import {
   ExternalRunCommandsConfig,
   getExternalConfigDir,
   loadNearestExternalRunCommandsConfig,
+  resolveProjectContext,
 } from '@dysonic/dy-cli-core';
 
 import { BuildBinTask } from '../tasks/build-bin-task';
@@ -87,6 +88,7 @@ export class BuildCommand extends AbstractCommand<BuildCommandConfig, BuildComma
         typeof args.globals !== 'undefined' ? args.globals : buildConfig?.umd?.globals,
       ),
       bin: target === 'bin' ? this.resolveBinConfig(buildConfig?.bin) : undefined,
+      projectContext: resolveProjectContext(cwd, config),
     };
   }
 

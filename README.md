@@ -1,41 +1,42 @@
 # dy-cli
 
-`dy-cli` is a CLI toolkit for scaffolding and maintaining npm packages, with first-class support for:
+`dy-cli` is a command-first toolkit for package projects. The intent is simple: users work through `dy-cli`, not through package-manager-specific scripts.
 
-- monorepo workspaces
-- single-package libraries
-- package-level build, test, and publish workflows
+It supports:
 
-The current built-in commands are:
+- `monorepo`
+- `single`
+
+The public command surface is:
 
 - `create`
+- `install`
 - `add`
 - `build`
 - `test`
+- `version`
 - `publish`
 
 For the Chinese guide, see `README_ZH.md`.
 
 ## Install
 
-```bash
-pnpm add -D @dysonic/dy-cli @dysonic/dy-cli-core
-```
-
-After installation, use the `dy-cli` binary directly in your project.
+Install `@dysonic/dy-cli` globally once, then keep using the `dy-cli` binary directly.
 
 ## Quick Start
 
-Create a monorepo project:
+Create a project:
 
 ```bash
-dy-cli create --project monorepo --dest-dir ./
+dy-cli create --project monorepo --dest-dir ./demo
+dy-cli create --project single --dest-dir ./demo
 ```
 
-Create a single-package project:
+Install dependencies:
 
 ```bash
-dy-cli create --project single --dest-dir ./
+cd ./demo
+dy-cli install
 ```
 
 Add a child package in a monorepo:
@@ -44,7 +45,7 @@ Add a child package in a monorepo:
 dy-cli add button
 ```
 
-Run package-level tasks:
+Run the common flows:
 
 ```bash
 dy-cli build
@@ -54,10 +55,22 @@ dy-cli build --umd
 dy-cli test
 dy-cli test --coverage
 
+dy-cli version
+dy-cli version --beta
+dy-cli version --beta-exit
+dy-cli version --set 0.0.1
+
 dy-cli publish
 dy-cli publish --dry-run
 dy-cli publish --tag beta
 ```
+
+Default scope rules:
+
+- in a `single` project, `build / test / version / publish` target the current package
+- at a monorepo root, `build / test / publish` target all child packages by default
+- inside a monorepo child package, `build / test / publish` target only that package
+- at a fixed-version monorepo root, `version` updates the whole release set
 
 ## Commands
 
@@ -77,6 +90,18 @@ Options:
 - `--project-name <projectName>`: override the inferred project name
 - `--force`: overwrite a non-empty target directory
 
+Generated projects include `dy.config.ts` as the main metadata entry, plus the default `dy-cli` flow for install, build, test, version, and publish.
+
+### `install`
+
+Install project dependencies through the managed adapter.
+
+```bash
+dy-cli install
+```
+
+The command resolves the project root first, then chooses the underlying package manager automatically.
+
 ### `add`
 
 Create a child package inside a monorepo workspace.
@@ -95,9 +120,12 @@ Options:
 - `--private`: generate a private package
 - `--side-effects`: mark the package as having side effects
 
+`add` works only in projects whose `dy.config.ts` declares `project.type: 'monorepo'`.
+Generated child packages do not add extra `build / test / publish` scripts. Those flows stay behind the global `dy-cli` entry.
+
 ### `build`
 
-Build the current package without delegating to project-local build scripts.
+Build a project package without delegating to project-local build scripts.
 
 ```bash
 dy-cli build
@@ -114,9 +142,12 @@ Options:
 - `--externals <externals>`: comma-separated UMD externals
 - `--globals <globals>`: comma-separated UMD globals, such as `react:React,react-dom:ReactDOM`
 
+Run it at a monorepo root to build all child packages by default.
+If a package declares `bin` in `package.json`, the default `dy-cli build` also emits the executable output.
+
 ### `test`
 
-Run Jest tests for the current package.
+Run Jest tests for a project package.
 
 ```bash
 dy-cli test
@@ -132,9 +163,28 @@ Options:
 - `--watch`: watch mode
 - `--update-snapshot`: update snapshots
 
+Run it at a monorepo root to test all child packages by default.
+
+### `version`
+
+Manage release versions through `dy-cli`.
+
+```bash
+dy-cli version
+dy-cli version --beta
+dy-cli version --beta-exit
+dy-cli version --set 0.0.1
+```
+
+Options:
+
+- `--set <version>`: required for `single` projects
+- `--beta`: enter beta pre mode before versioning a fixed monorepo
+- `--beta-exit`: exit beta pre mode before versioning a fixed monorepo
+
 ### `publish`
 
-Publish the current package manually with `npm publish`.
+Publish a project package or a fixed monorepo release set.
 
 ```bash
 dy-cli publish
@@ -145,23 +195,26 @@ dy-cli publish --tag beta
 Options:
 
 - `--dry-run`: run publish without uploading
-- `--tag <tag>`: npm dist-tag
+- `--tag <tag>`: dist-tag
 - `--access <access>`: `public` or `restricted`
-- `--otp <otp>`: npm one-time password
-- `--registry <registry>`: npm registry URL
+- `--otp <otp>`: registry one-time password
+- `--registry <registry>`: registry URL
 
-`publish` refuses to publish `private: true` packages.
+At a monorepo root, `publish` builds, tests, and releases all child packages by default. `publish` refuses to publish `private: true` packages.
 
 ## `dy.config.ts`
 
-`dy-cli` reads project configuration from `dy.config.ts`.
+`dy-cli` reads project metadata and command defaults from `dy.config.ts`.
 
 Example:
 
 ```ts
-import { defineConfig } from '@dysonic/dy-cli-core';
-
-export default defineConfig({
+export default {
+  project: {
+    type: 'monorepo',
+    packageDir: 'packages',
+    versionStrategy: 'fixed',
+  },
   commands: {
     create: {
       defaultTemplateType: 'monorepo',
@@ -193,12 +246,16 @@ export default defineConfig({
     test: {
       config: './jest.config.js',
     },
+    version: {
+      betaTag: 'beta',
+    },
     publish: {
       access: 'public',
-      tag: 'latest',
+      betaTag: 'beta',
+      workspaceConcurrency: 8,
     },
   },
-});
+};
 ```
 
 ## Package Layout
@@ -208,27 +265,19 @@ The workspace is split into focused packages:
 - `packages/core`: shared interfaces, config contracts, helpers, and base abstractions
 - `packages/cli`: the public `dy-cli` entrypoint
 - `packages/cmd-create`: project scaffolding
+- `packages/cmd-install`: dependency installation
 - `packages/cmd-add`: monorepo child package scaffolding
 - `packages/cmd-build`: package build pipeline
 - `packages/cmd-test`: package test runner
+- `packages/cmd-version`: version management
 - `packages/cmd-publish`: package publish runner
 
 ## Development
 
-Install dependencies:
+This repository also uses `dy-cli` as the main workflow entry:
 
 ```bash
-pnpm install
-```
-
-Run tests:
-
-```bash
-pnpm test
-```
-
-Build all packages:
-
-```bash
-pnpm -r build
+dy-cli install
+dy-cli test
+dy-cli build
 ```
