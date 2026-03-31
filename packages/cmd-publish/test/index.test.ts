@@ -438,6 +438,66 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
     );
   });
 
+  test('should dry-run workspace publishes without invoking changeset publish', async () => {
+    const workspace = createTempDir('dy-cli-publish-workspace-dry-run');
+    const packageDir = path.join(workspace, 'packages/button');
+    const command = new PublishCommand();
+
+    await fs.ensureDir(packageDir);
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      workspaces: ['packages/*'],
+    });
+    await fs.writeJSON(path.join(packageDir, 'package.json'), {
+      name: '@dysonic/button',
+      version: '0.0.1',
+      private: false,
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      [
+        'export default {',
+        '  project: {',
+        "    type: 'monorepo',",
+        "    versionStrategy: 'fixed',",
+        '  },',
+        '  commands: {',
+        '    publish: {',
+        "      access: 'public',",
+        '    },',
+        '  },',
+        '};',
+      ].join('\n'),
+    );
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace, '--dry-run']);
+
+    expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
+      1,
+      'dy-cli',
+      ['build'],
+      expect.objectContaining({ cwd: packageDir }),
+    );
+    expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
+      2,
+      'dy-cli',
+      ['test'],
+      expect.objectContaining({ cwd: packageDir }),
+    );
+    expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
+      3,
+      'npm',
+      ['publish', '--dry-run', '--access', 'public'],
+      expect.objectContaining({ cwd: packageDir }),
+    );
+    expect(execa as unknown as jest.Mock).not.toHaveBeenCalledWith(
+      'npx',
+      ['changeset', 'publish'],
+      expect.any(Object),
+    );
+  });
+
   test('should reject legacy version flags on publish', async () => {
     const workspace = createTempDir('dy-cli-publish-legacy-version');
     const command = new PublishCommand();
@@ -457,4 +517,43 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
       command.parseAsync(['node', 'test', '--cwd', workspace, '--version']),
     ).rejects.toBeTruthy();
   });
+
+  test.each(['prepublishOnly', 'publish', 'postpublish'])(
+    'should reject publish when invoked from npm %s lifecycle',
+    async (lifecycleEvent) => {
+      const workspace = createTempDir(`dy-cli-publish-recursive-lifecycle-${lifecycleEvent}`);
+      const command = new PublishCommand();
+      const previousLifecycleEvent = process.env.npm_lifecycle_event;
+
+      await fs.writeJSON(path.join(workspace, 'package.json'), {
+        name: '@dysonic/demo-app',
+        version: '0.0.1',
+        private: false,
+        scripts: {
+          [lifecycleEvent]: 'dy-cli publish',
+        },
+      });
+      await fs.writeFile(
+        path.join(workspace, 'dy.config.ts'),
+        "export default { project: { type: 'single' }, commands: { publish: {} } };",
+      );
+
+      process.env.npm_lifecycle_event = lifecycleEvent;
+
+      try {
+        await expect(
+          command.parseAsync(['node', 'test', '--cwd', workspace]),
+        ).rejects.toMatchObject({
+          code: 'INVALID_ARGUMENT',
+          message: expect.stringContaining('Rename the script'),
+        });
+      } finally {
+        if (previousLifecycleEvent === undefined) {
+          delete process.env.npm_lifecycle_event;
+        } else {
+          process.env.npm_lifecycle_event = previousLifecycleEvent;
+        }
+      }
+    },
+  );
 });

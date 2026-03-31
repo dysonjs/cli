@@ -24,7 +24,9 @@ export function detectPackageManager(cwd: string): PackageManagerName {
 
 export async function installDependencies(cwd: string) {
   const packageManager = detectPackageManager(cwd);
-  await execa(packageManager, ['install'], {
+  const args = packageManager === 'npm' ? ['install', '--legacy-peer-deps'] : ['install'];
+
+  await execa(packageManager, args, {
     cwd,
     stdio: 'inherit',
   });

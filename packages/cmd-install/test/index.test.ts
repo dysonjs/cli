@@ -61,7 +61,7 @@ describe('@dysonic/dy-cli-cmd-install', () => {
 
     expect(execa).toHaveBeenCalledWith(
       'npm',
-      ['install'],
+      ['install', '--legacy-peer-deps'],
       expect.objectContaining({
         cwd: workspace,
       }),

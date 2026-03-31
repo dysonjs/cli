@@ -23,6 +23,8 @@ export class AddPackageTask extends AbstractTask<AddCommandConfig> {
     await this.renderTemplate(targetDir, packageMeta);
     await execa('prettier', ['--write', targetDir], {
       cwd: workspaceRoot,
+      localDir: workspaceRoot,
+      preferLocal: true,
     });
   }
 

@@ -8,9 +8,6 @@ module.exports = {
     },
   },
   settings: {
-    react: {
-      version: 'detect',
-    },
     'import/resolver': {
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
@@ -19,7 +16,6 @@ module.exports = {
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
   },
   extends: [
-    'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
     'prettier',
     'plugin:prettier/recommended',
@@ -49,8 +45,6 @@ module.exports = {
         allowedNames: ['self'], // Allow `const self = this`; `[]` by default
       },
     ],
-    'react/display-name': 'off',
-    'react/prop-types': 'off',
     'no-duplicate-imports': 'error',
     // 'import/no-cycle': ['warn', { maxDepth: process.env.NODE_ENV === 'production' ? 2 : 1 }],
     'import/no-self-import': 'error',
