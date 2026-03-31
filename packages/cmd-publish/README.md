@@ -51,6 +51,7 @@ dy-cli publish --tag beta
 - running it at a monorepo root publishes the full child-package set by default
 - in monorepo child packages, it searches upward for the nearest `dy.config.ts`
 - packages with `private: true` are rejected
+- when the workspace is in Changesets prerelease mode, every target package must already have a stable version published; otherwise the command aborts before publishing
 
 ## Design Notes
 

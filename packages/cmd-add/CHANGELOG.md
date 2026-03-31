@@ -1,5 +1,13 @@
 # @dysonic/dy-cli-cmd-add
 
+## 1.0.1
+
+### Patch Changes
+
+- Prevent prerelease publishing from assigning `latest` to packages that do not already have a stable release.
+- Updated dependencies
+  - @dysonic/dy-cli-core@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

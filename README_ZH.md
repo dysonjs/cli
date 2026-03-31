@@ -243,6 +243,7 @@ dy-cli publish --tag beta
 - 在 monorepo 根目录执行时，`publish` 默认会先构建、测试，再发布所有子包
 - 在子包目录执行时，`publish` 只发布当前包
 - `private: true` 的包会被直接拒绝发布
+- 当工作区处于 Changesets 的 prerelease 模式时，目标包必须已经在 registry 上存在至少一个稳定版本；否则会直接拒绝发布，避免首次 beta 包意外占用 `latest` 标签
 
 ## `dy.config.ts`
 
