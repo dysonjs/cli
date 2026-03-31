@@ -11,9 +11,11 @@ Its responsibility is intentionally narrow:
 The built-in commands currently mounted are:
 
 - `create`
+- `install`
 - `add`
 - `build`
 - `test`
+- `version`
 - `publish`
 
 For the Chinese version, see `README_ZH.md`.
@@ -41,9 +43,11 @@ This package depends on:
 
 - `@dysonic/dy-cli-core`
 - `@dysonic/dy-cli-cmd-create`
+- `@dysonic/dy-cli-cmd-install`
 - `@dysonic/dy-cli-cmd-add`
 - `@dysonic/dy-cli-cmd-build`
 - `@dysonic/dy-cli-cmd-test`
+- `@dysonic/dy-cli-cmd-version`
 - `@dysonic/dy-cli-cmd-publish`
 
 It should not be depended on by `cmd-*` packages or `core`.

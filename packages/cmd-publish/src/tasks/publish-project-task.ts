@@ -5,7 +5,7 @@ import path from 'path';
 
 export class PublishProjectTask extends AbstractTask<PublishCommandConfig> {
   public async run(): Promise<void> {
-    const cwd = this.config.cwd ?? process.cwd();
+    const cwd = this.resolveExecutionDir();
     const packageJSONPath = path.join(cwd, 'package.json');
 
     if (!(await fs.pathExists(packageJSONPath))) {
@@ -36,12 +36,21 @@ export class PublishProjectTask extends AbstractTask<PublishCommandConfig> {
       otp: undefined,
       registry: undefined,
       beta: false,
-      betaExit: false,
       workspace: false,
-      version: false,
       betaTag: 'beta',
       workspaceRoot: undefined,
       workspaceConcurrency: 8,
+      projectContext: {
+        cwd: process.cwd(),
+        rootDir: process.cwd(),
+        type: 'single',
+        packageDir: 'packages',
+        versionStrategy: undefined,
+        packageDirs: [],
+        targetPackageDirs: [process.cwd()],
+        currentPackageDir: process.cwd(),
+        isRoot: true,
+      },
     };
   }
 
@@ -69,5 +78,13 @@ export class PublishProjectTask extends AbstractTask<PublishCommandConfig> {
     }
 
     return args;
+  }
+
+  private resolveExecutionDir() {
+    if (this.config.projectContext.type === 'single') {
+      return this.config.projectContext.rootDir;
+    }
+
+    return this.config.projectContext.currentPackageDir ?? (this.config.cwd ?? process.cwd());
   }
 }

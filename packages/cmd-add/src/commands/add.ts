@@ -3,8 +3,8 @@ import {
   AddCommandArgs,
   AddCommandConfig,
   CommandOption,
-  DyCliError,
   ExternalRunCommandsConfig,
+  resolveProjectContext,
 } from '@dysonic/dy-cli-core';
 
 import { AddPackageTask } from '../tasks/add-package-task';
@@ -51,6 +51,7 @@ export class AddCommand extends AbstractCommand<AddCommandConfig, AddCommandArgs
       description: args.description ?? addConfig?.description,
       private: args.private ?? addConfig?.private,
       sideEffects: args.sideEffects ?? addConfig?.sideEffects,
+      projectContext: resolveProjectContext(cwd, config),
     };
   }
 

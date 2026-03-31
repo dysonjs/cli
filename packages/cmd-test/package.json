@@ -1,7 +1,7 @@
 {
   "name": "@dysonic/dy-cli-cmd-test",
   "version": "0.0.5",
-  "description": "Built-in test command for running Jest tests in single-package projects and monorepo child packages",
+  "description": "Built-in test command for running Jest tests through dy-cli project scopes",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -17,14 +17,6 @@
     "jest": "27.5.1"
   },
   "scripts": {
-    "build": "pnpm exec dy-cli build",
-    "build:types": "pnpm exec dy-cli build --types",
-    "test": "pnpm exec dy-cli test",
-    "test:coverage": "pnpm exec dy-cli test --coverage",
-    "publish": "pnpm exec dy-cli publish",
-    "publish:dry-run": "pnpm exec dy-cli publish --dry-run",
-    "publish:beta": "pnpm exec dy-cli publish --tag beta",
-    "publish:beta:dry-run": "pnpm exec dy-cli publish --tag beta --dry-run",
     "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
     "prebuild": "rimraf dist"
   }

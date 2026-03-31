@@ -2,7 +2,7 @@
 
 `@dysonic/dy-cli-cmd-test` 是 `dy-cli test` 命令的实现包。
 
-它负责在当前包目录运行 Jest 单测。
+它负责运行项目包的 Jest 单测。
 
 ## 包定位
 
@@ -33,7 +33,8 @@ dy-cli test --update-snapshot
 
 - 向上查找最近的 `dy.config.ts`
 - 自动解析 Jest 配置文件
-- 运行当前包的测试
+- 在 monorepo 根目录执行时默认运行所有子包测试
+- 在 single 项目或 monorepo 子包目录执行时运行当前包测试
 - 支持覆盖率、watch、snapshot 更新
 
 ## 设计说明

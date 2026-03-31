@@ -1,4 +1,5 @@
 import { BaseCommandArgs, BaseCommandConfig } from '../base';
+import { ProjectContext } from '../project';
 
 export type PublishAccess = 'public' | 'restricted';
 
@@ -19,9 +20,7 @@ export interface PublishCommandArgs extends BaseCommandArgs {
   otp?: string;
   registry?: string;
   beta?: boolean;
-  betaExit?: boolean;
   workspace?: boolean;
-  version?: boolean;
 }
 
 export interface PublishCommandConfig extends BaseCommandConfig {
@@ -31,10 +30,9 @@ export interface PublishCommandConfig extends BaseCommandConfig {
   otp?: string;
   registry?: string;
   beta: boolean;
-  betaExit: boolean;
   workspace: boolean;
-  version: boolean;
   betaTag: string;
   workspaceRoot?: string;
   workspaceConcurrency: number;
+  projectContext: ProjectContext;
 }

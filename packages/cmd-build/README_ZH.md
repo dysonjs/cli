@@ -2,7 +2,7 @@
 
 `@dysonic/dy-cli-cmd-build` 是 `dy-cli build` 命令的实现包。
 
-它负责构建当前 npm 包，支持：
+它负责构建项目包，支持：
 
 - 默认包构建
 - 类型产物构建
@@ -37,9 +37,11 @@ dy-cli build --umd
 ## 支持能力
 
 - 默认构建 ESM / CJS 产物
+- 如果包声明了 `bin`，默认也会一起产出可执行文件
 - `--types` 构建声明文件
 - `--umd` 构建 UMD 包
 - 从 `dy.config.ts` 读取 UMD 相关配置
+- 在 monorepo 根目录执行时默认构建所有子包
 - 在 monorepo 子包目录中向上查找最近的 `dy.config.ts`
 
 ## 设计说明

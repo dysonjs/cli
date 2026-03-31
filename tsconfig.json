@@ -15,8 +15,10 @@
       "@dysonic/dy-cli-core": ["packages/core/src"],
       "@dysonic/dy-cli-cmd-build": ["packages/cmd-build/src"],
       "@dysonic/dy-cli-cmd-create": ["packages/cmd-create/src"],
+      "@dysonic/dy-cli-cmd-install": ["packages/cmd-install/src"],
       "@dysonic/dy-cli-cmd-publish": ["packages/cmd-publish/src"],
-      "@dysonic/dy-cli-cmd-test": ["packages/cmd-test/src"]
+      "@dysonic/dy-cli-cmd-test": ["packages/cmd-test/src"],
+      "@dysonic/dy-cli-cmd-version": ["packages/cmd-version/src"]
     },
     "preserveSymlinks": true,
     "resolveJsonModule": true,

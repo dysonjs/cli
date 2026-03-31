@@ -34,12 +34,13 @@ dy-cli add button
 dy-cli add --package-name card --description "Card component"
 ```
 
-Generated child packages include default script entrypoints for:
+Generated child packages stay minimal by default:
 
-- `dy-cli build`
-- `dy-cli test`
-- `dy-cli publish`
+- they do not add extra `build`, `test`, or `publish` package scripts
+- child-package build, test, version, and publish flows are driven from the global `dy-cli` entry
+
+The command resolves monorepo context from `dy.config.ts` project metadata instead of relying on package-manager-specific workspace files.
 
 ## Design Notes
 
-The goal of this package is to make monorepo child package creation go through `dy-cli add` instead of relying on extra project-local scripts.
+The goal of this package is to make monorepo child package creation go through `dy-cli add` instead of relying on extra project-local scripts or per-package command wrappers.

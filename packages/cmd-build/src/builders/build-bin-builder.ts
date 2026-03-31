@@ -18,7 +18,7 @@ export class BuildBinBuilder extends AbstractBuilder {
     const esbuild =
       typeof process.env.JEST_WORKER_ID === 'string'
         ? (
-            new Function('specifier', 'return require(specifier)')('rollup-plugin-esbuild') as {
+            require('rollup-plugin-esbuild') as {
               default: (options: Record<string, unknown>) => unknown;
             }
           ).default
@@ -48,7 +48,7 @@ export class BuildBinBuilder extends AbstractBuilder {
           target: 'es2018',
           sourceMap: false,
           tsconfig: this.resolveTsConfigPath(),
-        }),
+        }) as Rollup.Plugin,
         copy({
           targets: await this.getCopyTargets(),
         }),
