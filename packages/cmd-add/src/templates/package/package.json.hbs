@@ -1,0 +1,22 @@
+{
+  "name": "{{scopedPackageName}}",
+  "private": {{private}},
+  "version": "0.0.0",
+  "license": "MIT",
+  "description": "{{description}}",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "browser": "dist/index.umd.js",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": {{sideEffects}},
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
+    "prebuild": "rimraf dist"
+  }
+}

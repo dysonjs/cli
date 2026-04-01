@@ -1,0 +1,29 @@
+export default {
+  project: {
+    type: 'single',
+  },
+  commands: {
+    create: {
+      defaultTemplateType: '{{defaultTemplateType}}',
+      templates: {
+{{templatesBlock}}
+      },
+    },
+    build: {
+      mode: '{{buildMode}}',
+      umd: {
+        name: '{{umdName}}',
+      },
+    },
+    test: {
+      config: './jest.config.js',
+    },
+    version: {
+      betaTag: 'beta',
+    },
+    publish: {
+      access: 'public',
+      betaTag: 'beta',
+    },
+  },
+};

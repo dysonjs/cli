@@ -1,0 +1,35 @@
+export default {
+  project: {
+    type: 'monorepo',
+    packageDir: 'packages',
+    versionStrategy: 'fixed',
+  },
+  commands: {
+    create: {
+      defaultTemplateType: '{{defaultTemplateType}}',
+      templates: {
+{{templatesBlock}}
+      },
+    },
+    add: {
+      destDir: 'packages',
+    },
+    build: {
+      mode: '{{buildMode}}',
+      umd: {
+        name: '{{umdName}}',
+      },
+    },
+    test: {
+      config: './jest.config.js',
+    },
+    version: {
+      betaTag: 'beta',
+    },
+    publish: {
+      access: 'public',
+      betaTag: 'beta',
+      workspaceConcurrency: 8,
+    },
+  },
+};

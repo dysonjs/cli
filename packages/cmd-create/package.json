@@ -1,7 +1,8 @@
 {
   "name": "@dysonic/dy-cli-cmd-create",
-  "version": "0.0.0",
-  "description": "默认内置的创建命令，暂时仅支持创建项目（如：monorepo 项目、单包项目等）",
+  "version": "1.0.2",
+  "license": "MIT",
+  "description": "Built-in create command for scaffolding monorepo and single-package projects",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -12,12 +13,14 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
+  "dependencies": {
+    "@dysonic/dy-cli-core": "workspace:*",
+    "fs-extra": "10.1.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "9.0.12"
+  },
   "scripts": {
-    "build": "npm run build:cjs && npm run build:esm",
-    "build:cjs": "ts-node-script ../../tools/scripts/build.ts --mode cjs",
-    "build:esm": "ts-node-script ../../tools/scripts/build.ts --mode esm",
-    "test": "ts-node-script ../../tools/scripts/test.ts --verbose --color",
-    "test:coverage": "ts-node-script ../../tools/scripts/test.ts --coverage",
     "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
     "prebuild": "rimraf dist"
   }

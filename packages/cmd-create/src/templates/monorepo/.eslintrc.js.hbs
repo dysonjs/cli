@@ -1,0 +1,70 @@
+module.exports = {
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
+    'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
+  },
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+    'plugin:prettier/recommended',
+  ],
+  plugins: ['import'],
+  rules: {
+    'no-shadow': 'warn',
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    '@typescript-eslint/explicit-member-accessibility': [
+      'off',
+      { overrides: { constructors: 'no-public', accessors: 'off' } },
+    ],
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'error',
+    '@typescript-eslint/no-empty-function': 'off',
+    // https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/docs/rules/ban-types.md
+    '@typescript-eslint/ban-types': 'off',
+    '@typescript-eslint/no-empty-interface': 'off',
+    // https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/docs/rules/explicit-module-boundary-types.md
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/no-this-alias': [
+      'warn',
+      {
+        allowDestructuring: false, // Disallow `const { props, state } = this`; true by default
+        allowedNames: ['self'], // Allow `const self = this`; `[]` by default
+      },
+    ],
+    'no-duplicate-imports': 'error',
+    // 'import/no-cycle': ['warn', { maxDepth: process.env.NODE_ENV === 'production' ? 2 : 1 }],
+    'import/no-self-import': 'error',
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        // 配置白名单
+        devDependencies: ['**/scripts/**', '**/test/**', 'tools/**'],
+        peerDependencies: ['packages/*/src/**', '**/test/**'],
+      },
+    ],
+  },
+  // eslint 规则覆盖
+  overrides: [
+    {
+      files: ['tools/**', '**/scripts/**'],
+      rules: {
+        'no-console': 'off',
+        '@typescript-eslint/no-var-requires': 'off',
+      },
+    },
+  ],
+};

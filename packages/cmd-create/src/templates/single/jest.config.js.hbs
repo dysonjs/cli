@@ -1,0 +1,14 @@
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
+  collectCoverageFrom: ['<rootDir>/src/**/*.[jt]s?(x)', '!<rootDir>/src/**/*.d.ts'],
+  coverageReporters: ['lcov', 'text', 'json-summary'],
+  coverageDirectory: 'coverage',
+  testMatch: ['<rootDir>/test/**/*.test.[jt]s?(x)'],
+  globals: {
+    'ts-jest': {
+      tsconfig: '<rootDir>/tsconfig.json',
+    },
+  },
+};

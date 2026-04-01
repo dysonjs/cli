@@ -1,0 +1,29 @@
+{
+  "name": "@dysonic/dy-cli-cmd-install",
+  "version": "1.0.2",
+  "license": "MIT",
+  "description": "Built-in install command for installing project dependencies through dy-cli",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "dependencies": {
+    "@dysonic/dy-cli-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/execa": "2.0.2",
+    "@types/fs-extra": "9.0.12",
+    "execa": "5.1.1",
+    "fs-extra": "10.1.0"
+  },
+  "scripts": {
+    "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
+    "prebuild": "rimraf dist"
+  }
+}

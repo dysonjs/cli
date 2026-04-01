@@ -1,0 +1,27 @@
+{
+  "name": "@dysonic/dy-cli-cmd-version",
+  "version": "1.0.2",
+  "license": "MIT",
+  "description": "Built-in version command for managing package versions through dy-cli",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "dependencies": {
+    "@dysonic/dy-cli-core": "workspace:*",
+    "fs-extra": "10.1.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "9.0.12"
+  },
+  "scripts": {
+    "clean": "rimraf dist && rimraf coverage && rimraf node_modules",
+    "prebuild": "rimraf dist"
+  }
+}
