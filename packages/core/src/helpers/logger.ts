@@ -1,6 +1,6 @@
 export const log = {
   debug: (...messages: unknown[]) => {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV === 'development') {
       console.debug('🐛', '\x1b[35m', ...messages, '\x1b[0m');
     }
   },

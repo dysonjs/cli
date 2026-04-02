@@ -273,6 +273,7 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     const workspace = createTempDir('dy-cli-build-bin-outside-cwd');
     const command = new BuildCommand();
     const previousCwd = process.cwd();
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 
     await fs.writeJSON(path.join(workspace, 'package.json'), {
       name: 'demo-cli',
@@ -303,7 +304,11 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     );
     await fs.writeFile(
       path.join(workspace, 'src/index.ts'),
-      'export const runCLI = (_argv?: string[]) => undefined;\n',
+      [
+        'export const runCLI = (argv?: string[]) => {',
+        "  console.log(`outside-cwd:${argv?.join('|') ?? ''}`);",
+        '};',
+      ].join('\n'),
     );
     await fs.writeFile(
       path.join(workspace, 'dy.config.ts'),
@@ -322,12 +327,17 @@ describe('@dysonic/dy-cli-cmd-build', () => {
 
     try {
       await command.parseAsync(['node', 'test', '--cwd', workspace, '--bin']);
+      expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('Generated an empty chunk'));
     } finally {
       process.chdir(previousCwd);
+      warnSpy.mockRestore();
     }
 
     await expect(fs.readFile(path.join(workspace, 'dist/cli.js'), 'utf8')).resolves.toContain(
       '#!/usr/bin/env node',
+    );
+    await expect(fs.readFile(path.join(workspace, 'dist/cli.js'), 'utf8')).resolves.toContain(
+      'outside-cwd',
     );
   });
 

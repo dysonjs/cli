@@ -38,11 +38,11 @@ export abstract class AbstractCommand<C extends BaseCommandConfig, T extends Bas
     }
 
     this.action(async () => {
-      const args = this.getMergedCommandArgs();
-      const cwd = args.cwd ?? process.cwd();
+      const mergedArgs = this.getMergedCommandArgs();
+      const cwd = mergedArgs.cwd ?? process.cwd();
       const config = this.loadExternalRunCommandsConfig(cwd);
 
-      this.config = this.mergeConfigWithArgs(cwd, args, config);
+      this.config = this.mergeConfigWithArgs(cwd, mergedArgs, config);
       log.debug(this.config);
       await this.execute();
     });

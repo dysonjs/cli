@@ -4,7 +4,6 @@ import extensions from 'rollup-plugin-extensions';
 import copy from 'rollup-plugin-copy';
 import json from '@rollup/plugin-json';
 import esbuild, { minify } from 'rollup-plugin-esbuild';
-import progress from 'rollup-plugin-progress';
 
 import { log, parseProcessArgv, time } from './utils';
 

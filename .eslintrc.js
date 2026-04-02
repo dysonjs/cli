@@ -56,6 +56,7 @@ module.exports = {
         'no-console': 'off',
         '@typescript-eslint/no-var-requires': 'off',
         'import/no-extra': 'off',
+        'import/no-extraneous-dependencies': 'off',
       },
     },
   ],

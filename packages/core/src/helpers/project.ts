@@ -19,7 +19,8 @@ export function resolveProjectContext(
 
   const rootPackageJSON = readPackageJSON(rootDir);
   const type = resolveProjectType(rootPackageJSON, config);
-  const packageDir = config.project?.packageDir ?? config.commands?.add?.destDir ?? DEFAULT_PROJECT_PACKAGE_DIR;
+  const packageDir =
+    config.project?.packageDir ?? config.commands?.add?.destDir ?? DEFAULT_PROJECT_PACKAGE_DIR;
   const packageDirs = type === 'monorepo' ? resolveWorkspacePackageDirs(rootDir, packageDir) : [];
   const normalizedCwd = path.resolve(cwd);
   const currentPackageDir =
@@ -27,7 +28,8 @@ export function resolveProjectContext(
       ? rootDir
       : packageDirs.find(
           (packageDirPath) =>
-            normalizedCwd === packageDirPath || normalizedCwd.startsWith(`${packageDirPath}${path.sep}`),
+            normalizedCwd === packageDirPath ||
+            normalizedCwd.startsWith(`${packageDirPath}${path.sep}`),
         );
   const isRoot = normalizedCwd === rootDir;
 
@@ -39,7 +41,11 @@ export function resolveProjectContext(
     versionStrategy: config.project?.versionStrategy ?? (type === 'monorepo' ? 'fixed' : undefined),
     packageDirs,
     targetPackageDirs:
-      type === 'single' ? [rootDir] : currentPackageDir && !isRoot ? [currentPackageDir] : packageDirs,
+      type === 'single'
+        ? [rootDir]
+        : currentPackageDir && !isRoot
+        ? [currentPackageDir]
+        : packageDirs,
     currentPackageDir,
     isRoot,
   };
@@ -73,7 +79,10 @@ function resolveWorkspacePackageDirs(rootDir: string, packageDir: string): strin
     .map((entry) => path.join(packagesRoot, entry))
     .filter((entryPath) => {
       try {
-        return fs.statSync(entryPath).isDirectory() && fs.existsSync(path.join(entryPath, 'package.json'));
+        return (
+          fs.statSync(entryPath).isDirectory() &&
+          fs.existsSync(path.join(entryPath, 'package.json'))
+        );
       } catch {
         return false;
       }

@@ -48,6 +48,6 @@ export class BuildBinTask extends AbstractTask<BuildCommandConfig> {
       return this.config.projectContext.rootDir;
     }
 
-    return this.config.projectContext.currentPackageDir ?? (this.config.cwd ?? process.cwd());
+    return this.config.projectContext.currentPackageDir ?? this.config.cwd ?? process.cwd();
   }
 }

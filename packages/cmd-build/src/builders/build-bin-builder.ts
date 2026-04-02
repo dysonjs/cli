@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import { createRequire } from 'module';
 import path from 'path';
 import Rollup from 'rollup';
 import extensions from 'rollup-plugin-extensions';
@@ -15,22 +16,17 @@ export class BuildBinBuilder extends AbstractBuilder {
   }
 
   public async build() {
+    type EsbuildModule = {
+      default: (options: Record<string, unknown>) => unknown;
+    };
+    const requireModule = createRequire(__filename) as (specifier: string) => EsbuildModule;
+    const importModule = new Function('specifier', 'return import(specifier)') as (
+      specifier: string,
+    ) => Promise<EsbuildModule>;
     const esbuild =
       typeof process.env.JEST_WORKER_ID === 'string'
-        ? (
-            require('rollup-plugin-esbuild') as {
-              default: (options: Record<string, unknown>) => unknown;
-            }
-          ).default
-        : (
-            await (
-              new Function('specifier', 'return import(specifier)') as (
-                specifier: string,
-              ) => Promise<{
-                default: (options: Record<string, unknown>) => unknown;
-              }>
-            )('rollup-plugin-esbuild')
-          ).default;
+        ? requireModule('rollup-plugin-esbuild').default
+        : (await importModule('rollup-plugin-esbuild')).default;
     const pkg = await this.loadPackageManifest();
     const input = await this.resolveInputEntry();
     const output = this.resolveOutputFile(pkg);

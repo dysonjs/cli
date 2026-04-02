@@ -3,8 +3,7 @@ import path from 'path';
 
 import { AbstractTask, BuildCommandConfig, runProjectCommand } from '@dysonic/dy-cli-core';
 
-import { BuildBinBuilder } from '../builders';
-import { BuildPackageBuilder } from '../builders';
+import { BuildBinBuilder, BuildPackageBuilder } from '../builders';
 
 export class BuildPackageTask extends AbstractTask<BuildCommandConfig> {
   public async run(): Promise<void> {
@@ -57,7 +56,7 @@ export class BuildPackageTask extends AbstractTask<BuildCommandConfig> {
       return this.config.projectContext.rootDir;
     }
 
-    return this.config.projectContext.currentPackageDir ?? (this.config.cwd ?? process.cwd());
+    return this.config.projectContext.currentPackageDir ?? this.config.cwd ?? process.cwd();
   }
 
   private async shouldBuildBinOutputByDefault(executionDir: string) {

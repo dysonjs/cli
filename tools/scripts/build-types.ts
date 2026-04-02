@@ -2,15 +2,10 @@ import path from 'path';
 import Rollup from 'rollup';
 import dts from 'rollup-plugin-dts';
 
-import { log, generateInputTsEntry, parseProcessArgv, time } from './utils';
-
-type ProcessArgv = {};
+import { log, generateInputTsEntry, time } from './utils';
 
 const CWD = process.cwd();
 const PKG = require(path.join(CWD, 'package.json'));
-const DEST = path.join(CWD, 'dist');
-const ARGS = parseProcessArgv<ProcessArgv>();
-const TSCONFIG = path.join(CWD, 'tsconfig.json');
 const DEPS = Object.keys(PKG.dependencies || {});
 const PEER_DEPS = Object.keys(PKG.peerDependencies || {});
 

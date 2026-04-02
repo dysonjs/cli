@@ -53,8 +53,8 @@ export function getAllPkgPath() {
   }, new Map<string, string>());
 }
 
-export function validateProjectExist(pkg: string, name: string) {
-  return fs.existsSync(path.join(BASE_DIR, pkg, name));
+export function validateProjectExist(packageDir: string, name: string) {
+  return fs.existsSync(path.join(BASE_DIR, packageDir, name));
 }
 
 export function render<T extends {}>(

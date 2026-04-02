@@ -1,21 +1,19 @@
-/// <reference path="../types/rollup-plugins.d.ts" />
-
 import Rollup from 'rollup';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import extensions from 'rollup-plugin-extensions';
-import postcss from 'rollup-plugin-postcss';
 import autoprefixer from 'autoprefixer';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import ts from 'rollup-plugin-typescript2';
-import less from 'less';
-import LessPluginNpmImport from 'less-plugin-npm-import';
 
 import { BuildCommandConfig } from '@dysonic/dy-cli-core';
 
 import { AbstractBuilder } from './abstract-builder';
+import less from './less-module';
+import LessPluginNpmImport from './less-plugin-npm-import';
+import postcss from './postcss-plugin';
 
 export class BuildUmdBuilder extends AbstractBuilder {
   constructor(

@@ -5,6 +5,7 @@ import { AbstractTask, TestCommandConfig, runProjectCommand } from '@dysonic/dy-
 export class RunTestTask extends AbstractTask<TestCommandConfig> {
   public async run(): Promise<void> {
     process.env.NODE_ENV = 'test';
+    process.env.TS_JEST_DISABLE_VER_CHECKER = 'true';
 
     if (this.config.workspace || this.shouldRunWorkspaceByDefault()) {
       const args: string[] = [];
@@ -22,6 +23,7 @@ export class RunTestTask extends AbstractTask<TestCommandConfig> {
 
       await runProjectCommand(this.config.projectContext, 'test', args, {
         NODE_ENV: 'test',
+        TS_JEST_DISABLE_VER_CHECKER: 'true',
       });
       return;
     }
@@ -76,6 +78,6 @@ export class RunTestTask extends AbstractTask<TestCommandConfig> {
       return this.config.projectContext.rootDir;
     }
 
-    return this.config.projectContext.currentPackageDir ?? (this.config.cwd ?? process.cwd());
+    return this.config.projectContext.currentPackageDir ?? this.config.cwd ?? process.cwd();
   }
 }

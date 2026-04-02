@@ -1,18 +1,16 @@
-/// <reference path="../types/rollup-plugins.d.ts" />
-
 import fs from 'fs-extra';
 import path from 'path';
 import Rollup from 'rollup';
 import extensions from 'rollup-plugin-extensions';
-import postcss from 'rollup-plugin-postcss';
 import autoprefixer from 'autoprefixer';
 import copy from 'rollup-plugin-copy';
 import json from '@rollup/plugin-json';
 import ts from 'rollup-plugin-typescript2';
-import less from 'less';
-import LessPluginNpmImport from 'less-plugin-npm-import';
 
 import { AbstractBuilder } from './abstract-builder';
+import less from './less-module';
+import LessPluginNpmImport from './less-plugin-npm-import';
+import postcss from './postcss-plugin';
 
 export class BuildPackageBuilder extends AbstractBuilder {
   public async build() {

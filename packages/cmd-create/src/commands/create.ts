@@ -3,7 +3,6 @@ import {
   CommandOption,
   CreateCommandArgs,
   CreateCommandConfig,
-  CreateTemplateType,
   DEFAULT_CREATE_TEMPLATE_TYPE,
   DEFAULT_CREATE_TEMPLATES,
   DyCliError,

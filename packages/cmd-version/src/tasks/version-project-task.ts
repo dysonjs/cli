@@ -63,10 +63,7 @@ export class VersionProjectTask extends AbstractTask<VersionCommandConfig> {
 
   private async runSingleVersion() {
     if (!this.config.set) {
-      throw new DyCliError(
-        'INVALID_ARGUMENT',
-        '--set is required for single-package versioning.',
-      );
+      throw new DyCliError('INVALID_ARGUMENT', '--set is required for single-package versioning.');
     }
 
     const cwd = this.config.projectContext.rootDir;

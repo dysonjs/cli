@@ -120,6 +120,7 @@ describe('@dysonic/dy-cli-cmd-test', () => {
   test('should set NODE_ENV to test before running jest', async () => {
     const workspace = createTempDir('dy-cli-test-node-env');
     const command = new TestCommand();
+    const debugSpy = jest.spyOn(console, 'debug').mockImplementation(() => {});
 
     await fs.writeJSON(path.join(workspace, 'package.json'), {
       name: 'demo-single',
@@ -133,9 +134,33 @@ describe('@dysonic/dy-cli-cmd-test', () => {
 
     process.env.NODE_ENV = 'development';
 
+    try {
+      await command.parseAsync(['node', 'test', '--cwd', workspace]);
+      expect(process.env.NODE_ENV).toBe('test');
+    } finally {
+      debugSpy.mockRestore();
+    }
+  });
+
+  test('should disable the ts-jest version checker before running jest', async () => {
+    const workspace = createTempDir('dy-cli-test-ts-jest-version-checker');
+    const command = new TestCommand();
+
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-single',
+      version: '0.0.0',
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      'export default { commands: { test: {} } };',
+    );
+    await fs.writeFile(path.join(workspace, 'jest.config.js'), 'module.exports = {};');
+
+    delete process.env.TS_JEST_DISABLE_VER_CHECKER;
+
     await command.parseAsync(['node', 'test', '--cwd', workspace]);
 
-    expect(process.env.NODE_ENV).toBe('test');
+    expect(process.env.TS_JEST_DISABLE_VER_CHECKER).toBe('true');
   });
 
   test('should reject when dy.config.ts is missing', async () => {
@@ -180,6 +205,10 @@ describe('@dysonic/dy-cli-cmd-test', () => {
       ['test', '--coverage'],
       expect.objectContaining({
         cwd: packageDir,
+        env: expect.objectContaining({
+          NODE_ENV: 'test',
+          TS_JEST_DISABLE_VER_CHECKER: 'true',
+        }),
       }),
     );
     expect(jestRunner.run).not.toHaveBeenCalled();

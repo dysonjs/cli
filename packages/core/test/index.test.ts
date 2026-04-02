@@ -245,9 +245,19 @@ describe('@dysonic/dy-cli-core', () => {
     expect(errorSpy).toHaveBeenCalled();
 
     const prev = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'test';
+    process.env.NODE_ENV = 'development';
     log.debug('e');
     expect(debugSpy).toHaveBeenCalled();
+
+    debugSpy.mockClear();
+    delete process.env.NODE_ENV;
+    log.debug('silent-without-node-env');
+    expect(debugSpy).not.toHaveBeenCalled();
+
+    debugSpy.mockClear();
+    process.env.NODE_ENV = 'test';
+    log.debug('silent-in-test');
+    expect(debugSpy).not.toHaveBeenCalled();
 
     debugSpy.mockClear();
     process.env.NODE_ENV = 'production';
