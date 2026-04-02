@@ -70,7 +70,7 @@ export class AddPackageTask extends AbstractTask<AddCommandConfig> {
       sideEffects: boolean;
     },
   ) {
-    const templateDir = path.join(__dirname, '../templates/package');
+    const templateDir = await this.resolveTemplateDir();
     const filePaths = await this.getTemplateFilePaths(templateDir);
     const renderContext = this.getRenderContext(packageMeta);
 
@@ -86,6 +86,25 @@ export class AddPackageTask extends AbstractTask<AddCommandConfig> {
         await fs.chmod(outputPath, stat.mode);
       }),
     );
+  }
+
+  /**
+   * Supports both the published bundle layout (`dist/templates`) and the source/build task layout
+   * (`src/tasks` or `dist/tasks` + `../templates`).
+   */
+  private async resolveTemplateDir(runtimeDir = __dirname) {
+    const candidates = [
+      path.join(runtimeDir, 'templates/package'),
+      path.join(runtimeDir, '../templates/package'),
+    ];
+
+    for (const templateDir of candidates) {
+      if (await fs.pathExists(templateDir)) {
+        return templateDir;
+      }
+    }
+
+    throw new DyCliError('TEMPLATE_NOT_FOUND', "Template directory 'package' does not exist.");
   }
 
   private async getTemplateFilePaths(templateDir: string): Promise<string[]> {

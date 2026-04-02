@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
-import { CreateCommand } from '../src';
+import { CreateCommand, CreateProjectTask } from '../src';
 
 function createTempDir(name: string) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `${name}-`));
@@ -44,6 +44,19 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(
       await fs.pathExists(path.join(__dirname, '../src/templates/single/package.json.hbs')),
     ).toBe(true);
+  });
+
+  test('should resolve templates from bundle dist layout', async () => {
+    const runtimeDir = createTempDir('dy-cli-create-runtime');
+    const bundleDir = path.join(runtimeDir, 'dist');
+    const templateDir = path.join(bundleDir, 'templates/monorepo');
+    const task = new CreateProjectTask({
+      templateType: 'monorepo',
+    }) as any;
+
+    await fs.outputFile(path.join(templateDir, 'package.json.hbs'), '{}');
+
+    await expect(task.resolveTemplateTypeDir(bundleDir)).resolves.toBe(templateDir);
   });
 
   test('should create a monorepo project when project and dest dir are provided', async () => {

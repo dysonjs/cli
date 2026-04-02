@@ -1,5 +1,13 @@
 # @dysonic/dy-cli
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @dysonic/dy-cli-cmd-add@1.0.3
+  - @dysonic/dy-cli-cmd-create@1.0.3
+
 ## 1.0.2
 
 ### Patch Changes

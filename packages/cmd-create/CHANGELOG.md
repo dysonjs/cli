@@ -1,5 +1,11 @@
 # @dysonic/dy-cli-cmd-create
 
+## 1.0.3
+
+### Patch Changes
+
+- Fix published template resolution for the `add` and `create` commands, and restore the package-local `cmd-add` TypeScript config so release builds run against the package itself instead of the workspace root.
+
 ## 1.0.2
 
 ### Patch Changes

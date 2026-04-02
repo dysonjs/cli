@@ -4,7 +4,7 @@ import os from 'os';
 import path from 'path';
 import execa from 'execa';
 
-import { AddCommand } from '../src';
+import { AddCommand, AddPackageTask } from '../src';
 
 jest.mock('inquirer', () => ({
   prompt: jest.fn(),
@@ -47,6 +47,17 @@ async function snapshotDirTree(
 describe('@dysonic/dy-cli-cmd-add', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  test('should resolve templates from bundle dist layout', async () => {
+    const runtimeDir = createTempDir('dy-cli-add-runtime');
+    const bundleDir = path.join(runtimeDir, 'dist');
+    const templateDir = path.join(bundleDir, 'templates/package');
+    const task = new AddPackageTask({}) as any;
+
+    await fs.outputFile(path.join(templateDir, 'package.json.hbs'), '{}');
+
+    await expect(task.resolveTemplateDir(bundleDir)).resolves.toBe(templateDir);
   });
 
   test('should create a child package in monorepo projects', async () => {

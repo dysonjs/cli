@@ -50,7 +50,7 @@ export class CreateProjectTask extends AbstractTask<CreateCommandConfig> {
   }
 
   private async renderTemplate(targetDir: string) {
-    const templateDir = path.join(__dirname, '../templates', this.config.templateType);
+    const templateDir = await this.resolveTemplateTypeDir();
     const filePaths = await this.getTemplateFilePaths(templateDir);
     const renderContext = this.getRenderContext();
 
@@ -93,14 +93,29 @@ export class CreateProjectTask extends AbstractTask<CreateCommandConfig> {
     ]);
   }
 
-  private async getTemplateFilePaths(templateDir: string): Promise<string[]> {
-    if (!(await fs.pathExists(templateDir))) {
-      throw new DyCliError(
-        'TEMPLATE_NOT_FOUND',
-        `Template directory '${this.config.templateType}' does not exist.`,
-      );
+  /**
+   * Supports both the published bundle layout (`dist/templates`) and the source/build task layout
+   * (`src/tasks` or `dist/tasks` + `../templates`).
+   */
+  private async resolveTemplateTypeDir(runtimeDir = __dirname) {
+    const candidates = [
+      path.join(runtimeDir, 'templates', this.config.templateType),
+      path.join(runtimeDir, '..', 'templates', this.config.templateType),
+    ];
+
+    for (const templateDir of candidates) {
+      if (await fs.pathExists(templateDir)) {
+        return templateDir;
+      }
     }
 
+    throw new DyCliError(
+      'TEMPLATE_NOT_FOUND',
+      `Template directory '${this.config.templateType}' does not exist.`,
+    );
+  }
+
+  private async getTemplateFilePaths(templateDir: string): Promise<string[]> {
     const entries = await fs.readdir(templateDir);
     const filePaths = await Promise.all(
       entries.map(async (entry) => {
