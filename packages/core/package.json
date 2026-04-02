@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "MIT",
   "description": "Core package providing shared command contracts, execution abstractions, and helper utilities for dy-cli",
   "main": "dist/index.cjs.js",

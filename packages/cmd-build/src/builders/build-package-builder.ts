@@ -1,11 +1,11 @@
 import fs from 'fs-extra';
+import { createRequire } from 'module';
 import path from 'path';
 import Rollup from 'rollup';
 import extensions from 'rollup-plugin-extensions';
 import autoprefixer from 'autoprefixer';
 import copy from 'rollup-plugin-copy';
 import json from '@rollup/plugin-json';
-import ts from 'rollup-plugin-typescript2';
 
 import { AbstractBuilder } from './abstract-builder';
 import less from './less-module';
@@ -14,6 +14,17 @@ import postcss from './postcss-plugin';
 
 export class BuildPackageBuilder extends AbstractBuilder {
   public async build() {
+    type EsbuildModule = {
+      default: (options: Record<string, unknown>) => unknown;
+    };
+    const requireModule = createRequire(__filename) as (specifier: string) => EsbuildModule;
+    const importModule = new Function('specifier', 'return import(specifier)') as (
+      specifier: string,
+    ) => Promise<EsbuildModule>;
+    const esbuild =
+      typeof process.env.JEST_WORKER_ID === 'string'
+        ? requireModule('rollup-plugin-esbuild').default
+        : (await importModule('rollup-plugin-esbuild')).default;
     const pkg = await this.loadPackageManifest();
     const input = await this.resolveInputTsEntry();
     const output = [
@@ -44,22 +55,11 @@ export class BuildPackageBuilder extends AbstractBuilder {
           resolveIndex: true,
           extensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs'],
         }),
-        ts({
-          check: true,
-          clean: true,
-          verbosity: 0,
+        esbuild({
+          target: 'es2015',
+          sourceMap: false,
           tsconfig: this.resolveTsConfigPath(),
-          tsconfigOverride: {
-            compilerOptions: {
-              sourceMap: false,
-              declaration: false,
-              declarationMap: false,
-              target: 'es2015',
-              module: 'esnext',
-            },
-            exclude: ['**/test'],
-          },
-        }),
+        }) as Rollup.Plugin,
         postcss({
           plugins: [autoprefixer],
           minimize: true,

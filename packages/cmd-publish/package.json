@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-publish",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "MIT",
   "description": "Built-in publish command for dy-cli package publishing",
   "main": "dist/index.cjs.js",

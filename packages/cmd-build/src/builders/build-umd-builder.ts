@@ -1,3 +1,4 @@
+import { createRequire } from 'module';
 import Rollup from 'rollup';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import extensions from 'rollup-plugin-extensions';
@@ -6,7 +7,6 @@ import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
-import ts from 'rollup-plugin-typescript2';
 
 import { BuildCommandConfig } from '@dysonic/dy-cli-core';
 
@@ -24,6 +24,17 @@ export class BuildUmdBuilder extends AbstractBuilder {
   }
 
   public async build() {
+    type EsbuildModule = {
+      default: (options: Record<string, unknown>) => unknown;
+    };
+    const requireModule = createRequire(__filename) as (specifier: string) => EsbuildModule;
+    const importModule = new Function('specifier', 'return import(specifier)') as (
+      specifier: string,
+    ) => Promise<EsbuildModule>;
+    const esbuild =
+      typeof process.env.JEST_WORKER_ID === 'string'
+        ? requireModule('rollup-plugin-esbuild').default
+        : (await importModule('rollup-plugin-esbuild')).default;
     const pkg = await this.loadPackageManifest();
     const input = await this.resolveInputTsEntry();
     const bundle = await Rollup.rollup({
@@ -61,22 +72,11 @@ export class BuildUmdBuilder extends AbstractBuilder {
           compact: true,
           namedExports: true,
         }),
-        ts({
-          check: true,
-          clean: true,
-          verbosity: 0,
+        esbuild({
+          target: 'es2015',
+          sourceMap: false,
           tsconfig: this.resolveTsConfigPath(),
-          tsconfigOverride: {
-            compilerOptions: {
-              sourceMap: false,
-              declaration: false,
-              declarationMap: false,
-              target: 'es2015',
-              module: 'esnext',
-            },
-            exclude: ['**/test'],
-          },
-        }),
+        }) as Rollup.Plugin,
         replace({
           preventAssignment: true,
           values: {

@@ -2,7 +2,19 @@
   "$schema": "https://unpkg.com/@changesets/config@2.3.1/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [],
+  "fixed": [
+    [
+      "@dysonic/dy-cli",
+      "@dysonic/dy-cli-cmd-add",
+      "@dysonic/dy-cli-cmd-build",
+      "@dysonic/dy-cli-cmd-create",
+      "@dysonic/dy-cli-cmd-install",
+      "@dysonic/dy-cli-cmd-publish",
+      "@dysonic/dy-cli-cmd-test",
+      "@dysonic/dy-cli-cmd-version",
+      "@dysonic/dy-cli-core"
+    ]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
