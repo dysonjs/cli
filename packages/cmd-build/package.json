@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-build",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "description": "Built-in build command for generating CJS, ESM, UMD, and other package outputs",
   "main": "dist/index.cjs.js",

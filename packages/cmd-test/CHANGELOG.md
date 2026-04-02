@@ -1,5 +1,12 @@
 # @dysonic/dy-cli-cmd-test
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [ec70e4f]
+  - @dysonic/dy-cli-core@1.0.4
+
 ## 1.0.2
 
 ### Patch Changes

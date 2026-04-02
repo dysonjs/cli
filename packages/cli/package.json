@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "description": "CLI entry package for dy-cli, mounting built-in commands and exposing the public command-line interface",
   "bin": {

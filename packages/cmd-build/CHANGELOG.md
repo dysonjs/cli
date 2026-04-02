@@ -1,5 +1,16 @@
 # @dysonic/dy-cli-cmd-build
 
+## 1.0.4
+
+### Patch Changes
+
+- ec70e4f: Fix package builds invoked from outside the target package directory by passing the package cwd into the Rollup TypeScript plugin.
+
+  This release also keeps fixed monorepo package versions aligned after `changeset version`, and republishes the current core logger behavior so `debug` output only appears in explicit development mode instead of leaking into normal CLI runs through older internal package versions.
+
+- Updated dependencies [ec70e4f]
+  - @dysonic/dy-cli-core@1.0.4
+
 ## 1.0.2
 
 ### Patch Changes
