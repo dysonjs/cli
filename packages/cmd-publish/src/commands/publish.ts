@@ -22,8 +22,8 @@ export class PublishCommand extends AbstractCommand<PublishCommandConfig, Publis
 
   public getOptions(): CommandOption[] {
     return [
-      ['--workspace', 'Run workspace build/test/publish orchestration with Changesets'],
-      ['--beta', 'Use the configured beta tag when publishing workspace releases'],
+      ['--workspace', 'Run workspace build/test/publish orchestration from the monorepo root'],
+      ['--beta', 'Use the configured beta tag when publishing prerelease workspace releases'],
       ['--dry-run', 'Run publish without uploading the package'],
       ['--tag <tag>', 'Specify the dist-tag for the release'],
       ['--access <access>', 'Specify access level: public or restricted'],

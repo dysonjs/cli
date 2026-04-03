@@ -143,7 +143,7 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
     });
   });
 
-  test('should run workspace build, workspace test, and changeset publish when --workspace is provided', async () => {
+  test('should run workspace build, workspace test, and npm publish when --workspace is provided', async () => {
     const workspace = createTempDir('dy-cli-publish-workspace');
     const packageDir = path.join(workspace, 'packages/button');
     const command = new PublishCommand();
@@ -196,9 +196,14 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       3,
+      'npm',
+      ['publish'],
+      expect.objectContaining({ cwd: packageDir }),
+    );
+    expect(execa as unknown as jest.Mock).not.toHaveBeenCalledWith(
       'npx',
       ['changeset', 'publish'],
-      expect.objectContaining({ cwd: workspace }),
+      expect.any(Object),
     );
   });
 
@@ -252,9 +257,9 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       3,
-      'npx',
-      ['changeset', 'publish', '--tag', 'next'],
-      expect.objectContaining({ cwd: workspace }),
+      'npm',
+      ['publish', '--tag', 'next'],
+      expect.objectContaining({ cwd: packageDir }),
     );
   });
 
@@ -274,10 +279,10 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
       return Promise.resolve({});
     });
 
-    await fs.ensureDir(path.join(workspace, '.changeset'));
+    await fs.ensureDir(path.join(workspace, '.dy-cli/release'));
     await fs.ensureDir(packageDir);
     await fs.writeFile(
-      path.join(workspace, '.changeset/pre.json'),
+      path.join(workspace, '.dy-cli/release/state.json'),
       JSON.stringify({
         mode: 'pre',
         tag: 'beta',
@@ -321,7 +326,7 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
     expect(execaMock).not.toHaveBeenCalledWith('npx', ['changeset', 'publish'], expect.any(Object));
   });
 
-  test('should allow prerelease workspace publishing when target packages already have stable releases', async () => {
+  test('should migrate legacy changeset prerelease state before workspace publishing', async () => {
     const workspace = createTempDir('dy-cli-publish-workspace-pre-stable');
     const packageDir = path.join(workspace, 'packages/button');
     const command = new PublishCommand();
@@ -371,7 +376,75 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
       ].join('\n'),
     );
 
-    await command.parseAsync(['node', 'test', '--cwd', workspace]);
+    await command.parseAsync(['node', 'test', '--cwd', workspace, '--beta']);
+
+    expect(await fs.readJSON(path.join(workspace, '.dy-cli/release/state.json'))).toMatchObject({
+      mode: 'pre',
+      tag: 'beta',
+    });
+    expect(execaMock).toHaveBeenCalledWith(
+      'npm',
+      ['view', '@dysonic/button', 'versions', '--json'],
+      expect.any(Object),
+    );
+    expect(execaMock).toHaveBeenCalledWith(
+      'npm',
+      ['publish', '--tag', 'beta'],
+      expect.objectContaining({ cwd: packageDir }),
+    );
+  });
+
+  test('should allow prerelease workspace publishing when target packages already have stable releases', async () => {
+    const workspace = createTempDir('dy-cli-publish-workspace-pre-state');
+    const packageDir = path.join(workspace, 'packages/button');
+    const command = new PublishCommand();
+    const execaMock = execa as unknown as jest.Mock;
+
+    execaMock.mockImplementation((commandName: string, args?: string[]) => {
+      if (commandName === 'npm' && args?.[0] === 'view') {
+        return Promise.resolve({
+          stdout: JSON.stringify(['0.0.5', '1.0.0-beta.0']),
+        });
+      }
+
+      return Promise.resolve({});
+    });
+
+    await fs.ensureDir(path.join(workspace, '.dy-cli/release'));
+    await fs.ensureDir(packageDir);
+    await fs.writeFile(
+      path.join(workspace, '.dy-cli/release/state.json'),
+      JSON.stringify({
+        mode: 'pre',
+        tag: 'beta',
+      }),
+    );
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      workspaces: ['packages/*'],
+    });
+    await fs.writeJSON(path.join(packageDir, 'package.json'), {
+      name: '@dysonic/button',
+      version: '1.0.0-beta.0',
+      private: false,
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      [
+        'export default {',
+        '  project: {',
+        "    type: 'monorepo',",
+        "    versionStrategy: 'fixed',",
+        '  },',
+        '  commands: {',
+        '    publish: {},',
+        '  },',
+        '};',
+      ].join('\n'),
+    );
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace, '--beta']);
 
     expect(execaMock).toHaveBeenCalledWith(
       'npm',
@@ -379,9 +452,9 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
       expect.any(Object),
     );
     expect(execaMock).toHaveBeenCalledWith(
-      'npx',
-      ['changeset', 'publish'],
-      expect.objectContaining({ cwd: workspace }),
+      'npm',
+      ['publish', '--tag', 'beta'],
+      expect.objectContaining({ cwd: packageDir }),
     );
   });
 
@@ -432,9 +505,9 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       3,
-      'npx',
-      ['changeset', 'publish'],
-      expect.objectContaining({ cwd: workspace }),
+      'npm',
+      ['publish'],
+      expect.objectContaining({ cwd: packageDir }),
     );
   });
 

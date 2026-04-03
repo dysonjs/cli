@@ -1,5 +1,24 @@
 # @dysonic/dy-cli
 
+
+## 1.0.5
+
+### Patch Changes
+
+- chore: remove unused rollup-plugin-typescript2
+- chore: remove obsolete local tooling
+- chore: upgrade self-hosted dy-cli to 1.0.4
+
+- Updated dependencies
+  - @dysonic/dy-cli-core@1.0.5
+  - @dysonic/dy-cli-cmd-add@1.0.5
+  - @dysonic/dy-cli-cmd-build@1.0.5
+  - @dysonic/dy-cli-cmd-create@1.0.5
+  - @dysonic/dy-cli-cmd-install@1.0.5
+  - @dysonic/dy-cli-cmd-publish@1.0.5
+  - @dysonic/dy-cli-cmd-test@1.0.5
+  - @dysonic/dy-cli-cmd-version@1.0.5
+
 ## 1.0.4
 
 ### Patch Changes

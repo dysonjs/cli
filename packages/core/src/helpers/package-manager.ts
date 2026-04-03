@@ -22,8 +22,11 @@ export function detectPackageManager(cwd: string): PackageManagerName {
   return 'npm';
 }
 
-export async function installDependencies(cwd: string) {
-  const packageManager = detectPackageManager(cwd);
+export async function installDependencies(
+  cwd: string,
+  packageManagerOverride?: PackageManagerName,
+) {
+  const packageManager = packageManagerOverride ?? detectPackageManager(cwd);
   const args = packageManager === 'npm' ? ['install', '--legacy-peer-deps'] : ['install'];
 
   await execa(packageManager, args, {
@@ -93,17 +96,6 @@ export async function runProjectCommand(
       },
     });
   }
-}
-
-export async function runChangesetCommand(cwd: string, args: string[]) {
-  const packageManager = detectPackageManager(cwd);
-
-  if (packageManager === 'pnpm') {
-    await execa('pnpm', ['changeset', ...args], { cwd });
-    return;
-  }
-
-  await execa('npx', ['changeset', ...args], { cwd });
 }
 
 export async function hasPublishedStableVersion(packageName: string) {

@@ -181,8 +181,8 @@ Run it at a monorepo root to test all child packages by default.
 Manage release versions through `dy-cli`.
 
 ```bash
-dy-cli version
-dy-cli version --beta
+dy-cli version --patch
+dy-cli version --minor --beta
 dy-cli version --beta-exit
 dy-cli version --set 0.0.1
 ```
@@ -190,6 +190,7 @@ dy-cli version --set 0.0.1
 Options:
 
 - `--set <version>`: required for `single` projects
+- `--patch`, `--minor`, `--major`: required for fixed monorepo releases
 - `--beta`: enter beta pre mode before versioning a fixed monorepo
 - `--beta-exit`: exit beta pre mode before versioning a fixed monorepo
 
@@ -212,7 +213,7 @@ Options:
 - `--registry <registry>`: registry URL
 
 At a monorepo root, `publish` builds, tests, and releases all child packages by default. `publish` refuses to publish `private: true` packages.
-When the workspace is in Changesets prerelease mode, `publish` also requires every target package to already have at least one stable version on the registry. This prevents first-time prerelease packages from taking over the `latest` dist-tag.
+When the workspace is in `dy-cli` prerelease mode, `publish` also requires every target package to already have at least one stable version on the registry. This prevents first-time prerelease packages from taking over the `latest` dist-tag.
 If you expose `dy-cli publish` through `package.json` scripts, avoid npm publish lifecycle names such as `prepublishOnly`, `publish`, or `postpublish`; use `release` instead.
 
 ## `dy.config.ts`

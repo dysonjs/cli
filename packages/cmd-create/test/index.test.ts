@@ -76,10 +76,6 @@ describe('@dysonic/dy-cli-cmd-create', () => {
 
     const projectDir = path.join(workspace, 'demo-app');
     const configContent = await fs.readFile(path.join(projectDir, 'dy.config.ts'), 'utf8');
-    const changesetReadme = await fs.readFile(
-      path.join(projectDir, '.changeset/README.md'),
-      'utf8',
-    );
     const eslintConfig = await fs.readFile(path.join(projectDir, '.eslintrc.js'), 'utf8');
     const releaseWorkflow = await fs.readFile(
       path.join(projectDir, '.github/workflows/release.yml'),
@@ -97,13 +93,11 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     const projectSnapshot = await snapshotProjectTree(projectDir);
 
     expect(await fs.pathExists(path.join(projectDir, 'pnpm-workspace.yaml'))).toBe(false);
-    expect(await fs.pathExists(path.join(projectDir, '.changeset/config.json'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.changeset'))).toBe(false);
     expect(await fs.pathExists(path.join(projectDir, '.github/workflows/release.yml'))).toBe(true);
-    expect(changesetReadme).toContain('dy-cli version');
-    expect(changesetReadme).toContain('dy-cli publish');
-    expect(changesetReadme).not.toContain('@changesets/cli');
-    expect(releaseWorkflow).toContain('version: pnpm exec dy-cli version');
-    expect(releaseWorkflow).toContain('publish: pnpm exec dy-cli publish');
+    expect(releaseWorkflow).toContain('workflow_dispatch:');
+    expect(releaseWorkflow).not.toContain('changesets/action');
+    expect(releaseWorkflow).not.toContain('id: changesets');
     expect(await fs.pathExists(path.join(projectDir, 'tools/scripts/build.ts'))).toBe(false);
     expect(await fs.pathExists(path.join(projectDir, 'tools/scripts/build-types.ts'))).toBe(false);
     expect(await fs.pathExists(path.join(projectDir, 'tools/scripts/build-umd.ts'))).toBe(false);
@@ -165,6 +159,8 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(configContent).toContain('single: {');
     expect(configContent).toContain('add: {');
     expect(configContent).toContain("destDir: 'packages'");
+    expect(configContent).toContain('install: {');
+    expect(configContent).toContain("npmClient: 'pnpm'");
     expect(configContent).toContain('build: {');
     expect(configContent).toContain('test: {');
     expect(configContent).toContain('version: {');
@@ -172,6 +168,7 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(configContent).toContain("access: 'public'");
     expect(configContent).toContain("betaTag: 'beta'");
     expect(configContent).toContain('workspaceConcurrency: 8');
+    expect(packageJSON.devDependencies['@changesets/cli']).toBeUndefined();
     expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBeUndefined();
     expect(packageJSON.devDependencies['@dysonic/dy-cli-core']).toBeUndefined();
     expect(packageJSON.devDependencies.execa).toBeUndefined();
@@ -234,6 +231,7 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(await fs.pathExists(path.join(projectDir, 'test/index.test.ts'))).toBe(true);
     expect(await fs.pathExists(path.join(projectDir, 'jest.config.js'))).toBe(true);
     expect(await fs.pathExists(path.join(projectDir, 'pnpm-workspace.yaml'))).toBe(false);
+    expect(await fs.pathExists(path.join(projectDir, '.changeset'))).toBe(false);
     expect(packageJSON.private).toBe(false);
     expect(packageJSON.license).toBe('MIT');
     expect(packageJSON.scripts.test).toBe('dy-cli test');
@@ -246,6 +244,7 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(packageJSON.scripts['publish:dry-run']).toBeUndefined();
     expect(packageJSON.scripts['publish:beta']).toBeUndefined();
     expect(packageJSON.scripts['publish:beta:dry-run']).toBeUndefined();
+    expect(packageJSON.devDependencies['@changesets/cli']).toBeUndefined();
     expect(packageJSON.devDependencies.typescript).toBe('~5.8.3');
     expect(configContent).toContain('project: {');
     expect(configContent).toContain("type: 'single'");

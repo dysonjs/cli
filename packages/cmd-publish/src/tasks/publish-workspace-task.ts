@@ -1,9 +1,10 @@
 import {
   AbstractTask,
   DyCliError,
+  ensureReleaseState,
   PublishCommandConfig,
   hasPublishedStableVersion,
-  runChangesetCommand,
+  ReleaseState,
   runProjectCommand,
 } from '@dysonic/dy-cli-core';
 import fs from 'fs-extra';
@@ -14,26 +15,22 @@ import { PublishProjectTask } from './publish-project-task';
 export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
   public async run(): Promise<void> {
     const cwd = this.config.projectContext.rootDir;
+    const releaseState = await ensureReleaseState(cwd);
 
-    await this.assertPrereleasePackagesHaveStableReleases(cwd);
+    await this.assertPrereleasePackagesHaveStableReleases(releaseState);
     await runProjectCommand(this.config.projectContext, 'build');
     await runProjectCommand(this.config.projectContext, 'test', [], {
       NODE_ENV: 'test',
     });
 
-    const publishArgs = ['publish'];
-    const tag = this.resolveTag();
-
-    if (tag) {
-      publishArgs.push('--tag', tag);
-    }
+    const tag = this.resolveTag(releaseState);
 
     if (this.config.dryRun) {
-      await this.runWorkspaceDryRun();
+      await this.runWorkspacePublish(tag, true);
       return;
     }
 
-    await runChangesetCommand(cwd, publishArgs);
+    await this.runWorkspacePublish(tag, false);
   }
 
   protected getDefaultConfig(): PublishCommandConfig {
@@ -63,7 +60,7 @@ export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
     };
   }
 
-  private resolveTag(): string | undefined {
+  private resolveTag(releaseState: ReleaseState): string | undefined {
     if (this.config.tag) {
       return this.config.tag;
     }
@@ -72,11 +69,15 @@ export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
       return this.config.betaTag;
     }
 
+    if (releaseState.mode === 'pre') {
+      return releaseState.tag;
+    }
+
     return undefined;
   }
 
-  private async assertPrereleasePackagesHaveStableReleases(cwd: string) {
-    if (!(await fs.pathExists(path.join(cwd, '.changeset/pre.json')))) {
+  private async assertPrereleasePackagesHaveStableReleases(releaseState: ReleaseState) {
+    if (releaseState.mode !== 'pre') {
       return;
     }
 
@@ -117,7 +118,7 @@ export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
     );
   }
 
-  private async runWorkspaceDryRun() {
+  private async runWorkspacePublish(tag: string | undefined, dryRun: boolean) {
     for (const packageDir of this.config.projectContext.targetPackageDirs) {
       const packageJSONPath = path.join(packageDir, 'package.json');
 
@@ -136,7 +137,8 @@ export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
       await new PublishProjectTask({
         ...this.config,
         cwd: packageDir,
-        dryRun: true,
+        dryRun,
+        tag,
         projectContext: {
           ...this.config.projectContext,
           currentPackageDir: packageDir,

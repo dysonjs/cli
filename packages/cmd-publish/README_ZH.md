@@ -7,7 +7,7 @@ flowchart LR
   user["用户"] --> command["PublishCommand"]
   command --> tasks["单包任务 / 工作区任务"]
   tasks --> project["npm publish"]
-  tasks --> workspace["build / test / changeset publish"]
+  tasks --> workspace["build / test / npm publish"]
 ```
 
 `@dysonic/dy-cli-cmd-publish` 是 `dy-cli publish` 命令的实现包。
@@ -49,7 +49,7 @@ dy-cli publish --tag beta
 - 在 monorepo 根目录执行时，默认发布整组子包
 - 在 monorepo 子包里会向上查找最近的 `dy.config.ts`
 - `private: true` 的包会被拒绝发布
-- 当工作区处于 Changesets prerelease 模式时，所有目标包都必须已经发布过稳定版本；否则命令会在真正发布前直接中止
+- 当工作区处于 dy-cli prerelease 模式时，所有目标包都必须已经发布过稳定版本；否则命令会在真正发布前直接中止
 - `dy-cli publish` 不允许从 `prepublishOnly`、`publish`、`postpublish` 这类 npm 发布生命周期脚本里再次进入；请改用 `release` 之类的脚本名
 
 ## 设计说明

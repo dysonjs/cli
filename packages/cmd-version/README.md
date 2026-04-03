@@ -7,7 +7,7 @@ flowchart LR
   user["User"] --> command["VersionCommand"]
   command --> task["VersionProjectTask"]
   task --> single["single package.json update"]
-  task --> monorepo["changeset pre / version flow"]
+  task --> monorepo["dy-cli fixed monorepo release flow"]
 ```
 
 `@dysonic/dy-cli-cmd-version` implements the `dy-cli version` command.
@@ -24,14 +24,15 @@ This package handles:
 ## Command Semantics
 
 ```bash
-dy-cli version
-dy-cli version --beta
+dy-cli version --patch
+dy-cli version --minor --beta
 dy-cli version --beta-exit
 dy-cli version --set 0.0.1
 ```
 
 ## Behavior
 
-- in a fixed monorepo root, `dy-cli version` runs the shared version flow for the whole release set
+- in a fixed monorepo root, `dy-cli version` requires one of `--patch`, `--minor`, or `--major`
+- fixed monorepo versioning is handled entirely by `dy-cli`
 - `--beta` and `--beta-exit` are only for fixed monorepo versioning
 - in a `single` project, `--set <version>` updates the package version directly

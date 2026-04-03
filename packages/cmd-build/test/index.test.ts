@@ -541,6 +541,48 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     expect(await fs.pathExists(path.join(workspace, 'dist/templates/note.txt'))).toBe(true);
   });
 
+  test('should remove deleted template files from dist on rebuild', async () => {
+    const workspace = createTempDir('dy-cli-build-clean-dist');
+    const command = new BuildCommand();
+
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-app',
+      version: '0.0.0',
+      main: 'dist/index.cjs.js',
+      module: 'dist/index.esm.js',
+    });
+    await fs.writeJSON(path.join(workspace, 'tsconfig.json'), {
+      compilerOptions: {
+        target: 'ES2019',
+        module: 'ESNext',
+        moduleResolution: 'Node',
+        esModuleInterop: true,
+        strict: false,
+        skipLibCheck: true,
+      },
+      include: ['src'],
+    });
+    await fs.ensureDir(path.join(workspace, 'src'));
+    await fs.writeFile(path.join(workspace, 'src/index.ts'), "export const copied = 'yes';\n");
+    await fs.outputFile(path.join(workspace, 'src/templates/stale.txt'), 'stale');
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      ['export default { commands: { build: {} } };'].join('\n'),
+    );
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace]);
+
+    expect(await fs.pathExists(path.join(workspace, 'dist/templates/stale.txt'))).toBe(true);
+
+    await fs.remove(path.join(workspace, 'src/templates/stale.txt'));
+    await fs.outputFile(path.join(workspace, 'src/templates/fresh.txt'), 'fresh');
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace]);
+
+    expect(await fs.pathExists(path.join(workspace, 'dist/templates/stale.txt'))).toBe(false);
+    expect(await fs.pathExists(path.join(workspace, 'dist/templates/fresh.txt'))).toBe(true);
+  });
+
   test('should parse externals and globals from CLI strings', async () => {
     const workspace = createTempDir('dy-cli-build-parse-cli');
     const command = new BuildCommand();

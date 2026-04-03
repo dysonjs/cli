@@ -35,6 +35,7 @@ export class InstallCommand extends AbstractCommand<InstallCommandConfig, Instal
   ): InstallCommandConfig {
     return {
       cwd,
+      npmClient: config.commands?.install?.npmClient,
       projectContext: resolveProjectContext(cwd, config),
     };
   }

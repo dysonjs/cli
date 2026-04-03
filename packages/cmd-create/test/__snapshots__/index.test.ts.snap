@@ -2,31 +2,6 @@
 
 exports[`@dysonic/dy-cli-cmd-create should create a monorepo project when project and dest dir are provided: monorepo scaffold 1`] = `
 Object {
-  ".changeset/README.md": "# Release Metadata
-
-This folder stores the release metadata used by \`dy-cli version\` and \`dy-cli publish\`.
-
-For day-to-day work, stay on the \`dy-cli\` command flow:
-
-- \`dy-cli version\`
-- \`dy-cli version --beta\`
-- \`dy-cli version --beta-exit\`
-- \`dy-cli publish\`
-
-The files in this folder are internal release inputs for the monorepo workflow.
-",
-  ".changeset/config.json": "{
-  \\"$schema\\": \\"https://unpkg.com/@changesets/config@2.3.1/schema.json\\",
-  \\"changelog\\": \\"@changesets/cli/changelog\\",
-  \\"commit\\": false,
-  \\"fixed\\": [],
-  \\"linked\\": [],
-  \\"access\\": \\"public\\",
-  \\"baseBranch\\": \\"main\\",
-  \\"updateInternalDependencies\\": \\"patch\\",
-  \\"ignore\\": []
-}
-",
   ".editorconfig": "root = true
 
 [*]
@@ -117,22 +92,32 @@ packages/**/templates/**
   ".github/workflows/release.yml": "name: Release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        description: Select the release bump to prepare
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      prerelease:
+        description: Enter prerelease mode before versioning
+        required: false
+        type: boolean
+        default: false
 
-concurrency: \${{ github.workflow }}-\${{ github.ref }}
+concurrency: \${{ github.workflow }}-\${{ github.ref_name }}
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  release:
-    name: Release
+  release-pr:
+    name: Create Release Pull Request
     runs-on: ubuntu-latest
-    env:
-      NPM_TOKEN: \${{ secrets.NPM_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -151,13 +136,26 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Create Release Pull Request or Publish
-        id: changesets
-        uses: changesets/action@v1
+      - name: Prepare Release Changes
+        shell: bash
+        run: |
+          args=\\"--\${{ inputs.releaseType }}\\"
+          if [ \\"\${{ inputs.prerelease }}\\" = \\"true\\" ]; then
+            args=\\"$args --beta\\"
+          fi
+          pnpm exec dy-cli version $args
+
+      - name: Create Release Pull Request
+        uses: peter-evans/create-pull-request@v6
         with:
-          version: pnpm exec dy-cli version
-          publish: pnpm exec dy-cli publish
-          title: Version Packages
+          branch: release/\${{ inputs.releaseType }}
+          commit-message: chore(release): prepare \${{ inputs.releaseType }} release
+          title: Release: \${{ inputs.releaseType }}
+          body: |
+            This PR was prepared by the dy-cli release workflow.
+
+            - Release type: \`\${{ inputs.releaseType }}\`
+            - Prerelease mode: \`\${{ inputs.prerelease }}\`
 ",
   ".gitignore": ".idea
 .vscode
@@ -309,6 +307,9 @@ dy-cli publish
     add: {
       destDir: 'packages',
     },
+    install: {
+      npmClient: 'pnpm',
+    },
     build: {
       mode: 'production',
       umd: {
@@ -390,7 +391,6 @@ dy-cli publish
     \\"node\\": \\">=18.20.8\\"
   },
   \\"devDependencies\\": {
-    \\"@changesets/cli\\": \\"~2.28.1\\",
     \\"@types/jest\\": \\"~26.0.24\\",
     \\"@types/node\\": \\"~16.18.126\\",
     \\"@typescript-eslint/eslint-plugin\\": \\"~6.21.0\\",

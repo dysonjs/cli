@@ -2,7 +2,7 @@ import { AbstractTask, InstallCommandConfig, installDependencies } from '@dysoni
 
 export class InstallProjectTask extends AbstractTask<InstallCommandConfig> {
   public async run(): Promise<void> {
-    await installDependencies(this.config.projectContext.rootDir);
+    await installDependencies(this.config.projectContext.rootDir, this.config.npmClient);
   }
 
   protected getDefaultConfig(): InstallCommandConfig {
