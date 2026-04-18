@@ -57,7 +57,10 @@ export class CreateProjectTask extends AbstractTask<CreateCommandConfig> {
     await Promise.all(
       filePaths.map(async (filePath) => {
         const relativePath = path.relative(templateDir, filePath);
-        const outputPath = path.join(targetDir, this.normalizeOutputPath(relativePath));
+        const outputPath = path.join(
+          targetDir,
+          this.normalizeOutputPath(relativePath, renderContext),
+        );
         const source = await fs.readFile(filePath, 'utf8');
         const content = this.renderContent(source, renderContext);
         const stat = await fs.stat(filePath);
@@ -69,6 +72,8 @@ export class CreateProjectTask extends AbstractTask<CreateCommandConfig> {
   }
 
   private getRenderContext() {
+    const packageJSON = this.getPackageManifest();
+
     return {
       projectName: this.config.projectName,
       scopedPackageName: `@dysonic/${this.config.projectName}`,
@@ -76,6 +81,8 @@ export class CreateProjectTask extends AbstractTask<CreateCommandConfig> {
       templatesBlock: this.serializeTemplates().join('\n'),
       buildMode: 'production',
       umdName: this.getUmdName(),
+      cliVersion: this.getPackageVersion(packageJSON),
+      packageManager: this.getPackageManager(packageJSON),
     };
   }
 
@@ -133,7 +140,7 @@ export class CreateProjectTask extends AbstractTask<CreateCommandConfig> {
     return filePaths.flat();
   }
 
-  private normalizeOutputPath(relativePath: string) {
+  private normalizeOutputPath(relativePath: string, context: Record<string, string>) {
     return relativePath
       .split(path.sep)
       .map((segment) => {
@@ -143,11 +150,15 @@ export class CreateProjectTask extends AbstractTask<CreateCommandConfig> {
             : segment.endsWith('.tpl')
             ? segment.slice(0, -4)
             : segment,
-          this.getRenderContext(),
+          context,
         );
 
         if (segmentWithoutExtension.startsWith('__')) {
           return `.${segmentWithoutExtension.slice(2)}`;
+        }
+
+        if (segmentWithoutExtension === '_') {
+          return segmentWithoutExtension;
         }
 
         if (segmentWithoutExtension.startsWith('_')) {
@@ -171,5 +182,34 @@ export class CreateProjectTask extends AbstractTask<CreateCommandConfig> {
       .filter(Boolean)
       .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
       .join('');
+  }
+
+  private getPackageManifest(runtimeDir = __dirname) {
+    const packageJSONPath = path.join(runtimeDir, '..', '..', 'package.json');
+
+    if (!fs.existsSync(packageJSONPath)) {
+      throw new DyCliError(
+        'CONFIG_NOT_FOUND',
+        `Package manifest not found at '${packageJSONPath}'.`,
+      );
+    }
+
+    return fs.readJSONSync(packageJSONPath);
+  }
+
+  private getPackageVersion(packageJSON: Record<string, unknown>) {
+    if (typeof packageJSON.version !== 'string' || !packageJSON.version) {
+      throw new DyCliError('INVALID_ARGUMENT', 'Package version is invalid.');
+    }
+
+    return packageJSON.version;
+  }
+
+  private getPackageManager(packageJSON: Record<string, unknown>) {
+    if (typeof packageJSON.packageManager !== 'string' || !packageJSON.packageManager) {
+      throw new DyCliError('INVALID_ARGUMENT', 'Package manager is invalid.');
+    }
+
+    return packageJSON.packageManager;
   }
 }

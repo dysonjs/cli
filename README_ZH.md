@@ -1,38 +1,28 @@
 # dy-cli
 
-## 架构图
+`dy-cli` 是一套面向 TypeScript 包项目的命令优先工具集。
 
-```mermaid
-flowchart LR
-  user["用户"] --> binary["dy-cli 命令"]
-  binary --> cli["packages/cli"]
-  cli --> commands["cmd-create / cmd-install / cmd-add / cmd-build / cmd-test / cmd-version / cmd-publish"]
-  commands --> core["packages/core"]
-  commands --> outputs["项目文件 / 构建 / 测试 / 升版 / 发布结果"]
-```
+它把项目创建、依赖安装、构建、测试、版本管理和发布收敛到一个稳定的 CLI 面上。核心目标是让项目工作流显式、可重复，而不是把构建、测试、发布逻辑分散在隐性的包管理器脚本里。
 
-`dy-cli` 是一套命令优先的包项目工具。核心目标是让用户围绕 `dy-cli` 建立统一心智，而不是直接面向包管理器命令或项目内脚本。
+[English](./README.md) | 简体中文
 
-它支持两类项目：
+## 特性
 
-- `monorepo`
-- `single`
-
-当前对外命令集合是：
-
-- `create`
-- `install`
-- `add`
-- `build`
-- `test`
-- `version`
-- `publish`
-
-## 安装
-
-先全局安装一次 `@dysonic/dy-cli`，之后项目内统一直接使用 `dy-cli`。
+- 支持初始化 `single` 和 `monorepo` 两类包项目。
+- 使用 `dy.config.ts` 作为项目元信息和命令默认配置入口。
+- 支持 ESM、CJS、UMD、类型声明和可执行 bin 产物构建。
+- 基于项目作用域运行 Jest。
+- 支持 fixed-version monorepo 发布，不暴露用户侧 `.changeset` 文件。
+- 支持单包发布和 monorepo 发布编排，包含 dry-run、tag、access、OTP、registry 等选项。
+- 从显式项目元数据解析包管理器和 workspace 上下文，不依赖全局 CLI 状态。
 
 ## 快速开始
+
+需要直接创建或管理项目时，先安装公开 CLI：
+
+```bash
+npm install -g @dysonic/dy-cli
+```
 
 创建项目：
 
@@ -41,216 +31,40 @@ dy-cli create --project monorepo --dest-dir ./demo
 dy-cli create --project single --dest-dir ./demo
 ```
 
-安装依赖：
+进入生成项目并安装依赖：
 
 ```bash
 cd ./demo
 dy-cli install
 ```
 
-在 monorepo 中创建子包：
-
-```bash
-dy-cli add button
-```
-
 执行常用流程：
 
 ```bash
 dy-cli build
-dy-cli build --types
-dy-cli build --umd
-
 dy-cli test
-dy-cli test --coverage
-
-dy-cli version
-dy-cli version --beta
-dy-cli version --beta-exit
-dy-cli version --set 0.0.1
-
-dy-cli publish
+dy-cli version --patch
 dy-cli publish --dry-run
-dy-cli publish --tag beta
 ```
 
-默认作用域规则：
+生成项目会默认包含本地 `dy-cli` 依赖和 `packageManager` 元数据，因此项目脚本和 workspace 递归执行不会依赖全局安装的二进制。
 
-- `single` 项目下，`build / test / version / publish` 默认作用当前包
-- monorepo 根目录下，`build / test / publish` 默认作用所有子包
-- monorepo 子包目录下，`build / test / publish` 默认只作用当前子包
-- fixed 模式 monorepo 根目录下，`version` 默认控制整仓版本
+## 项目类型
 
-## 命令说明
+`dy-cli` 当前支持两类项目结构。
 
-### `create`
+| 类型       | 适用场景                     | 默认行为                                           |
+| ---------- | ---------------------------- | -------------------------------------------------- |
+| `single`   | 从项目根目录发布一个包。     | 构建、测试、升版、发布默认作用于根包。             |
+| `monorepo` | 从 `packages/*` 发布多个包。 | 根目录下的构建、测试、升版、发布可以编排所有子包。 |
 
-用于初始化项目骨架。
+两类模板都会默认包含 TypeScript、Jest、构建、版本、发布、格式化、lint 和 release 准备配置。monorepo 模板不会暴露 `pnpm-workspace.yaml` 或用户侧 `.changeset` 文件；`dy.config.ts` 是项目工作流元数据的来源。
 
-```bash
-dy-cli create --project monorepo --dest-dir ./demo
-dy-cli create --project single --dest-dir ./demo
-```
+## 核心概念
 
-参数：
-
-- `--project <project>`：项目类型，当前支持 `monorepo` 和 `single`
-- `--dest-dir <destDir>`：目标目录，相对于 `cwd`
-- `--project-name <projectName>`：显式指定项目名
-- `--force`：目标目录非空时强制覆盖
-
-说明：
-
-- `create` 会生成 `dy.config.ts`，并把它作为项目主元数据入口
-- 模板会把后续 `install / add / build / test / version / publish` 的默认命令流一并铺好
-
-### `install`
-
-用于安装项目依赖。
-
-```bash
-dy-cli install
-```
-
-说明：
-
-- `install` 会先解析项目根目录
-- 底层实际使用的包管理器由 `dy-cli` 自动识别，用户不需要直接面向它
-
-### `add`
-
-用于在 monorepo 项目里快速创建子包。
-
-示例：
-
-```bash
-dy-cli add button
-dy-cli add --package-name card --description "Card component"
-```
-
-参数：
-
-- `[packageName]`：位置参数形式的包名
-- `--package-name <packageName>`：显式指定包名
-- `--dest-dir <destDir>`：子包目录，默认是 `packages`
-- `--description <description>`：包描述
-- `--private`：将子包标记为私有包
-- `--side-effects`：将子包标记为有副作用
-
-说明：
-
-- `add` 只适用于 `dy.config.ts` 中声明为 `project.type: 'monorepo'` 的项目
-- 新建出的子包默认不会额外生成 `build / test / publish` 这类 package script
-- 子包的构建、测试、升版、发布统一通过全局 `dy-cli` 入口完成
-
-### `build`
-
-用于构建项目包，不再依赖项目内部自定义 build 脚本。
-
-示例：
-
-```bash
-dy-cli build
-dy-cli build --types
-dy-cli build --umd
-```
-
-参数：
-
-- `--mode <mode>`：构建模式
-- `--types`：只构建类型产物
-- `--umd`：只构建 UMD 产物
-- `--name <name>`：UMD 全局变量名
-- `--externals <externals>`：UMD external 包名，逗号分隔
-- `--globals <globals>`：UMD external 对应的全局变量映射，逗号分隔
-
-说明：
-
-- `dy-cli build` 默认构建当前包的 ESM / CJS 产物
-- `dy-cli build --types` 构建 `d.ts`
-- `dy-cli build --umd` 构建 UMD 包
-- 如果包在 `package.json` 中声明了 `bin`，默认 `dy-cli build` 也会同时产出可执行文件
-- 在 monorepo 根目录执行时，默认会构建所有子包
-- 在 monorepo 子包目录里执行时，会自动向上查找最近的 `dy.config.ts`
-
-### `test`
-
-用于运行项目包的 Jest 单测。
-
-示例：
-
-```bash
-dy-cli test
-dy-cli test --coverage
-dy-cli test --watch
-dy-cli test --update-snapshot
-```
-
-参数：
-
-- `--config <config>`：显式指定 Jest 配置文件
-- `--coverage`：输出覆盖率
-- `--watch`：watch 模式
-- `--update-snapshot`：更新 snapshot
-
-说明：
-
-- `test` 当前基于 Jest
-- 在 monorepo 根目录执行时，默认会测试所有子包
-- 在 monorepo 子包目录里执行时，会自动向上查找最近的 `dy.config.ts` 和 Jest 配置
-
-### `version`
-
-用于通过 `dy-cli` 管理版本号。
-
-示例：
-
-```bash
-dy-cli version
-dy-cli version --beta
-dy-cli version --beta-exit
-dy-cli version --set 0.0.1
-```
-
-参数：
-
-- `--set <version>`：`single` 项目必填
-- `--beta`：fixed monorepo 升版前进入 beta 预发布模式
-- `--beta-exit`：fixed monorepo 升版前退出 beta 预发布模式
-
-### `publish`
-
-用于发布项目包，或者在 monorepo 根目录发布整组子包。
-
-示例：
-
-```bash
-dy-cli publish
-dy-cli publish --dry-run
-dy-cli publish --tag beta
-```
-
-参数：
-
-- `--dry-run`：仅演练，不真正上传
-- `--tag <tag>`：dist-tag
-- `--access <access>`：发布权限，支持 `public` / `restricted`
-- `--otp <otp>`：二次校验口令
-- `--registry <registry>`：registry 地址
-
-说明：
-
-- 在 monorepo 根目录执行时，`publish` 默认会先构建、测试，再发布所有子包
-- 在子包目录执行时，`publish` 只发布当前包
-- `private: true` 的包会被直接拒绝发布
-- 当工作区处于 Changesets 的 prerelease 模式时，目标包必须已经在 registry 上存在至少一个稳定版本；否则会直接拒绝发布，避免首次 beta 包意外占用 `latest` 标签
-- 如果你要通过 `package.json` 暴露 `dy-cli publish`，不要使用 `prepublishOnly`、`publish`、`postpublish` 这类 npm 发布生命周期脚本名，建议改用 `release`
-
-## `dy.config.ts`
+### `dy.config.ts`
 
 `dy-cli` 通过 `dy.config.ts` 读取项目元信息和命令默认配置。
-
-示例：
 
 ```ts
 export default {
@@ -260,19 +74,6 @@ export default {
     versionStrategy: 'fixed',
   },
   commands: {
-    create: {
-      defaultTemplateType: 'monorepo',
-      templates: {
-        monorepo: {
-          label: 'Monorepo',
-          description: 'Create a workspace-based project scaffold.',
-        },
-        single: {
-          label: 'Single repo',
-          description: 'Create a single-package project scaffold.',
-        },
-      },
-    },
     add: {
       destDir: 'packages',
     },
@@ -302,45 +103,240 @@ export default {
 };
 ```
 
-当前配置结构说明：
+### 作用域解析
 
-- `project`：项目类型、包目录、版本策略等主元信息
-- `commands.create`：项目初始化默认模板和模板描述
-- `commands.add`：monorepo 子包创建配置
-- `commands.build`：构建模式和 UMD 配置
-- `commands.test`：Jest 配置和测试开关默认值
-- `commands.version`：版本管理默认项
-- `commands.publish`：发布默认参数
+命令作用域由最近的 `dy.config.ts` 和当前包位置决定。
 
-## 工作区结构
+| 执行位置            | 作用域                               |
+| ------------------- | ------------------------------------ |
+| `single` 根目录     | 当前包                               |
+| `monorepo` 根目录   | workspace 感知流程默认作用于所有子包 |
+| `monorepo` 子包目录 | 当前子包                             |
 
-当前仓库按职责拆成这些包：
+### 包管理器解析
 
-- `packages/core`
-  提供核心接口、配置契约、公共 helper、基础抽象
-- `packages/cli`
-  对外统一暴露 `dy-cli` 命令行入口
-- `packages/cmd-create`
-  负责项目初始化
-- `packages/cmd-install`
-  负责依赖安装
-- `packages/cmd-add`
-  负责 monorepo 子包创建
-- `packages/cmd-build`
-  负责包构建能力
-- `packages/cmd-test`
-  负责包测试能力
-- `packages/cmd-version`
-  负责版本管理
-- `packages/cmd-publish`
-  负责包发布能力
+`dy-cli` 会从 `packageManager` 或 lockfile 元数据解析包管理器，并在子包目录执行时向上查找 workspace 根。内部递归调用 `dy-cli` 时会通过 `pnpm exec dy-cli ...` 或 `npm exec -- dy-cli ...` 执行，而不是依赖 PATH 注入。
 
-## 开发
+## 命令
 
-这个仓库本身也使用 `dy-cli` 作为主工作流入口：
+### `create`
+
+创建项目骨架。
+
+```bash
+dy-cli create --project monorepo --dest-dir ./demo
+dy-cli create --project single --dest-dir ./demo
+```
+
+选项：
+
+| 选项                           | 说明                         |
+| ------------------------------ | ---------------------------- |
+| `--project <project>`          | `monorepo` 或 `single`。     |
+| `--dest-dir <destDir>`         | 目标目录，相对于 `cwd`。     |
+| `--project-name <projectName>` | 覆盖根据目录推断出的项目名。 |
+| `--force`                      | 覆盖非空目标目录。           |
+
+### `install`
+
+通过解析出的包管理器安装项目依赖。
 
 ```bash
 dy-cli install
-dy-cli test
-dy-cli build
 ```
+
+### `add`
+
+在 monorepo 项目中创建子包。
+
+```bash
+dy-cli add button
+dy-cli add --package-name card --description "Card component"
+```
+
+选项：
+
+| 选项                           | 说明                              |
+| ------------------------------ | --------------------------------- |
+| `[packageName]`                | 位置参数形式的包名。              |
+| `--package-name <packageName>` | 显式包名。                        |
+| `--dest-dir <destDir>`         | 子包容器目录，默认是 `packages`。 |
+| `--description <description>`  | 包描述。                          |
+| `--private`                    | 生成私有包。                      |
+| `--side-effects`               | 标记包存在副作用。                |
+
+`add` 只适用于 `dy.config.ts` 声明了 `project.type: 'monorepo'` 的项目。
+
+### `build`
+
+构建项目包，不委托给项目内自定义 build 脚本。
+
+```bash
+dy-cli build
+dy-cli build --types
+dy-cli build --umd
+dy-cli build --bin
+```
+
+选项：
+
+| 选项                      | 说明                                            |
+| ------------------------- | ----------------------------------------------- |
+| `--mode <mode>`           | 构建模式。                                      |
+| `--workspace`             | 构建所有 workspace 子包。                       |
+| `--types`                 | 构建类型声明文件。                              |
+| `--umd`                   | 构建 UMD 产物。                                 |
+| `--bin`                   | 构建可执行 bin 产物。                           |
+| `--name <name>`           | UMD 全局变量名。                                |
+| `--externals <externals>` | UMD external 包名，逗号分隔。                   |
+| `--globals <globals>`     | UMD global 映射，逗号分隔，例如 `react:React`。 |
+
+### `test`
+
+在解析出的项目作用域内运行 Jest。
+
+```bash
+dy-cli test
+dy-cli test --coverage
+dy-cli test --watch
+dy-cli test --update-snapshot
+```
+
+选项：
+
+| 选项                | 说明                      |
+| ------------------- | ------------------------- |
+| `--config <config>` | 显式指定 Jest 配置路径。  |
+| `--workspace`       | 测试所有 workspace 子包。 |
+| `--coverage`        | 收集覆盖率。              |
+| `--watch`           | watch 模式。              |
+| `--update-snapshot` | 更新 Jest 快照。          |
+
+### `version`
+
+管理包版本。
+
+```bash
+dy-cli version --set 0.0.1
+dy-cli version --patch
+dy-cli version --minor --beta
+dy-cli version --beta-exit
+```
+
+规则：
+
+- `single` 项目必须使用 `--set <version>`。
+- fixed-version monorepo 必须使用 `--patch`、`--minor` 或 `--major` 之一。
+- `--beta` 会在 fixed monorepo 升版前进入预发布模式。
+- `--beta-exit` 用于 fixed monorepo 退出预发布模式。
+
+### `publish`
+
+发布单个包或 fixed monorepo 发布集合。
+
+```bash
+dy-cli publish
+dy-cli publish --dry-run
+dy-cli publish --tag beta
+dy-cli publish --workspace --beta
+```
+
+选项：
+
+| 选项                    | 说明                                                    |
+| ----------------------- | ------------------------------------------------------- |
+| `--workspace`           | 从 monorepo 根目录执行 workspace 构建、测试、发布编排。 |
+| `--beta`                | 使用配置的 beta tag 发布预发布 workspace 版本。         |
+| `--dry-run`             | 仅演练，不上传包。                                      |
+| `--tag <tag>`           | 发布 dist-tag。                                         |
+| `--access <access>`     | `public` 或 `restricted`。                              |
+| `--otp <otp>`           | registry 一次性验证码。                                 |
+| `--registry <registry>` | registry 地址。                                         |
+
+`publish` 会拒绝发布 `private: true` 的包。预发布模式下，workspace 发布要求每个目标包在 registry 上已经存在稳定版本，避免首次 beta 包占用 `latest` dist-tag。
+
+不要通过 `prepublishOnly`、`publish`、`postpublish` 这类 npm 发布生命周期脚本名暴露 `dy-cli publish`，建议使用 `release`。
+
+## 包结构
+
+| 包                     | 职责                                              |
+| ---------------------- | ------------------------------------------------- |
+| `packages/cli`         | 对外 `dy-cli` 可执行入口和命令装配。              |
+| `packages/core`        | 公共契约、配置加载、项目解析、helper 和错误类型。 |
+| `packages/cmd-create`  | 项目脚手架。                                      |
+| `packages/cmd-install` | 依赖安装。                                        |
+| `packages/cmd-add`     | monorepo 子包脚手架。                             |
+| `packages/cmd-build`   | 包构建流水线。                                    |
+| `packages/cmd-test`    | Jest 运行集成。                                   |
+| `packages/cmd-version` | 版本管理。                                        |
+| `packages/cmd-publish` | 发布编排。                                        |
+
+每个包都包含自己的 README，用于说明包级职责和边界。
+
+## 架构
+
+```mermaid
+flowchart LR
+  user["用户"] --> binary["dy-cli 命令"]
+  binary --> cli["packages/cli"]
+  cli --> commands["packages/cmd-*"]
+  commands --> core["packages/core"]
+  commands --> outputs["脚手架 / 构建 / 测试 / 升版 / 发布"]
+```
+
+依赖方向保持简单：
+
+- `packages/cli` 负责装配命令包。
+- `packages/cmd-*` 实现具体命令行为。
+- `packages/core` 提供公共契约和运行时 helper。
+- `packages/core` 不能依赖命令包。
+
+## 开发
+
+使用 Node `>=18.20.8`。
+
+```bash
+pnpm install
+pnpm lint
+pnpm prettier
+pnpm test
+```
+
+聚焦测试可以走相同 CLI 路径：
+
+```bash
+pnpm test -- --runInBand packages/cmd-create/test/index.test.ts
+```
+
+构建和发布验证：
+
+```bash
+pnpm exec dy-cli build
+pnpm exec dy-cli publish --dry-run
+```
+
+修改 release、publish、version、build 或 scaffold 行为时，优先在受影响包补聚焦回归，再跑更宽的验证。
+
+## 发布说明
+
+当前仓库使用由 `dy-cli` 自身管理的 fixed-version monorepo 策略。
+
+- 不要重新引入用户侧 `.changeset` 文件或 `@changesets/*`。
+- monorepo 发版使用 `dy-cli version --patch|--minor|--major`。
+- workspace 发布使用 `dy-cli publish` 或 `dy-cli publish --dry-run`。
+- 保持 `packages/*` 下已发布包版本一致。
+
+## 贡献
+
+变更应遵守上面的包边界。命令包负责自己的编排和副作用；只有真正跨命令复用的基础能力才应进入 `packages/core`。
+
+PR 应包含：
+
+- 用户可感知变更摘要
+- 受影响包或工作流
+- 已执行的验证命令
+- 如果修改 build、version、publish、scaffold 或 CLI 行为，需要说明发布影响
+
+## License
+
+[MIT](./LICENSE)

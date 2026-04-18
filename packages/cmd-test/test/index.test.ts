@@ -201,8 +201,8 @@ describe('@dysonic/dy-cli-cmd-test', () => {
     await command.parseAsync(['node', 'test', '--cwd', packageDir, '--workspace', '--coverage']);
 
     expect(execa).toHaveBeenCalledWith(
-      'dy-cli',
-      ['test', '--coverage'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'test', '--coverage'],
       expect.objectContaining({
         cwd: packageDir,
         env: expect.objectContaining({
@@ -238,8 +238,8 @@ describe('@dysonic/dy-cli-cmd-test', () => {
     await command.parseAsync(['node', 'test', '--cwd', workspace, '--coverage']);
 
     expect(execa).toHaveBeenCalledWith(
-      'dy-cli',
-      ['test', '--coverage'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'test', '--coverage'],
       expect.objectContaining({
         cwd: packageDir,
       }),

@@ -836,8 +836,8 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     await command.parseAsync(['node', 'test', '--cwd', packageDir, '--workspace', '--types']);
 
     expect(execa).toHaveBeenCalledWith(
-      'dy-cli',
-      ['build', '--types'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'build', '--types'],
       expect.objectContaining({
         cwd: packageDir,
       }),
@@ -867,8 +867,8 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     await command.parseAsync(['node', 'test', '--cwd', workspace, '--types']);
 
     expect(execa).toHaveBeenCalledWith(
-      'dy-cli',
-      ['build', '--types'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'build', '--types'],
       expect.objectContaining({
         cwd: packageDir,
       }),

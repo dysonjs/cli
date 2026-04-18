@@ -181,14 +181,14 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
 
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       1,
-      'dy-cli',
-      ['build'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'build'],
       expect.objectContaining({ cwd: packageDir }),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       2,
-      'dy-cli',
-      ['test'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'test'],
       expect.objectContaining({
         cwd: packageDir,
         env: expect.objectContaining({ NODE_ENV: 'test' }),
@@ -245,14 +245,14 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
 
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       1,
-      'dy-cli',
-      ['build'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'build'],
       expect.objectContaining({ cwd: packageDir }),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       2,
-      'dy-cli',
-      ['test'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'test'],
       expect.objectContaining({ cwd: packageDir }),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
@@ -493,14 +493,14 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
 
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       1,
-      'dy-cli',
-      ['build'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'build'],
       expect.objectContaining({ cwd: packageDir }),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       2,
-      'dy-cli',
-      ['test'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'test'],
       expect.objectContaining({ cwd: packageDir }),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
@@ -548,14 +548,14 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
 
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       1,
-      'dy-cli',
-      ['build'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'build'],
       expect.objectContaining({ cwd: packageDir }),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       2,
-      'dy-cli',
-      ['test'],
+      'npm',
+      ['exec', '--', 'dy-cli', 'test'],
       expect.objectContaining({ cwd: packageDir }),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(

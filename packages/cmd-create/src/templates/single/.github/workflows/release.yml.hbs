@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        description: Select the release bump to prepare
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      prerelease:
+        description: Enter prerelease mode before versioning
+        required: false
+        type: boolean
+        default: false
+
+concurrency: ${{ github.workflow }}-${{ github.ref_name }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-pr:
+    name: Create Release Pull Request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Prepare Release Changes
+        shell: bash
+        run: |
+          args="--${{ inputs.releaseType }}"
+          if [ "${{ inputs.prerelease }}" = "true" ]; then
+            args="$args --beta"
+          fi
+          pnpm exec dy-cli version $args
+
+      - name: Create Release Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: release/${{ inputs.releaseType }}
+          commit-message: chore(release): prepare ${{ inputs.releaseType }} release
+          title: Release: ${{ inputs.releaseType }}
+          body: |
+            This PR was prepared by the dy-cli release workflow.
+
+            - Release type: `${{ inputs.releaseType }}`
+            - Prerelease mode: `${{ inputs.prerelease }}`

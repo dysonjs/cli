@@ -2,15 +2,18 @@
   "name": "dyson-cli",
   "private": true,
   "license": "MIT",
+  "packageManager": "pnpm@10.8.0",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
+    "check:package-files": "dy-cli publish --dry-run",
     "clean": "pnpm -r --stream --workspace-concurrency 8 --parallel clean",
     "lint": "eslint '*/**/*.{js,ts,jsx,tsx}'",
     "prepare": "husky install",
     "prettier": "prettier --write .",
-    "test": "dy-cli test"
+    "test": "dy-cli test",
+    "test:scaffold": "dy-cli test -- --runInBand packages/cmd-create/test/smoke.test.ts"
   },
   "lint-staged": {
     "**/*.{js,ts,jsx,tsx}": [
