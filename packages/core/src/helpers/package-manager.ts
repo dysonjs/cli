@@ -7,23 +7,41 @@ import { ProjectContext } from '../interfaces';
 export type PackageManagerName = 'npm' | 'pnpm';
 
 export function detectPackageManager(cwd: string): PackageManagerName {
-  const packageJSONPath = path.join(cwd, 'package.json');
-  if (fs.existsSync(packageJSONPath)) {
-    const packageJSON = fs.readJSONSync(packageJSONPath) as { packageManager?: string };
-    if (packageJSON.packageManager?.startsWith('pnpm@')) {
+  let currentDir = path.resolve(cwd);
+
+  while (true) {
+    const packageJSONPath = path.join(currentDir, 'package.json');
+    if (fs.existsSync(packageJSONPath)) {
+      const packageJSON = fs.readJSONSync(packageJSONPath) as { packageManager?: string };
+      if (packageJSON.packageManager?.startsWith('pnpm@')) {
+        return 'pnpm';
+      }
+
+      if (packageJSON.packageManager?.startsWith('npm@')) {
+        return 'npm';
+      }
+    }
+
+    if (fs.existsSync(path.join(currentDir, 'pnpm-lock.yaml'))) {
       return 'pnpm';
     }
-  }
 
-  if (fs.existsSync(path.join(cwd, 'pnpm-lock.yaml'))) {
-    return 'pnpm';
+    const parentDir = path.dirname(currentDir);
+    if (parentDir === currentDir) {
+      break;
+    }
+
+    currentDir = parentDir;
   }
 
   return 'npm';
 }
 
-export async function installDependencies(cwd: string) {
-  const packageManager = detectPackageManager(cwd);
+export async function installDependencies(
+  cwd: string,
+  packageManagerOverride?: PackageManagerName,
+) {
+  const packageManager = packageManagerOverride ?? detectPackageManager(cwd);
   const args = packageManager === 'npm' ? ['install', '--legacy-peer-deps'] : ['install'];
 
   await execa(packageManager, args, {
@@ -85,7 +103,13 @@ export async function runProjectCommand(
   env: NodeJS.ProcessEnv = {},
 ) {
   for (const packageDir of projectContext.targetPackageDirs) {
-    await execa('dy-cli', [commandName, ...args], {
+    const packageManager = detectPackageManager(packageDir);
+    const commandArgs =
+      packageManager === 'npm'
+        ? ['exec', '--', 'dy-cli', commandName, ...args]
+        : ['exec', 'dy-cli', commandName, ...args];
+
+    await execa(packageManager, commandArgs, {
       cwd: packageDir,
       env: {
         ...process.env,
@@ -93,17 +117,6 @@ export async function runProjectCommand(
       },
     });
   }
-}
-
-export async function runChangesetCommand(cwd: string, args: string[]) {
-  const packageManager = detectPackageManager(cwd);
-
-  if (packageManager === 'pnpm') {
-    await execa('pnpm', ['changeset', ...args], { cwd });
-    return;
-  }
-
-  await execa('npx', ['changeset', ...args], { cwd });
 }
 
 export async function hasPublishedStableVersion(packageName: string) {

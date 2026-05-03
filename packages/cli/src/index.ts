@@ -11,6 +11,8 @@ import { version } from '@dysonic/dy-cli-cmd-version';
 
 import pkg from '../package.json';
 
+export type { ExternalRunCommandsConfig } from '@dysonic/dy-cli-core';
+
 export function createProgram() {
   const program = new Command();
 

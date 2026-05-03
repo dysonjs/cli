@@ -16,7 +16,7 @@ describe('@dysonic/dy-cli-cmd-version', () => {
     jest.clearAllMocks();
   });
 
-  test('should version a fixed monorepo from the workspace root by default', async () => {
+  test('should require an explicit bump flag for fixed monorepo versioning', async () => {
     const workspace = createTempDir('dy-cli-version-monorepo');
     const packageDir = path.join(workspace, 'packages/button');
     const command = new VersionCommand();
@@ -42,23 +42,17 @@ describe('@dysonic/dy-cli-cmd-version', () => {
       ].join('\n'),
     );
 
-    await command.parseAsync(['node', 'test', '--cwd', packageDir]);
-
-    expect(execa).toHaveBeenCalledWith(
-      'npx',
-      ['changeset', 'version'],
-      expect.objectContaining({
-        cwd: workspace,
-      }),
-    );
+    await expect(command.parseAsync(['node', 'test', '--cwd', packageDir])).rejects.toMatchObject({
+      code: 'INVALID_ARGUMENT',
+      message: expect.stringContaining('--patch'),
+    });
   });
 
-  test('should synchronize all workspace package versions after fixed monorepo versioning', async () => {
+  test('should version a fixed monorepo from the workspace root when --patch is provided', async () => {
     const workspace = createTempDir('dy-cli-version-fixed-sync');
     const packageDir = path.join(workspace, 'packages/button');
     const siblingPackageDir = path.join(workspace, 'packages/card');
     const command = new VersionCommand();
-    const execaMock = execa as unknown as jest.Mock;
 
     await fs.ensureDir(packageDir);
     await fs.ensureDir(siblingPackageDir);
@@ -90,35 +84,61 @@ describe('@dysonic/dy-cli-cmd-version', () => {
       ].join('\n'),
     );
 
-    execaMock.mockImplementation(
-      async (commandName: string, args?: string[], options?: { cwd?: string }) => {
-        if (
-          commandName === 'npx' &&
-          Array.isArray(args) &&
-          args.join(' ') === 'changeset version' &&
-          options?.cwd === workspace
-        ) {
-          await fs.writeJSON(
-            path.join(packageDir, 'package.json'),
-            {
-              name: '@demo/button',
-              version: '1.0.3',
-            },
-            { spaces: 2 },
-          );
-        }
-
-        return {} as Awaited<ReturnType<typeof execa>>;
-      },
-    );
-
-    await command.parseAsync(['node', 'test', '--cwd', packageDir]);
+    await command.parseAsync(['node', 'test', '--cwd', packageDir, '--patch']);
 
     expect(await fs.readJSON(path.join(packageDir, 'package.json'))).toMatchObject({
       version: '1.0.3',
     });
     expect(await fs.readJSON(path.join(siblingPackageDir, 'package.json'))).toMatchObject({
       version: '1.0.3',
+    });
+    expect(await fs.readFile(path.join(packageDir, 'CHANGELOG.md'), 'utf8')).toContain('## 1.0.3');
+    expect(await fs.pathExists(path.join(workspace, '.dy-cli/release/state.json'))).toBe(false);
+    expect(execa as unknown as jest.Mock).not.toHaveBeenCalledWith(
+      'npx',
+      ['changeset', 'version'],
+      expect.any(Object),
+    );
+  });
+
+  test('should enter prerelease mode and persist dy-cli release state when --patch --beta is provided', async () => {
+    const workspace = createTempDir('dy-cli-version-pre');
+    const packageDir = path.join(workspace, 'packages/button');
+    const command = new VersionCommand();
+
+    await fs.ensureDir(packageDir);
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      workspaces: ['packages/*'],
+    });
+    await fs.writeJSON(path.join(packageDir, 'package.json'), {
+      name: '@demo/button',
+      version: '1.0.2',
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      [
+        'export default {',
+        '  project: {',
+        "    type: 'monorepo',",
+        "    versionStrategy: 'fixed',",
+        '  },',
+        '  commands: {',
+        '    version: {},',
+        '  },',
+        '};',
+      ].join('\n'),
+    );
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace, '--patch', '--beta']);
+
+    expect(await fs.readJSON(path.join(packageDir, 'package.json'))).toMatchObject({
+      version: '1.0.3-beta.0',
+    });
+    expect(await fs.readJSON(path.join(workspace, '.dy-cli/release/state.json'))).toMatchObject({
+      mode: 'pre',
+      tag: 'beta',
     });
   });
 

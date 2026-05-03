@@ -9,6 +9,7 @@ import {
   AbstractTask,
   CommandOption,
   defineConfig,
+  detectPackageManager,
   DyCliError,
   ExternalRunCommandsConfig,
   getExternalConfigDir,
@@ -19,6 +20,7 @@ import {
   resolveProjectName,
   resolveTargetDir,
   runPackageScript,
+  runProjectCommand,
 } from '../src';
 
 jest.mock('execa', () => jest.fn().mockResolvedValue(undefined));
@@ -347,6 +349,77 @@ describe('@dysonic/dy-cli-core', () => {
       expect.objectContaining({
         cwd: dir,
         env: expect.objectContaining({ FOO: 'bar' }),
+      }),
+    );
+  });
+
+  test('detectPackageManager should walk up to the workspace root', () => {
+    const root = createTempDir('dy-cli-pm-root');
+    const child = path.join(root, 'packages', 'demo-app');
+
+    fs.mkdirpSync(child);
+    fs.writeJSONSync(path.join(root, 'package.json'), {
+      packageManager: 'pnpm@10.8.0',
+    });
+    fs.writeJSONSync(path.join(child, 'package.json'), {
+      name: '@dysonic/demo-app',
+    });
+
+    expect(detectPackageManager(child)).toBe('pnpm');
+  });
+
+  test('detectPackageManager should respect a nearer packageManager declaration', () => {
+    const root = createTempDir('dy-cli-pm-override');
+    const child = path.join(root, 'packages', 'demo-app');
+
+    fs.mkdirpSync(child);
+    fs.writeJSONSync(path.join(root, 'package.json'), {
+      packageManager: 'pnpm@10.8.0',
+    });
+    fs.writeJSONSync(path.join(child, 'package.json'), {
+      packageManager: 'npm@10.0.0',
+    });
+
+    expect(detectPackageManager(child)).toBe('npm');
+  });
+
+  test('runProjectCommand should execute dy-cli through the detected package manager', async () => {
+    const root = createTempDir('dy-cli-project-command');
+    const child = path.join(root, 'packages', 'demo-app');
+    const mockedExeca = execa as unknown as jest.Mock;
+
+    fs.mkdirpSync(child);
+    fs.writeJSONSync(path.join(root, 'package.json'), {
+      packageManager: 'pnpm@10.8.0',
+    });
+    mockedExeca.mockClear();
+    mockedExeca.mockResolvedValueOnce(undefined);
+
+    await runProjectCommand(
+      {
+        cwd: child,
+        rootDir: root,
+        type: 'monorepo',
+        packageDir: 'packages',
+        versionStrategy: 'fixed',
+        packageDirs: [child],
+        targetPackageDirs: [child],
+        currentPackageDir: child,
+        isRoot: false,
+      },
+      'build',
+      ['--types'],
+      { NODE_ENV: 'production' },
+    );
+
+    expect(mockedExeca).toHaveBeenCalledWith(
+      'pnpm',
+      ['exec', 'dy-cli', 'build', '--types'],
+      expect.objectContaining({
+        cwd: child,
+        env: expect.objectContaining({
+          NODE_ENV: 'production',
+        }),
       }),
     );
   });

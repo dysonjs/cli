@@ -45,6 +45,8 @@ export class BuildPackageBuilder extends AbstractBuilder {
       },
     ];
 
+    await this.clearCopiedAssetDirs();
+
     const bundle = await Rollup.rollup({
       strictDeprecations: true,
       input,
@@ -88,6 +90,14 @@ export class BuildPackageBuilder extends AbstractBuilder {
     });
 
     await Promise.all(output.map((item) => bundle.write(item)));
+  }
+
+  private async clearCopiedAssetDirs() {
+    const distDir = path.join(this.cwd, 'dist');
+
+    await Promise.all(
+      ['themes', 'locales', 'templates'].map((dirName) => fs.remove(path.join(distDir, dirName))),
+    );
   }
 
   private async getCopyTargets() {

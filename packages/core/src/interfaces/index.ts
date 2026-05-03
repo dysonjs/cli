@@ -1,6 +1,7 @@
 export * from './base';
 export * from './run-commands';
 export * from './project';
+export * from './release-state';
 export * from './model/command';
 export * from './model/task';
 export * from './command/create-command';

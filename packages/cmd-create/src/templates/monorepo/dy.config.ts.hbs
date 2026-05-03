@@ -1,3 +1,5 @@
+import type { ExternalRunCommandsConfig } from 'dy-cli';
+
 export default {
   project: {
     type: 'monorepo',
@@ -13,6 +15,9 @@ export default {
     },
     add: {
       destDir: 'packages',
+    },
+    install: {
+      npmClient: 'pnpm',
     },
     build: {
       mode: '{{buildMode}}',
@@ -32,4 +37,4 @@ export default {
       workspaceConcurrency: 8,
     },
   },
-};
+} satisfies ExternalRunCommandsConfig;

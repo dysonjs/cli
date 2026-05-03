@@ -7,7 +7,7 @@ flowchart LR
   user["User"] --> command["PublishCommand"]
   command --> tasks["project task / workspace task"]
   tasks --> project["npm publish"]
-  tasks --> workspace["build / test / changeset publish"]
+  tasks --> workspace["build / test / npm publish"]
 ```
 
 `@dysonic/dy-cli-cmd-publish` implements the `dy-cli publish` command.
@@ -51,7 +51,7 @@ dy-cli publish --tag beta
 - running it at a monorepo root publishes the full child-package set by default
 - in monorepo child packages, it searches upward for the nearest `dy.config.ts`
 - packages with `private: true` are rejected
-- when the workspace is in Changesets prerelease mode, every target package must already have a stable version published; otherwise the command aborts before publishing
+- when the workspace is in dy-cli prerelease mode, every target package must already have a stable version published; otherwise the command aborts before publishing
 - `dy-cli publish` refuses to run from npm publish lifecycle scripts such as `prepublishOnly`, `publish`, or `postpublish`; use a `release` script name instead
 
 ## Design Notes

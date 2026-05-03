@@ -31,6 +31,8 @@ export class BuildBinBuilder extends AbstractBuilder {
     const input = await this.resolveInputEntry();
     const output = this.resolveOutputFile(pkg);
 
+    await fs.remove(path.join(this.cwd, 'dist', 'templates'));
+
     const bundle = await Rollup.rollup({
       strictDeprecations: true,
       input,

@@ -76,15 +76,13 @@ describe('@dysonic/dy-cli-cmd-create', () => {
 
     const projectDir = path.join(workspace, 'demo-app');
     const configContent = await fs.readFile(path.join(projectDir, 'dy.config.ts'), 'utf8');
-    const changesetReadme = await fs.readFile(
-      path.join(projectDir, '.changeset/README.md'),
-      'utf8',
-    );
     const eslintConfig = await fs.readFile(path.join(projectDir, '.eslintrc.js'), 'utf8');
+    const readmeContent = await fs.readFile(path.join(projectDir, 'README.md'), 'utf8');
     const releaseWorkflow = await fs.readFile(
       path.join(projectDir, '.github/workflows/release.yml'),
       'utf8',
     );
+    const createPackageJSON = await fs.readJSON(path.join(__dirname, '../package.json'));
     const packageJSON = await fs.readJSON(path.join(projectDir, 'package.json'));
     const tsconfigContent = await fs.readFile(path.join(projectDir, 'tsconfig.json'), 'utf8');
     const packageInnerJSON = await fs.readJSON(
@@ -97,13 +95,13 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     const projectSnapshot = await snapshotProjectTree(projectDir);
 
     expect(await fs.pathExists(path.join(projectDir, 'pnpm-workspace.yaml'))).toBe(false);
-    expect(await fs.pathExists(path.join(projectDir, '.changeset/config.json'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.changeset'))).toBe(false);
     expect(await fs.pathExists(path.join(projectDir, '.github/workflows/release.yml'))).toBe(true);
-    expect(changesetReadme).toContain('dy-cli version');
-    expect(changesetReadme).toContain('dy-cli publish');
-    expect(changesetReadme).not.toContain('@changesets/cli');
-    expect(releaseWorkflow).toContain('version: pnpm exec dy-cli version');
-    expect(releaseWorkflow).toContain('publish: pnpm exec dy-cli publish');
+    expect(await fs.pathExists(path.join(projectDir, '.husky/_/husky.sh'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.husky/_/.gitignore'))).toBe(true);
+    expect(releaseWorkflow).toContain('workflow_dispatch:');
+    expect(releaseWorkflow).not.toContain('changesets/action');
+    expect(releaseWorkflow).not.toContain('id: changesets');
     expect(await fs.pathExists(path.join(projectDir, 'tools/scripts/build.ts'))).toBe(false);
     expect(await fs.pathExists(path.join(projectDir, 'tools/scripts/build-types.ts'))).toBe(false);
     expect(await fs.pathExists(path.join(projectDir, 'tools/scripts/build-umd.ts'))).toBe(false);
@@ -121,6 +119,7 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(packageInnerSource).toContain('export {}');
     expect(packageJSON.name).toBe('demo-app');
     expect(packageJSON.workspaces).toEqual(['packages/*']);
+    expect(packageJSON.packageManager).toBe(createPackageJSON.packageManager);
     expect(packageJSON.scripts.add).toBe('dy-cli add');
     expect(packageJSON.scripts.build).toBe('dy-cli build');
     expect(packageJSON.scripts['build:types']).toBe('dy-cli build --types');
@@ -153,6 +152,8 @@ describe('@dysonic/dy-cli-cmd-create', () => {
       'rimraf dist && rimraf coverage && rimraf node_modules',
     );
     expect(packageInnerJSON.scripts.prebuild).toBe('rimraf dist');
+    expect(configContent).toContain("import type { ExternalRunCommandsConfig } from 'dy-cli';");
+    expect(configContent).toContain('satisfies ExternalRunCommandsConfig;');
     expect(configContent).toContain('project: {');
     expect(configContent).toContain("type: 'monorepo'");
     expect(configContent).toContain("packageDir: 'packages'");
@@ -165,6 +166,8 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(configContent).toContain('single: {');
     expect(configContent).toContain('add: {');
     expect(configContent).toContain("destDir: 'packages'");
+    expect(configContent).toContain('install: {');
+    expect(configContent).toContain("npmClient: 'pnpm'");
     expect(configContent).toContain('build: {');
     expect(configContent).toContain('test: {');
     expect(configContent).toContain('version: {');
@@ -172,8 +175,12 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(configContent).toContain("access: 'public'");
     expect(configContent).toContain("betaTag: 'beta'");
     expect(configContent).toContain('workspaceConcurrency: 8');
+    expect(packageJSON.devDependencies['@changesets/cli']).toBeUndefined();
     expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBeUndefined();
     expect(packageJSON.devDependencies['@dysonic/dy-cli-core']).toBeUndefined();
+    expect(packageJSON.devDependencies['dy-cli']).toBe(
+      `npm:@dysonic/dy-cli@${createPackageJSON.version}`,
+    );
     expect(packageJSON.devDependencies.execa).toBeUndefined();
     expect(packageJSON.devDependencies['fs-extra']).toBeUndefined();
     expect(packageJSON.devDependencies.lodash).toBeUndefined();
@@ -206,6 +213,9 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(eslintConfig).not.toContain('plugin:react/recommended');
     expect(eslintConfig).not.toContain('react:');
     expect(eslintConfig).not.toContain('react/display-name');
+    expect(readmeContent).toContain('pnpm install');
+    expect(readmeContent).toContain('pnpm exec dy-cli add button');
+    expect(readmeContent).not.toContain('dy-cli install');
     expect(tsconfigContent).not.toContain('resize-observer-browser');
     expect(projectSnapshot).toMatchSnapshot('monorepo scaffold');
   });
@@ -227,26 +237,75 @@ describe('@dysonic/dy-cli-cmd-create', () => {
 
     const projectDir = path.join(workspace, 'demo-app');
     const configContent = await fs.readFile(path.join(projectDir, 'dy.config.ts'), 'utf8');
+    const eslintConfig = await fs.readFile(path.join(projectDir, '.eslintrc.js'), 'utf8');
+    const releaseWorkflow = await fs.readFile(
+      path.join(projectDir, '.github/workflows/release.yml'),
+      'utf8',
+    );
+    const createPackageJSON = await fs.readJSON(path.join(__dirname, '../package.json'));
     const packageJSON = await fs.readJSON(path.join(projectDir, 'package.json'));
     const projectSnapshot = await snapshotProjectTree(projectDir);
 
+    expect(await fs.pathExists(path.join(projectDir, '.editorconfig'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.eslintignore'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.eslintrc.js'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.github/workflows/release.yml'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.prettierignore'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.prettierrc'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.husky/pre-commit'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.husky/_/husky.sh'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.husky/_/.gitignore'))).toBe(true);
+    expect(await fs.pathExists(path.join(projectDir, '.npmrc'))).toBe(true);
     expect(await fs.pathExists(path.join(projectDir, 'src/index.ts'))).toBe(true);
     expect(await fs.pathExists(path.join(projectDir, 'test/index.test.ts'))).toBe(true);
     expect(await fs.pathExists(path.join(projectDir, 'jest.config.js'))).toBe(true);
     expect(await fs.pathExists(path.join(projectDir, 'pnpm-workspace.yaml'))).toBe(false);
+    expect(await fs.pathExists(path.join(projectDir, '.changeset'))).toBe(false);
     expect(packageJSON.private).toBe(false);
     expect(packageJSON.license).toBe('MIT');
+    expect(packageJSON.packageManager).toBe(createPackageJSON.packageManager);
+    expect(packageJSON.scripts.lint).toBe(
+      'eslint src test dy.config.ts jest.config.js .eslintrc.js --ext .js,.jsx,.ts,.tsx',
+    );
+    expect(packageJSON.scripts.prepare).toBe('husky install');
+    expect(packageJSON.scripts.prettier).toBe('prettier --write .');
     expect(packageJSON.scripts.test).toBe('dy-cli test');
     expect(packageJSON.scripts['test:coverage']).toBe('dy-cli test --coverage');
     expect(packageJSON.scripts.release).toBe('dy-cli publish');
     expect(packageJSON.scripts['release:dry-run']).toBe('dy-cli publish --dry-run');
     expect(packageJSON.scripts['release:beta']).toBe('dy-cli publish --tag beta');
     expect(packageJSON.scripts['release:beta:dry-run']).toBe('dy-cli publish --tag beta --dry-run');
+    expect(packageJSON.scripts.version).toBe('dy-cli version');
+    expect(packageJSON.scripts['version:beta']).toBe('dy-cli version --beta');
+    expect(packageJSON.scripts['version:beta:exit']).toBe('dy-cli version --beta-exit');
+    expect(packageJSON['lint-staged']).toEqual({
+      '**/*.{js,ts,jsx,tsx}': ['prettier --write', 'cross-env NODE_ENV=production eslint --fix'],
+    });
+    expect(packageJSON.engines).toEqual({
+      node: '>=18.20.8',
+    });
     expect(packageJSON.scripts.publish).toBeUndefined();
     expect(packageJSON.scripts['publish:dry-run']).toBeUndefined();
     expect(packageJSON.scripts['publish:beta']).toBeUndefined();
     expect(packageJSON.scripts['publish:beta:dry-run']).toBeUndefined();
+    expect(packageJSON.devDependencies['@changesets/cli']).toBeUndefined();
+    expect(packageJSON.devDependencies['@types/node']).toBe('~16.18.126');
+    expect(packageJSON.devDependencies['@typescript-eslint/eslint-plugin']).toBe('~6.21.0');
+    expect(packageJSON.devDependencies['@typescript-eslint/parser']).toBe('~6.21.0');
+    expect(packageJSON.devDependencies['cross-env']).toBe('~7.0.3');
+    expect(packageJSON.devDependencies['dy-cli']).toBe(
+      `npm:@dysonic/dy-cli@${createPackageJSON.version}`,
+    );
+    expect(packageJSON.devDependencies.eslint).toBe('~7.32.0');
+    expect(packageJSON.devDependencies['eslint-config-prettier']).toBe('~8.10.0');
+    expect(packageJSON.devDependencies['eslint-plugin-import']).toBe('~2.31.0');
+    expect(packageJSON.devDependencies['eslint-plugin-prettier']).toBe('~3.4.0');
+    expect(packageJSON.devDependencies.husky).toBe('~7.0.1');
+    expect(packageJSON.devDependencies['lint-staged']).toBe('~11.2.6');
+    expect(packageJSON.devDependencies.prettier).toBe('~2.8.8');
     expect(packageJSON.devDependencies.typescript).toBe('~5.8.3');
+    expect(configContent).toContain("import type { ExternalRunCommandsConfig } from 'dy-cli';");
+    expect(configContent).toContain('satisfies ExternalRunCommandsConfig;');
     expect(configContent).toContain('project: {');
     expect(configContent).toContain("type: 'single'");
     expect(configContent).toContain('commands: {');
@@ -258,6 +317,14 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(configContent).toContain("betaTag: 'beta'");
     expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBeUndefined();
     expect(packageJSON.devDependencies['@dysonic/dy-cli-core']).toBeUndefined();
+    expect(eslintConfig).toContain('plugin:@typescript-eslint/recommended');
+    expect(eslintConfig).toContain('plugin:prettier/recommended');
+    expect(eslintConfig).toContain(
+      "devDependencies: ['**/test/**', '*.config.js', '.eslintrc.js', 'dy.config.ts']",
+    );
+    expect(releaseWorkflow).toContain('workflow_dispatch:');
+    expect(releaseWorkflow).toContain('pnpm exec dy-cli version $args');
+    expect(releaseWorkflow).toContain('Create Release Pull Request');
     expect(projectSnapshot).toMatchSnapshot('single scaffold');
   });
 
