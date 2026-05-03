@@ -1,5 +1,22 @@
 # @dysonic/dy-cli-cmd-build
 
+## 1.0.7
+
+### Patch Changes
+
+- chore: remove project npm auth token
+- fix(create): resolve package manifest from dist
+- chore: type generated dy config
+- feat: harden scaffold release workflow
+- docs: refresh repository guidelines
+- feat: hide changesets behind dy-cli release flow
+- chore: remove unused rollup-plugin-typescript2
+- chore: remove obsolete local tooling
+- chore: upgrade self-hosted dy-cli to 1.0.4
+
+- Updated dependencies
+  - @dysonic/dy-cli-core@1.0.7
+
 ## 1.0.6
 
 ### Patch Changes

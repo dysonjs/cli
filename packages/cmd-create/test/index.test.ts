@@ -59,6 +59,27 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     await expect(task.resolveTemplateTypeDir(bundleDir)).resolves.toBe(templateDir);
   });
 
+  test('should resolve package manifest from bundle dist layout', async () => {
+    const runtimeDir = createTempDir('dy-cli-create-manifest-runtime');
+    const bundleDir = path.join(runtimeDir, 'dist');
+    const task = new CreateProjectTask({
+      templateType: 'monorepo',
+    }) as any;
+
+    await fs.ensureDir(bundleDir);
+    await fs.writeJSON(path.join(runtimeDir, 'package.json'), {
+      name: '@dysonic/dy-cli-cmd-create',
+      version: '9.9.9',
+      packageManager: 'pnpm@10.8.0',
+    });
+
+    expect(task.getPackageManifest(bundleDir)).toMatchObject({
+      name: '@dysonic/dy-cli-cmd-create',
+      version: '9.9.9',
+      packageManager: 'pnpm@10.8.0',
+    });
+  });
+
   test('should create a monorepo project when project and dest dir are provided', async () => {
     const workspace = createTempDir('dy-cli-create');
     const command = new CreateCommand();

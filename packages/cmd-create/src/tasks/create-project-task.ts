@@ -185,13 +185,13 @@ export class CreateProjectTask extends AbstractTask<CreateCommandConfig> {
   }
 
   private getPackageManifest(runtimeDir = __dirname) {
-    const packageJSONPath = path.join(runtimeDir, '..', '..', 'package.json');
+    const packageJSONPath = [
+      path.join(runtimeDir, '..', 'package.json'),
+      path.join(runtimeDir, '..', '..', 'package.json'),
+    ].find((candidate) => fs.existsSync(candidate));
 
-    if (!fs.existsSync(packageJSONPath)) {
-      throw new DyCliError(
-        'CONFIG_NOT_FOUND',
-        `Package manifest not found at '${packageJSONPath}'.`,
-      );
+    if (!packageJSONPath) {
+      throw new DyCliError('CONFIG_NOT_FOUND', `Package manifest not found from '${runtimeDir}'.`);
     }
 
     return fs.readJSONSync(packageJSONPath);

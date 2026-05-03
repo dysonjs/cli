@@ -1,8 +1,13 @@
 {
   "name": "@dysonic/dy-cli-cmd-install",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "license": "MIT",
   "description": "Built-in install command for installing project dependencies through dy-cli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dysonjs/cli.git",
+    "directory": "packages/cmd-install"
+  },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -14,7 +19,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@dysonic/dy-cli-core": "1.0.6"
+    "@dysonic/dy-cli-core": "1.0.7"
   },
   "devDependencies": {
     "@types/execa": "2.0.2",

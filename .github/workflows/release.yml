@@ -3,10 +3,19 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      releaseType:
-        description: Select the release bump to prepare
+      action:
+        description: Select the release workflow action
         required: true
         type: choice
+        default: prepare
+        options:
+          - prepare
+          - publish
+      releaseType:
+        description: Select the release bump to prepare
+        required: false
+        type: choice
+        default: patch
         options:
           - patch
           - minor
@@ -19,14 +28,20 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref_name }}
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
+
+env:
+  DY_CLI_SOURCE_ENTRY: ./packages/cli/src/cli.ts
+  TS_NODE_PROJECT: tsconfig.json
 
 jobs:
   release-pr:
     name: Create Release Pull Request
+    if: ${{ inputs.action == 'prepare' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,10 +73,43 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           branch: release/${{ inputs.releaseType }}
-          commit-message: chore(release): prepare ${{ inputs.releaseType }} release
-          title: Release: ${{ inputs.releaseType }}
+          commit-message: 'chore(release): prepare ${{ inputs.releaseType }} release'
+          title: 'Release: ${{ inputs.releaseType }}'
           body: |
             This PR was prepared by the dy-cli release workflow.
 
             - Release type: `${{ inputs.releaseType }}`
             - Prerelease mode: `${{ inputs.prerelease }}`
+
+  publish:
+    name: Publish Packages
+    if: ${{ inputs.action == 'publish' && github.ref_name == github.event.repository.default_branch }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify Package Files
+        run: node -r ./node_modules/ts-node/register -r ./node_modules/tsconfig-paths/register "$DY_CLI_SOURCE_ENTRY" publish --dry-run
+
+      - name: Publish Packages
+        env:
+          NPM_CONFIG_PROVENANCE: 'true'
+        run: node -r ./node_modules/ts-node/register -r ./node_modules/tsconfig-paths/register "$DY_CLI_SOURCE_ENTRY" publish
