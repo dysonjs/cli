@@ -67,7 +67,7 @@ dy-cli publish --dry-run
 `dy-cli` 通过 `dy.config.ts` 读取项目元信息和命令默认配置。
 
 ```ts
-import type { ExternalRunCommandsConfig } from 'dy-cli';
+import type { ExternalRunCommandsConfig } from '@dysonic/dy-cli';
 
 export default {
   project: {
@@ -256,6 +256,8 @@ dy-cli publish --workspace --beta
 | `--registry <registry>` | registry 地址。                                         |
 
 `publish` 会拒绝发布 `private: true` 的包。预发布模式下，workspace 发布要求每个目标包在 registry 上已经存在稳定版本，避免首次 beta 包占用 `latest` dist-tag。
+
+执行 `npm publish` 前，`publish` 会校验 `main`、`module`、`types`、`browser`、`bin` 等声明的入口文件是否真实存在。workspace 发布会先为声明了类型或 UMD 入口的包构建对应产物，再做最终包文件校验。
 
 不要通过 `prepublishOnly`、`publish`、`postpublish` 这类 npm 发布生命周期脚本名暴露 `dy-cli publish`，建议使用 `release`。
 

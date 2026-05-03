@@ -43,12 +43,12 @@ describe('@dysonic/dy-cli-cmd-create smoke', () => {
 
       expect(singlePackageJSON.packageManager).toBe(createPackageJSON.packageManager);
       expect(monorepoPackageJSON.packageManager).toBe(createPackageJSON.packageManager);
-      expect(singlePackageJSON.devDependencies['dy-cli']).toBe(
-        `npm:@dysonic/dy-cli@${createPackageJSON.version}`,
+      expect(singlePackageJSON.devDependencies['@dysonic/dy-cli']).toBe(createPackageJSON.version);
+      expect(monorepoPackageJSON.devDependencies['@dysonic/dy-cli']).toBe(
+        createPackageJSON.version,
       );
-      expect(monorepoPackageJSON.devDependencies['dy-cli']).toBe(
-        `npm:@dysonic/dy-cli@${createPackageJSON.version}`,
-      );
+      expect(singlePackageJSON.devDependencies['dy-cli']).toBeUndefined();
+      expect(monorepoPackageJSON.devDependencies['dy-cli']).toBeUndefined();
 
       await expectPathExists(path.join(singleDir, '.editorconfig'));
       await expectPathExists(path.join(singleDir, '.eslintrc.js'));

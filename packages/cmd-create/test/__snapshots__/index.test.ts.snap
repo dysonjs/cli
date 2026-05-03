@@ -284,7 +284,7 @@ pnpm run version
 pnpm run release
 \`\`\`
 ",
-  "dy.config.ts": "import type { ExternalRunCommandsConfig } from 'dy-cli';
+  "dy.config.ts": "import type { ExternalRunCommandsConfig } from '@dysonic/dy-cli';
 
 export default {
   project: {
@@ -399,7 +399,7 @@ export default {
     \\"@typescript-eslint/eslint-plugin\\": \\"~6.21.0\\",
     \\"@typescript-eslint/parser\\": \\"~6.21.0\\",
     \\"cross-env\\": \\"~7.0.3\\",
-    \\"dy-cli\\": \\"npm:@dysonic/dy-cli@1.0.7\\",
+    \\"@dysonic/dy-cli\\": \\"1.0.8\\",
     \\"eslint\\": \\"~7.32.0\\",
     \\"eslint-config-prettier\\": \\"~8.10.0\\",
     \\"eslint-plugin-import\\": \\"~2.31.0\\",
@@ -709,7 +709,7 @@ pnpm run release:dry-run
 The generated project includes \`.github/workflows/release.yml\` for preparing release pull requests.
 Set \`NPM_TOKEN\` in your CI or local environment before publishing.
 ",
-  "dy.config.ts": "import type { ExternalRunCommandsConfig } from 'dy-cli';
+  "dy.config.ts": "import type { ExternalRunCommandsConfig } from '@dysonic/dy-cli';
 
 export default {
   project: {
@@ -785,10 +785,10 @@ export default {
     \\"prettier\\": \\"prettier --write .\\",
     \\"test\\": \\"dy-cli test\\",
     \\"test:coverage\\": \\"dy-cli test --coverage\\",
-    \\"release\\": \\"dy-cli publish\\",
-    \\"release:dry-run\\": \\"dy-cli publish --dry-run\\",
-    \\"release:beta\\": \\"dy-cli publish --tag beta\\",
-    \\"release:beta:dry-run\\": \\"dy-cli publish --tag beta --dry-run\\",
+    \\"release\\": \\"dy-cli build && dy-cli build --types && dy-cli build --umd && dy-cli publish\\",
+    \\"release:dry-run\\": \\"dy-cli build && dy-cli build --types && dy-cli build --umd && dy-cli publish --dry-run\\",
+    \\"release:beta\\": \\"dy-cli build && dy-cli build --types && dy-cli build --umd && dy-cli publish --tag beta\\",
+    \\"release:beta:dry-run\\": \\"dy-cli build && dy-cli build --types && dy-cli build --umd && dy-cli publish --tag beta --dry-run\\",
     \\"version\\": \\"dy-cli version\\",
     \\"version:beta\\": \\"dy-cli version --beta\\",
     \\"version:beta:exit\\": \\"dy-cli version --beta-exit\\"
@@ -808,7 +808,7 @@ export default {
     \\"@typescript-eslint/eslint-plugin\\": \\"~6.21.0\\",
     \\"@typescript-eslint/parser\\": \\"~6.21.0\\",
     \\"cross-env\\": \\"~7.0.3\\",
-    \\"dy-cli\\": \\"npm:@dysonic/dy-cli@1.0.7\\",
+    \\"@dysonic/dy-cli\\": \\"1.0.8\\",
     \\"eslint\\": \\"~7.32.0\\",
     \\"eslint-config-prettier\\": \\"~8.10.0\\",
     \\"eslint-plugin-import\\": \\"~2.31.0\\",

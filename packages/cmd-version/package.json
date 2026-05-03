@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-version",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "license": "MIT",
   "description": "Built-in version command for managing package versions through dy-cli",
   "repository": {
@@ -19,7 +19,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@dysonic/dy-cli-core": "1.0.7",
+    "@dysonic/dy-cli-core": "1.0.8",
     "fs-extra": "10.1.0"
   },
   "devDependencies": {

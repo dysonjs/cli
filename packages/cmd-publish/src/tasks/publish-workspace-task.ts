@@ -19,6 +19,7 @@ export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
 
     await this.assertPrereleasePackagesHaveStableReleases(releaseState);
     await runProjectCommand(this.config.projectContext, 'build');
+    await this.runWorkspaceArtifactBuilds();
     await runProjectCommand(this.config.projectContext, 'test', [], {
       NODE_ENV: 'test',
     });
@@ -146,5 +147,69 @@ export class PublishWorkspaceTask extends AbstractTask<PublishCommandConfig> {
         },
       }).run();
     }
+  }
+
+  private async runWorkspaceArtifactBuilds() {
+    const typePackageDirs = await this.resolvePublishablePackageDirs((packageJSON) =>
+      this.isNonEmptyString(packageJSON.types),
+    );
+    const browserPackageDirs = await this.resolvePublishablePackageDirs(
+      (packageJSON) =>
+        typeof packageJSON.browser === 'string' && this.isNonEmptyString(packageJSON.browser),
+    );
+
+    if (typePackageDirs.length > 0) {
+      await runProjectCommand(
+        {
+          ...this.config.projectContext,
+          targetPackageDirs: typePackageDirs,
+        },
+        'build',
+        ['--types'],
+      );
+    }
+
+    if (browserPackageDirs.length > 0) {
+      await runProjectCommand(
+        {
+          ...this.config.projectContext,
+          targetPackageDirs: browserPackageDirs,
+        },
+        'build',
+        ['--umd'],
+      );
+    }
+  }
+
+  private async resolvePublishablePackageDirs(
+    predicate: (packageJSON: { private?: boolean; types?: string; browser?: unknown }) => boolean,
+  ) {
+    const packageDirs: string[] = [];
+
+    for (const packageDir of this.config.projectContext.targetPackageDirs) {
+      const packageJSONPath = path.join(packageDir, 'package.json');
+
+      if (!(await fs.pathExists(packageJSONPath))) {
+        continue;
+      }
+
+      const packageJSON = (await fs.readJSON(packageJSONPath)) as {
+        private?: boolean;
+        types?: string;
+        browser?: unknown;
+      };
+
+      if (packageJSON.private || !predicate(packageJSON)) {
+        continue;
+      }
+
+      packageDirs.push(packageDir);
+    }
+
+    return packageDirs;
+  }
+
+  private isNonEmptyString(value: unknown): value is string {
+    return typeof value === 'string' && value.trim().length > 0;
   }
 }

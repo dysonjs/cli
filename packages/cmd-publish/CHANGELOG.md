@@ -1,5 +1,27 @@
 # @dysonic/dy-cli-cmd-publish
 
+## 1.0.8
+
+### Patch Changes
+
+- ci: disable provenance for private release workflow
+- ci: use package manager pnpm version
+- Merge branch 'dev' into main for 1.0.7 release
+- ci: publish packages from github actions
+- chore: remove project npm auth token
+- fix(create): resolve package manifest from dist
+- Merge pull request #4 from dysonjs/dev
+- chore: type generated dy config
+- feat: harden scaffold release workflow
+- docs: refresh repository guidelines
+- feat: hide changesets behind dy-cli release flow
+- chore: remove unused rollup-plugin-typescript2
+- chore: remove obsolete local tooling
+- chore: upgrade self-hosted dy-cli to 1.0.4
+
+- Updated dependencies
+  - @dysonic/dy-cli-core@1.0.8
+
 ## 1.0.7
 
 ### Patch Changes

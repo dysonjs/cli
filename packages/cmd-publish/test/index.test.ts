@@ -143,6 +143,25 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
     });
   });
 
+  test('should reject publish when declared package entry files are missing', async () => {
+    const workspace = createTempDir('dy-cli-publish-missing-entry-files');
+    const command = new PublishCommand();
+
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: '@dysonic/demo-app',
+      version: '0.0.1',
+      private: false,
+      types: 'dist/index.d.ts',
+    });
+    await fs.writeFile(path.join(workspace, 'dy.config.ts'), 'export default { commands: {} };');
+
+    await expect(command.parseAsync(['node', 'test', '--cwd', workspace])).rejects.toMatchObject({
+      code: 'INVALID_ARGUMENT',
+      message: expect.stringContaining('types: dist/index.d.ts'),
+    });
+    expect(execa as unknown as jest.Mock).not.toHaveBeenCalled();
+  });
+
   test('should run workspace build, workspace test, and npm publish when --workspace is provided', async () => {
     const workspace = createTempDir('dy-cli-publish-workspace');
     const packageDir = path.join(workspace, 'packages/button');
@@ -204,6 +223,78 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
       'npx',
       ['changeset', 'publish'],
       expect.any(Object),
+    );
+  });
+
+  test('should build declared workspace artifact targets before publishing', async () => {
+    const workspace = createTempDir('dy-cli-publish-workspace-artifacts');
+    const packageDir = path.join(workspace, 'packages/button');
+    const command = new PublishCommand();
+
+    await fs.ensureDir(packageDir);
+    await fs.outputFile(path.join(packageDir, 'dist/index.d.ts'), 'export {};\n');
+    await fs.outputFile(path.join(packageDir, 'dist/index.umd.js'), 'void 0;\n');
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      workspaces: ['packages/*'],
+    });
+    await fs.writeJSON(path.join(packageDir, 'package.json'), {
+      name: '@dysonic/button',
+      version: '0.0.1',
+      private: false,
+      types: 'dist/index.d.ts',
+      browser: 'dist/index.umd.js',
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      [
+        'export default {',
+        '  project: {',
+        "    type: 'monorepo',",
+        "    versionStrategy: 'fixed',",
+        '  },',
+        '  commands: {',
+        '    publish: {},',
+        '  },',
+        '};',
+      ].join('\n'),
+    );
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace]);
+
+    expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
+      1,
+      'npm',
+      ['exec', '--', 'dy-cli', 'build'],
+      expect.objectContaining({ cwd: packageDir }),
+    );
+    expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
+      2,
+      'npm',
+      ['exec', '--', 'dy-cli', 'build', '--types'],
+      expect.objectContaining({ cwd: packageDir }),
+    );
+    expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
+      3,
+      'npm',
+      ['exec', '--', 'dy-cli', 'build', '--umd'],
+      expect.objectContaining({ cwd: packageDir }),
+    );
+    expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
+      4,
+      'npm',
+      ['exec', '--', 'dy-cli', 'test'],
+      expect.objectContaining({
+        cwd: packageDir,
+        env: expect.objectContaining({ NODE_ENV: 'test' }),
+      }),
+    );
+    expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
+      5,
+      'npm',
+      ['publish'],
+      expect.objectContaining({ cwd: packageDir }),
     );
   });
 

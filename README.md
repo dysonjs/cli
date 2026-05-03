@@ -75,7 +75,7 @@ or user-facing `.changeset` files; `dy.config.ts` is the source of project workf
 `dy-cli` reads project metadata and command defaults from `dy.config.ts`.
 
 ```ts
-import type { ExternalRunCommandsConfig } from 'dy-cli';
+import type { ExternalRunCommandsConfig } from '@dysonic/dy-cli';
 
 export default {
   project: {
@@ -268,6 +268,10 @@ Options:
 `publish` rejects `private: true` packages. In prerelease mode, workspace publish requires each
 target package to already have a stable registry release; this avoids first-time prerelease packages
 taking over the `latest` dist-tag.
+
+Before invoking `npm publish`, `publish` verifies that declared package entry files such as `main`,
+`module`, `types`, `browser`, and `bin` exist. Workspace publish builds declaration and UMD artifacts
+for packages that declare them before running the final package-file check.
 
 Avoid exposing `dy-cli publish` through npm publish lifecycle names such as `prepublishOnly`,
 `publish`, or `postpublish`. Use `release` instead.

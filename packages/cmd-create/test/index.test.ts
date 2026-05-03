@@ -173,7 +173,9 @@ describe('@dysonic/dy-cli-cmd-create', () => {
       'rimraf dist && rimraf coverage && rimraf node_modules',
     );
     expect(packageInnerJSON.scripts.prebuild).toBe('rimraf dist');
-    expect(configContent).toContain("import type { ExternalRunCommandsConfig } from 'dy-cli';");
+    expect(configContent).toContain(
+      "import type { ExternalRunCommandsConfig } from '@dysonic/dy-cli';",
+    );
     expect(configContent).toContain('satisfies ExternalRunCommandsConfig;');
     expect(configContent).toContain('project: {');
     expect(configContent).toContain("type: 'monorepo'");
@@ -197,11 +199,9 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(configContent).toContain("betaTag: 'beta'");
     expect(configContent).toContain('workspaceConcurrency: 8');
     expect(packageJSON.devDependencies['@changesets/cli']).toBeUndefined();
-    expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBeUndefined();
+    expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBe(createPackageJSON.version);
     expect(packageJSON.devDependencies['@dysonic/dy-cli-core']).toBeUndefined();
-    expect(packageJSON.devDependencies['dy-cli']).toBe(
-      `npm:@dysonic/dy-cli@${createPackageJSON.version}`,
-    );
+    expect(packageJSON.devDependencies['dy-cli']).toBeUndefined();
     expect(packageJSON.devDependencies.execa).toBeUndefined();
     expect(packageJSON.devDependencies['fs-extra']).toBeUndefined();
     expect(packageJSON.devDependencies.lodash).toBeUndefined();
@@ -292,10 +292,18 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(packageJSON.scripts.prettier).toBe('prettier --write .');
     expect(packageJSON.scripts.test).toBe('dy-cli test');
     expect(packageJSON.scripts['test:coverage']).toBe('dy-cli test --coverage');
-    expect(packageJSON.scripts.release).toBe('dy-cli publish');
-    expect(packageJSON.scripts['release:dry-run']).toBe('dy-cli publish --dry-run');
-    expect(packageJSON.scripts['release:beta']).toBe('dy-cli publish --tag beta');
-    expect(packageJSON.scripts['release:beta:dry-run']).toBe('dy-cli publish --tag beta --dry-run');
+    expect(packageJSON.scripts.release).toBe(
+      'dy-cli build && dy-cli build --types && dy-cli build --umd && dy-cli publish',
+    );
+    expect(packageJSON.scripts['release:dry-run']).toBe(
+      'dy-cli build && dy-cli build --types && dy-cli build --umd && dy-cli publish --dry-run',
+    );
+    expect(packageJSON.scripts['release:beta']).toBe(
+      'dy-cli build && dy-cli build --types && dy-cli build --umd && dy-cli publish --tag beta',
+    );
+    expect(packageJSON.scripts['release:beta:dry-run']).toBe(
+      'dy-cli build && dy-cli build --types && dy-cli build --umd && dy-cli publish --tag beta --dry-run',
+    );
     expect(packageJSON.scripts.version).toBe('dy-cli version');
     expect(packageJSON.scripts['version:beta']).toBe('dy-cli version --beta');
     expect(packageJSON.scripts['version:beta:exit']).toBe('dy-cli version --beta-exit');
@@ -314,9 +322,8 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(packageJSON.devDependencies['@typescript-eslint/eslint-plugin']).toBe('~6.21.0');
     expect(packageJSON.devDependencies['@typescript-eslint/parser']).toBe('~6.21.0');
     expect(packageJSON.devDependencies['cross-env']).toBe('~7.0.3');
-    expect(packageJSON.devDependencies['dy-cli']).toBe(
-      `npm:@dysonic/dy-cli@${createPackageJSON.version}`,
-    );
+    expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBe(createPackageJSON.version);
+    expect(packageJSON.devDependencies['dy-cli']).toBeUndefined();
     expect(packageJSON.devDependencies.eslint).toBe('~7.32.0');
     expect(packageJSON.devDependencies['eslint-config-prettier']).toBe('~8.10.0');
     expect(packageJSON.devDependencies['eslint-plugin-import']).toBe('~2.31.0');
@@ -325,7 +332,9 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(packageJSON.devDependencies['lint-staged']).toBe('~11.2.6');
     expect(packageJSON.devDependencies.prettier).toBe('~2.8.8');
     expect(packageJSON.devDependencies.typescript).toBe('~5.8.3');
-    expect(configContent).toContain("import type { ExternalRunCommandsConfig } from 'dy-cli';");
+    expect(configContent).toContain(
+      "import type { ExternalRunCommandsConfig } from '@dysonic/dy-cli';",
+    );
     expect(configContent).toContain('satisfies ExternalRunCommandsConfig;');
     expect(configContent).toContain('project: {');
     expect(configContent).toContain("type: 'single'");
@@ -336,7 +345,7 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(configContent).toContain('publish: {');
     expect(configContent).toContain("access: 'public'");
     expect(configContent).toContain("betaTag: 'beta'");
-    expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBeUndefined();
+    expect(packageJSON.devDependencies['@dysonic/dy-cli']).toBe(createPackageJSON.version);
     expect(packageJSON.devDependencies['@dysonic/dy-cli-core']).toBeUndefined();
     expect(eslintConfig).toContain('plugin:@typescript-eslint/recommended');
     expect(eslintConfig).toContain('plugin:prettier/recommended');

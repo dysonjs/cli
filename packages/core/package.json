@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-core",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "license": "MIT",
   "description": "Core package providing shared command contracts, execution abstractions, and helper utilities for dy-cli",
   "repository": {
