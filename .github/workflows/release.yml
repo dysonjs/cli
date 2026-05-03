@@ -107,5 +107,5 @@ jobs:
 
       - name: Publish Packages
         env:
-          NPM_CONFIG_PROVENANCE: 'true'
+          NPM_CONFIG_PROVENANCE: 'false'
         run: node -r ./node_modules/ts-node/register -r ./node_modules/tsconfig-paths/register "$DY_CLI_SOURCE_ENTRY" publish
