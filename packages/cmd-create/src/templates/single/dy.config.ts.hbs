@@ -1,3 +1,5 @@
+import type { ExternalRunCommandsConfig } from 'dy-cli';
+
 export default {
   project: {
     type: 'single',
@@ -26,4 +28,4 @@ export default {
       betaTag: 'beta',
     },
   },
-};
+} satisfies ExternalRunCommandsConfig;

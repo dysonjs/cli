@@ -152,6 +152,8 @@ describe('@dysonic/dy-cli-cmd-create', () => {
       'rimraf dist && rimraf coverage && rimraf node_modules',
     );
     expect(packageInnerJSON.scripts.prebuild).toBe('rimraf dist');
+    expect(configContent).toContain("import type { ExternalRunCommandsConfig } from 'dy-cli';");
+    expect(configContent).toContain('satisfies ExternalRunCommandsConfig;');
     expect(configContent).toContain('project: {');
     expect(configContent).toContain("type: 'monorepo'");
     expect(configContent).toContain("packageDir: 'packages'");
@@ -302,6 +304,8 @@ describe('@dysonic/dy-cli-cmd-create', () => {
     expect(packageJSON.devDependencies['lint-staged']).toBe('~11.2.6');
     expect(packageJSON.devDependencies.prettier).toBe('~2.8.8');
     expect(packageJSON.devDependencies.typescript).toBe('~5.8.3');
+    expect(configContent).toContain("import type { ExternalRunCommandsConfig } from 'dy-cli';");
+    expect(configContent).toContain('satisfies ExternalRunCommandsConfig;');
     expect(configContent).toContain('project: {');
     expect(configContent).toContain("type: 'single'");
     expect(configContent).toContain('commands: {');

@@ -67,6 +67,8 @@ dy-cli publish --dry-run
 `dy-cli` 通过 `dy.config.ts` 读取项目元信息和命令默认配置。
 
 ```ts
+import type { ExternalRunCommandsConfig } from 'dy-cli';
+
 export default {
   project: {
     type: 'monorepo',
@@ -100,7 +102,7 @@ export default {
       workspaceConcurrency: 8,
     },
   },
-};
+} satisfies ExternalRunCommandsConfig;
 ```
 
 ### 作用域解析

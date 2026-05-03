@@ -75,6 +75,8 @@ or user-facing `.changeset` files; `dy.config.ts` is the source of project workf
 `dy-cli` reads project metadata and command defaults from `dy.config.ts`.
 
 ```ts
+import type { ExternalRunCommandsConfig } from 'dy-cli';
+
 export default {
   project: {
     type: 'monorepo',
@@ -108,7 +110,7 @@ export default {
       workspaceConcurrency: 8,
     },
   },
-};
+} satisfies ExternalRunCommandsConfig;
 ```
 
 ### Scope Resolution

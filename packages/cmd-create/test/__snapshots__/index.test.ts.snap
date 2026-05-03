@@ -284,7 +284,9 @@ pnpm run version
 pnpm run release
 \`\`\`
 ",
-  "dy.config.ts": "export default {
+  "dy.config.ts": "import type { ExternalRunCommandsConfig } from 'dy-cli';
+
+export default {
   project: {
     type: 'monorepo',
     packageDir: 'packages',
@@ -328,7 +330,7 @@ pnpm run release
       workspaceConcurrency: 8,
     },
   },
-};
+} satisfies ExternalRunCommandsConfig;
 ",
   "jest.config.js": "module.exports = {
   testTimeout: 30000,
@@ -707,7 +709,9 @@ pnpm run release:dry-run
 The generated project includes \`.github/workflows/release.yml\` for preparing release pull requests.
 Set \`NPM_TOKEN\` in your CI or local environment before publishing.
 ",
-  "dy.config.ts": "export default {
+  "dy.config.ts": "import type { ExternalRunCommandsConfig } from 'dy-cli';
+
+export default {
   project: {
     type: 'single',
   },
@@ -742,7 +746,7 @@ Set \`NPM_TOKEN\` in your CI or local environment before publishing.
       betaTag: 'beta',
     },
   },
-};
+} satisfies ExternalRunCommandsConfig;
 ",
   "jest.config.js": "module.exports = {
   preset: 'ts-jest',
