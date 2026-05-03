@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "license": "MIT",
   "description": "CLI entry package for dy-cli, mounting built-in commands and exposing the public command-line interface",
   "bin": {
@@ -21,14 +21,14 @@
     "prebuild": "rimraf dist"
   },
   "dependencies": {
-    "@dysonic/dy-cli-core": "1.0.6",
-    "@dysonic/dy-cli-cmd-add": "1.0.6",
-    "@dysonic/dy-cli-cmd-build": "1.0.6",
-    "@dysonic/dy-cli-cmd-create": "1.0.6",
-    "@dysonic/dy-cli-cmd-install": "1.0.6",
-    "@dysonic/dy-cli-cmd-publish": "1.0.6",
-    "@dysonic/dy-cli-cmd-test": "1.0.6",
-    "@dysonic/dy-cli-cmd-version": "1.0.6",
+    "@dysonic/dy-cli-core": "1.0.7",
+    "@dysonic/dy-cli-cmd-add": "1.0.7",
+    "@dysonic/dy-cli-cmd-build": "1.0.7",
+    "@dysonic/dy-cli-cmd-create": "1.0.7",
+    "@dysonic/dy-cli-cmd-install": "1.0.7",
+    "@dysonic/dy-cli-cmd-publish": "1.0.7",
+    "@dysonic/dy-cli-cmd-test": "1.0.7",
+    "@dysonic/dy-cli-cmd-version": "1.0.7",
     "commander": "12.1.0"
   }
 }
