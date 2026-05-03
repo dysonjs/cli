@@ -58,6 +58,16 @@ If release code itself changed, validate with the source entry so you exercise t
 
 When touching `cmd-build`, `cmd-create`, `cmd-version`, or `cmd-publish`, inspect the `publish --dry-run` tarball output before a real release. `packages/cmd-create` is the highest-risk package for stale template artifacts.
 
+Default release behavior for agents:
+- treat a bare user request such as "publish", "release", or "发" as a request to use the GitHub Actions release workflow, not local `npm publish`
+- confirm the intended release kind first when it is not explicit: `patch`, `minor`, `major`, or prerelease/beta
+- perform release readiness checks before changing versions: `git status`, current branch, package versions, lockfile state, focused tests, build output, `publish --dry-run`, and declared package files such as `main`, `module`, `types`, `browser`, and `bin`
+- when release, build, publish, version, scaffold, or CLI behavior changed, run the source CLI entry for the relevant verification instead of relying only on the installed `dy-cli` binary
+- prepare version changes with `dy-cli version --patch|--minor|--major`, update `pnpm-lock.yaml` when package versions or internal dependency specs changed, then commit and push intentionally
+- publish from CI on the default branch through `.github/workflows/release.yml` with `action=publish`; do not publish from the developer machine unless the user explicitly asks to bypass CI and accepts the OTP/token boundary
+- if CI publish fails, stop and diagnose the root cause. Do not switch to local publish, add dummy files, change npm auth strategy, or skip checks just to make the release appear successful
+- after CI succeeds, verify npm state: all published workspace packages should report the same version and expected dist-tag, and at least the CLI package plus any changed high-risk package should be checked with `npm pack --dry-run --json` for `dist/index.d.ts` and declared entry files
+
 Recent work removed old local scripts and obsolete template tooling. Do not reintroduce `tools/scripts`, `tools/__template__`, `jest-runner.config.js`, or `jest-tsconfig.json` unless there is a very explicit reason and updated coverage for that path.
 
 ## Commit & Pull Request Guidelines
