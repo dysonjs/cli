@@ -3,6 +3,11 @@
   "version": "1.0.7",
   "license": "MIT",
   "description": "Built-in publish command for dy-cli package publishing",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dysonjs/cli.git",
+    "directory": "packages/cmd-publish"
+  },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",

@@ -3,6 +3,11 @@
   "version": "1.0.7",
   "license": "MIT",
   "description": "Built-in add command for creating child packages in monorepo projects",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dysonjs/cli.git",
+    "directory": "packages/cmd-add"
+  },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",

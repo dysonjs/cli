@@ -3,6 +3,11 @@
   "version": "1.0.7",
   "license": "MIT",
   "description": "Built-in install command for installing project dependencies through dy-cli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dysonjs/cli.git",
+    "directory": "packages/cmd-install"
+  },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",

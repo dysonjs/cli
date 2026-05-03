@@ -3,6 +3,11 @@
   "version": "1.0.7",
   "license": "MIT",
   "description": "CLI entry package for dy-cli, mounting built-in commands and exposing the public command-line interface",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dysonjs/cli.git",
+    "directory": "packages/cli"
+  },
   "bin": {
     "dy-cli": "dist/cli.js"
   },
