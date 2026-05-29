@@ -24,8 +24,8 @@ importers:
         specifier: ~7.0.3
         version: 7.0.3
       dy-cli:
-        specifier: npm:@dysonic/dy-cli@1.0.5
-        version: '@dysonic/dy-cli@1.0.5(@types/node@16.18.126)(postcss@8.5.3)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))(typescript@5.8.3)'
+        specifier: npm:@dysonic/dy-cli@1.0.9
+        version: '@dysonic/dy-cli@1.0.9(@types/node@16.18.126)(postcss@8.5.3)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))(typescript@5.8.3)'
       eslint:
         specifier: ~7.32.0
         version: 7.32.0
@@ -460,32 +460,32 @@ packages:
     resolution: {integrity: sha512-DX3Z+T5dt1ockmPdobJS/FAsQPW4V4SrWEhD2iYQT2Cb2tQsiMnYxrcUH9By/Z3B+v0S5LMBkQtV/XOBbpLEOg==}
     engines: {node: '>=12'}
 
-  '@dysonic/dy-cli-cmd-add@1.0.5':
-    resolution: {integrity: sha512-PqWxQ+cI9/BYswXE4e1F8FPsRq0pJ4kSyK0bCTVsP5NhJWmLHJhe0TWBHGC2zm/OYgtr37fm6uTLubO1e/zVJw==}
+  '@dysonic/dy-cli-cmd-add@1.0.9':
+    resolution: {integrity: sha512-xuAlFLO+wtVUJOSw969C4LFMPcSGioInFEt1s9H1Y2kxOfg4sQRJIU6bVUr7lsdJmQCIhqrfXy5NxluDgqqQUg==}
 
-  '@dysonic/dy-cli-cmd-build@1.0.5':
-    resolution: {integrity: sha512-jju2sKnlRPYXduvdxFwFUECBfDv550+dxRh52duMqdd+a8Kn80ANDsVPUNF7yiIn+iXDbPRaGeyl68O7oexJKg==}
+  '@dysonic/dy-cli-cmd-build@1.0.9':
+    resolution: {integrity: sha512-S2Jsfk+axe8UcFYnvvGqvTTKlw0cNOm8ta52kub+lPEZkux+hEoap3F6dmcYul56UFm93FNYEA3TwNDMu+65Ow==}
 
-  '@dysonic/dy-cli-cmd-create@1.0.5':
-    resolution: {integrity: sha512-CnqNgzgZGuaGakjRQADghD8cC+nj2vSYj89N6HzK2KiQOJDUBoPoTPQIe6NGABJAeDvJ2FZ8w7CkTz7ROUBqDQ==}
+  '@dysonic/dy-cli-cmd-create@1.0.9':
+    resolution: {integrity: sha512-M+h8U9YEEoh5X7gV7wENMCFJw9SwCuqAsy8lusm09dMQ/FjBeuPIKpoEPSzs9y0yzWG4XDdsGODRXGrb/T2Rdw==}
 
-  '@dysonic/dy-cli-cmd-install@1.0.5':
-    resolution: {integrity: sha512-rlmx8XQyuVZ06llkGHv2O4Kkzzi9YAuP/nRvzqsEoKpMu7Nml6UqO1Lw5TrmhD0ncPeeAE02vnZO/xBPChL3aA==}
+  '@dysonic/dy-cli-cmd-install@1.0.9':
+    resolution: {integrity: sha512-aytWTVs9rdCrP7o5tjofX7ZQ1n/aJdOaYIBkBlzmfgSQQ8Gtde9boK4aH+CLrA+IsYg5R9XSth4CugovOQWKAg==}
 
-  '@dysonic/dy-cli-cmd-publish@1.0.5':
-    resolution: {integrity: sha512-PtTGd/CXTWnNW8lMH2sIYBmCLAh9ghPDPxXTk3k/nT1gBcRCZ+iWtIweHQSSP/0xWiS9iUIG775yziH00sCRPQ==}
+  '@dysonic/dy-cli-cmd-publish@1.0.9':
+    resolution: {integrity: sha512-x2kr04/7ApOyouQssultEuzkWtXZXhnn8zf3M7RcRbWCMcFYtGfDJp02KlmFQNzREwhVWeufJQUO8/lSQP1LXQ==}
 
-  '@dysonic/dy-cli-cmd-test@1.0.5':
-    resolution: {integrity: sha512-rrShBz+xYXtyNKcCsqbIaxkWSRz6NKgU+/LOvFBXV/X0G+pP1xRq6COBAmjMDQXXal38Dvr9la6IgCs6uz/hTg==}
+  '@dysonic/dy-cli-cmd-test@1.0.9':
+    resolution: {integrity: sha512-CHYDKyCz4PRef6FpkoKhkFe6kMP9vpZACyWcritKmlwykYAJB4ZbKvieTAlbkas+rw57vbXuc3uU7d26mlSZjg==}
 
-  '@dysonic/dy-cli-cmd-version@1.0.5':
-    resolution: {integrity: sha512-a3mLKinvVjyBL5KuIXQCmq12JgpU3Qf0esHXL+sfoZTO3V9t00zGxpCaVtBinU5HpspEn7hsxfRpPhM7QeF7Ig==}
+  '@dysonic/dy-cli-cmd-version@1.0.9':
+    resolution: {integrity: sha512-AvYUWqdA0pPMu5FQ/GTaib0uCKUZ7q10szZOYXdFnYZ+KkH92JIsI5c8V6g5ZS+kyhy8JJWEAhVh6orLss4vbg==}
 
-  '@dysonic/dy-cli-core@1.0.5':
-    resolution: {integrity: sha512-1PCIlyOasyXe5nZTMGCPqExMXPzC6NMu2KNJeKr+fGbMBvcM1CbCKsV46yFUHQI4P8FfEMSDVYOWCpoBYU0oSA==}
+  '@dysonic/dy-cli-core@1.0.9':
+    resolution: {integrity: sha512-1+DvJeIlSmEP+Ugh7XTfnTUs2wc2yE8S3kIYDDnfrhbzhc1QDskPboyVavojszUuB5pTVJ8BdleiYPEo5UToKg==}
 
-  '@dysonic/dy-cli@1.0.5':
-    resolution: {integrity: sha512-N5HSWV4n/n01mvtlYngogrZuODLSuXPvkv9loWxIRn7idQhpcV2ZB2vR5asIzzcZv2ItpR7Fm5ye9Iy47iuTig==}
+  '@dysonic/dy-cli@1.0.9':
+    resolution: {integrity: sha512-pEzEZ+K7z+byFsa7qtCnQZyhTZdc+o5BMnfkTH9iHTy5iVZzKvG+kub6ES8weUJfT/hHdhR1k/djNGW7mLuqOA==}
     hasBin: true
 
   '@esbuild/android-arm64@0.18.20':
@@ -3997,9 +3997,9 @@ snapshots:
     dependencies:
       '@cspotcode/source-map-consumer': 0.8.0
 
-  '@dysonic/dy-cli-cmd-add@1.0.5(@types/node@16.18.126)(typescript@5.8.3)':
+  '@dysonic/dy-cli-cmd-add@1.0.9(@types/node@16.18.126)(typescript@5.8.3)':
     dependencies:
-      '@dysonic/dy-cli-core': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-core': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
       execa: 5.1.1
       fs-extra: 10.1.0
       inquirer: 8.2.6
@@ -4009,9 +4009,9 @@ snapshots:
       - '@types/node'
       - typescript
 
-  '@dysonic/dy-cli-cmd-build@1.0.5(@types/node@16.18.126)(postcss@8.5.3)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))':
+  '@dysonic/dy-cli-cmd-build@1.0.9(@types/node@16.18.126)(postcss@8.5.3)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))':
     dependencies:
-      '@dysonic/dy-cli-core': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-core': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
       '@rollup/plugin-commonjs': 25.0.0(rollup@4.40.0)
       '@rollup/plugin-json': 6.1.0(rollup@4.40.0)
       '@rollup/plugin-node-resolve': 15.3.0(rollup@4.40.0)
@@ -4039,9 +4039,9 @@ snapshots:
       - supports-color
       - ts-node
 
-  '@dysonic/dy-cli-cmd-create@1.0.5(@types/node@16.18.126)(typescript@5.8.3)':
+  '@dysonic/dy-cli-cmd-create@1.0.9(@types/node@16.18.126)(typescript@5.8.3)':
     dependencies:
-      '@dysonic/dy-cli-core': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-core': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
       fs-extra: 10.1.0
     transitivePeerDependencies:
       - '@swc/core'
@@ -4049,18 +4049,18 @@ snapshots:
       - '@types/node'
       - typescript
 
-  '@dysonic/dy-cli-cmd-install@1.0.5(@types/node@16.18.126)(typescript@5.8.3)':
+  '@dysonic/dy-cli-cmd-install@1.0.9(@types/node@16.18.126)(typescript@5.8.3)':
     dependencies:
-      '@dysonic/dy-cli-core': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-core': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
       - '@types/node'
       - typescript
 
-  '@dysonic/dy-cli-cmd-publish@1.0.5(@types/node@16.18.126)(typescript@5.8.3)':
+  '@dysonic/dy-cli-cmd-publish@1.0.9(@types/node@16.18.126)(typescript@5.8.3)':
     dependencies:
-      '@dysonic/dy-cli-core': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-core': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
       execa: 5.1.1
       fs-extra: 10.1.0
     transitivePeerDependencies:
@@ -4069,9 +4069,9 @@ snapshots:
       - '@types/node'
       - typescript
 
-  '@dysonic/dy-cli-cmd-test@1.0.5(@types/node@16.18.126)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))(typescript@5.8.3)':
+  '@dysonic/dy-cli-cmd-test@1.0.9(@types/node@16.18.126)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))(typescript@5.8.3)':
     dependencies:
-      '@dysonic/dy-cli-core': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-core': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
       jest: 27.5.1(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))
     transitivePeerDependencies:
       - '@swc/core'
@@ -4085,9 +4085,9 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@dysonic/dy-cli-cmd-version@1.0.5(@types/node@16.18.126)(typescript@5.8.3)':
+  '@dysonic/dy-cli-cmd-version@1.0.9(@types/node@16.18.126)(typescript@5.8.3)':
     dependencies:
-      '@dysonic/dy-cli-core': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-core': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
       fs-extra: 10.1.0
     transitivePeerDependencies:
       - '@swc/core'
@@ -4095,7 +4095,7 @@ snapshots:
       - '@types/node'
       - typescript
 
-  '@dysonic/dy-cli-core@1.0.5(@types/node@16.18.126)(typescript@5.8.3)':
+  '@dysonic/dy-cli-core@1.0.9(@types/node@16.18.126)(typescript@5.8.3)':
     dependencies:
       commander: 12.1.0
       execa: 5.1.1
@@ -4107,16 +4107,16 @@ snapshots:
       - '@types/node'
       - typescript
 
-  '@dysonic/dy-cli@1.0.5(@types/node@16.18.126)(postcss@8.5.3)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))(typescript@5.8.3)':
+  '@dysonic/dy-cli@1.0.9(@types/node@16.18.126)(postcss@8.5.3)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))(typescript@5.8.3)':
     dependencies:
-      '@dysonic/dy-cli-cmd-add': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
-      '@dysonic/dy-cli-cmd-build': 1.0.5(@types/node@16.18.126)(postcss@8.5.3)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))
-      '@dysonic/dy-cli-cmd-create': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
-      '@dysonic/dy-cli-cmd-install': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
-      '@dysonic/dy-cli-cmd-publish': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
-      '@dysonic/dy-cli-cmd-test': 1.0.5(@types/node@16.18.126)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))(typescript@5.8.3)
-      '@dysonic/dy-cli-cmd-version': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
-      '@dysonic/dy-cli-core': 1.0.5(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-cmd-add': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-cmd-build': 1.0.9(@types/node@16.18.126)(postcss@8.5.3)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))
+      '@dysonic/dy-cli-cmd-create': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-cmd-install': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-cmd-publish': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-cmd-test': 1.0.9(@types/node@16.18.126)(ts-node@10.2.1(@types/node@16.18.126)(typescript@5.8.3))(typescript@5.8.3)
+      '@dysonic/dy-cli-cmd-version': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
+      '@dysonic/dy-cli-core': 1.0.9(@types/node@16.18.126)(typescript@5.8.3)
       commander: 12.1.0
     transitivePeerDependencies:
       - '@swc/core'
