@@ -844,7 +844,7 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     expect(execa).toHaveBeenCalledWith(
       process.execPath,
       dyCliArgs('build', '--cwd', packageDir, '--types'),
-      expect.objectContaining({ cwd: packageDir }),
+      expect.any(Object),
     );
   });
 
@@ -873,7 +873,7 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     expect(execa).toHaveBeenCalledWith(
       process.execPath,
       dyCliArgs('build', '--cwd', packageDir, '--types'),
-      expect.objectContaining({ cwd: packageDir }),
+      expect.any(Object),
     );
   });
 });

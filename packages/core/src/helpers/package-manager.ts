@@ -135,10 +135,11 @@ export async function runProjectCommand(
   const { command, baseArgs } = resolveSelfCliInvocation();
 
   for (const packageDir of projectContext.targetPackageDirs) {
-    // `--cwd` 前置在透传参数之前,避免将来 args 以 `--` 收尾时被透传吃掉;
-    // 同时显式设置 execa 的 cwd 作为兜底,即使 `--cwd` 解析失败也仍指向正确的包目录
+    // `--cwd` 前置在透传参数之前,避免将来 args 以 `--` 收尾时被透传吃掉。
+    // 注意:绝不能在这里设置 execa 的 cwd —— 子进程必须继承父进程的工作目录(仓库根),
+    // 否则 process.execArgv 里相对的 `-r ./node_modules/...` 预加载、以及相对的
+    // TS_NODE_PROJECT 都会解析失败;目标包仅通过 `--cwd` 参数传递。
     await execa(command, [...baseArgs, commandName, '--cwd', packageDir, ...args], {
-      cwd: packageDir,
       env: {
         ...process.env,
         ...env,

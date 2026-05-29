@@ -440,7 +440,6 @@ describe('@dysonic/dy-cli-core', () => {
       command,
       [...baseArgs, 'build', '--cwd', child, '--types'],
       expect.objectContaining({
-        cwd: child,
         env: expect.objectContaining({
           NODE_ENV: 'production',
         }),
