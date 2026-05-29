@@ -67,6 +67,9 @@ jobs:
           fi
           pnpm exec dy-cli version $args
 
+      - name: Sync Lockfile
+        run: pnpm install --lockfile-only
+
       - name: Create Release Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
