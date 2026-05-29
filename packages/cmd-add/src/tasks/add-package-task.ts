@@ -3,7 +3,12 @@ import path from 'path';
 import execa from 'execa';
 import * as inquirer from 'inquirer';
 
-import { AbstractTask, AddCommandConfig, DyCliError } from '@dysonic/dy-cli-core';
+import {
+  AbstractTask,
+  AddCommandConfig,
+  createDefaultProjectContext,
+  DyCliError,
+} from '@dysonic/dy-cli-core';
 
 export class AddPackageTask extends AbstractTask<AddCommandConfig> {
   public async run(): Promise<void> {
@@ -36,17 +41,7 @@ export class AddPackageTask extends AbstractTask<AddCommandConfig> {
       description: undefined,
       private: undefined,
       sideEffects: undefined,
-      projectContext: {
-        cwd: process.cwd(),
-        rootDir: process.cwd(),
-        type: 'single',
-        packageDir: 'packages',
-        versionStrategy: undefined,
-        packageDirs: [],
-        targetPackageDirs: [process.cwd()],
-        currentPackageDir: process.cwd(),
-        isRoot: true,
-      },
+      projectContext: createDefaultProjectContext(),
     };
   }
 

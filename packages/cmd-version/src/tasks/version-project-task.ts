@@ -3,6 +3,7 @@ import path from 'path';
 
 import {
   AbstractTask,
+  createDefaultProjectContext,
   DyCliError,
   enterPrereleaseMode,
   ensureReleaseState,
@@ -38,17 +39,7 @@ export class VersionProjectTask extends AbstractTask<VersionCommandConfig> {
       betaExit: false,
       betaTag: 'beta',
       set: undefined,
-      projectContext: {
-        cwd: process.cwd(),
-        rootDir: process.cwd(),
-        type: 'single',
-        packageDir: 'packages',
-        versionStrategy: undefined,
-        packageDirs: [],
-        targetPackageDirs: [process.cwd()],
-        currentPackageDir: process.cwd(),
-        isRoot: true,
-      },
+      projectContext: createDefaultProjectContext(),
     };
   }
 
@@ -112,8 +103,7 @@ export class VersionProjectTask extends AbstractTask<VersionCommandConfig> {
       .map(({ version }) => version)
       .reduce((currentMax, version) =>
         compareSemver(version, currentMax) > 0 ? version : currentMax,
-      )
-      .replace(/-[0-9A-Za-z.-]+$/, '');
+      );
 
     const nextVersion = getNextReleaseVersion(targetVersion, releaseType, releaseState);
     const workspacePackageNames = new Set(packages.map(({ name }) => name));

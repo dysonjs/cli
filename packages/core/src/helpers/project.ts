@@ -7,6 +7,27 @@ import { getExternalConfigDir } from './utils';
 
 const DEFAULT_PROJECT_PACKAGE_DIR = 'packages';
 
+/**
+ * 构造默认的 ProjectContext。
+ *
+ * 各命令任务的 getDefaultConfig() 仅在「直接实例化任务或仅传入部分配置」时回退到它,正常执行
+ * 路径会被 resolveProjectContext() 的结果整体覆盖。集中到一处,避免 ProjectContext 字段调整时
+ * 需要逐个任务文件同步修改。
+ */
+export function createDefaultProjectContext(cwd: string = process.cwd()): ProjectContext {
+  return {
+    cwd,
+    rootDir: cwd,
+    type: 'single',
+    packageDir: DEFAULT_PROJECT_PACKAGE_DIR,
+    versionStrategy: undefined,
+    packageDirs: [],
+    targetPackageDirs: [cwd],
+    currentPackageDir: cwd,
+    isRoot: true,
+  };
+}
+
 export function resolveProjectContext(
   cwd: string,
   config: Partial<ExternalRunCommandsConfig>,

@@ -7,10 +7,16 @@ import ts from 'typescript';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import execa from 'execa';
 
+import { resolveSelfCliInvocation } from '@dysonic/dy-cli-core';
+
 import { BuildCommand, shouldExternalizeModuleId } from '../src';
 
 function createTempDir(name: string) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `${name}-`));
+}
+
+function dyCliArgs(...args: string[]) {
+  return [...resolveSelfCliInvocation().baseArgs, ...args];
 }
 
 jest.mock('rollup-plugin-esbuild', () => ({
@@ -836,11 +842,9 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     await command.parseAsync(['node', 'test', '--cwd', packageDir, '--workspace', '--types']);
 
     expect(execa).toHaveBeenCalledWith(
-      'npm',
-      ['exec', '--', 'dy-cli', 'build', '--types'],
-      expect.objectContaining({
-        cwd: packageDir,
-      }),
+      process.execPath,
+      dyCliArgs('build', '--cwd', packageDir, '--types'),
+      expect.objectContaining({ cwd: packageDir }),
     );
   });
 
@@ -867,11 +871,9 @@ describe('@dysonic/dy-cli-cmd-build', () => {
     await command.parseAsync(['node', 'test', '--cwd', workspace, '--types']);
 
     expect(execa).toHaveBeenCalledWith(
-      'npm',
-      ['exec', '--', 'dy-cli', 'build', '--types'],
-      expect.objectContaining({
-        cwd: packageDir,
-      }),
+      process.execPath,
+      dyCliArgs('build', '--cwd', packageDir, '--types'),
+      expect.objectContaining({ cwd: packageDir }),
     );
   });
 });

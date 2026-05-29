@@ -1,4 +1,9 @@
-import { AbstractTask, InstallCommandConfig, installDependencies } from '@dysonic/dy-cli-core';
+import {
+  AbstractTask,
+  createDefaultProjectContext,
+  InstallCommandConfig,
+  installDependencies,
+} from '@dysonic/dy-cli-core';
 
 export class InstallProjectTask extends AbstractTask<InstallCommandConfig> {
   public async run(): Promise<void> {
@@ -8,17 +13,7 @@ export class InstallProjectTask extends AbstractTask<InstallCommandConfig> {
   protected getDefaultConfig(): InstallCommandConfig {
     return {
       cwd: process.cwd(),
-      projectContext: {
-        cwd: process.cwd(),
-        rootDir: process.cwd(),
-        type: 'single',
-        packageDir: 'packages',
-        versionStrategy: undefined,
-        packageDirs: [],
-        targetPackageDirs: [process.cwd()],
-        currentPackageDir: process.cwd(),
-        isRoot: true,
-      },
+      projectContext: createDefaultProjectContext(),
     };
   }
 }

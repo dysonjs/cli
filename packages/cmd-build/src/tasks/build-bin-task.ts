@@ -1,4 +1,9 @@
-import { AbstractTask, BuildCommandConfig, runProjectCommand } from '@dysonic/dy-cli-core';
+import {
+  AbstractTask,
+  BuildCommandConfig,
+  createDefaultProjectContext,
+  runProjectCommand,
+} from '@dysonic/dy-cli-core';
 
 import { BuildBinBuilder } from '../builders';
 
@@ -25,17 +30,7 @@ export class BuildBinTask extends AbstractTask<BuildCommandConfig> {
       externals: undefined,
       globals: undefined,
       bin: undefined,
-      projectContext: {
-        cwd: process.cwd(),
-        rootDir: process.cwd(),
-        type: 'single',
-        packageDir: 'packages',
-        versionStrategy: undefined,
-        packageDirs: [],
-        targetPackageDirs: [process.cwd()],
-        currentPackageDir: process.cwd(),
-        isRoot: true,
-      },
+      projectContext: createDefaultProjectContext(),
     };
   }
 

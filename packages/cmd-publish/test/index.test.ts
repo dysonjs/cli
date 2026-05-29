@@ -3,12 +3,18 @@ import os from 'os';
 import path from 'path';
 import execa from 'execa';
 
+import { resolveSelfCliInvocation } from '@dysonic/dy-cli-core';
+
 import { PublishCommand } from '../src';
 
 jest.mock('execa', () => jest.fn(() => Promise.resolve({})));
 
 function createTempDir(name: string) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `${name}-`));
+}
+
+function dyCliArgs(...args: string[]) {
+  return [...resolveSelfCliInvocation().baseArgs, ...args];
 }
 
 describe('@dysonic/dy-cli-cmd-publish', () => {
@@ -200,16 +206,15 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
 
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       1,
-      'npm',
-      ['exec', '--', 'dy-cli', 'build'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('build', '--cwd', packageDir),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       2,
-      'npm',
-      ['exec', '--', 'dy-cli', 'test'],
+      process.execPath,
+      dyCliArgs('test', '--cwd', packageDir),
       expect.objectContaining({
-        cwd: packageDir,
         env: expect.objectContaining({ NODE_ENV: 'test' }),
       }),
     );
@@ -265,28 +270,27 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
 
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       1,
-      'npm',
-      ['exec', '--', 'dy-cli', 'build'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('build', '--cwd', packageDir),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       2,
-      'npm',
-      ['exec', '--', 'dy-cli', 'build', '--types'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('build', '--cwd', packageDir, '--types'),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       3,
-      'npm',
-      ['exec', '--', 'dy-cli', 'build', '--umd'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('build', '--cwd', packageDir, '--umd'),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       4,
-      'npm',
-      ['exec', '--', 'dy-cli', 'test'],
+      process.execPath,
+      dyCliArgs('test', '--cwd', packageDir),
       expect.objectContaining({
-        cwd: packageDir,
         env: expect.objectContaining({ NODE_ENV: 'test' }),
       }),
     );
@@ -336,15 +340,15 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
 
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       1,
-      'npm',
-      ['exec', '--', 'dy-cli', 'build'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('build', '--cwd', packageDir),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       2,
-      'npm',
-      ['exec', '--', 'dy-cli', 'test'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('test', '--cwd', packageDir),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       3,
@@ -584,15 +588,15 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
 
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       1,
-      'npm',
-      ['exec', '--', 'dy-cli', 'build'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('build', '--cwd', packageDir),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       2,
-      'npm',
-      ['exec', '--', 'dy-cli', 'test'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('test', '--cwd', packageDir),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       3,
@@ -639,15 +643,15 @@ describe('@dysonic/dy-cli-cmd-publish', () => {
 
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       1,
-      'npm',
-      ['exec', '--', 'dy-cli', 'build'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('build', '--cwd', packageDir),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       2,
-      'npm',
-      ['exec', '--', 'dy-cli', 'test'],
-      expect.objectContaining({ cwd: packageDir }),
+      process.execPath,
+      dyCliArgs('test', '--cwd', packageDir),
+      expect.any(Object),
     );
     expect(execa as unknown as jest.Mock).toHaveBeenNthCalledWith(
       3,
