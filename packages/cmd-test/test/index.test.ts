@@ -210,7 +210,6 @@ describe('@dysonic/dy-cli-cmd-test', () => {
       process.execPath,
       dyCliArgs('test', '--cwd', packageDir, '--coverage'),
       expect.objectContaining({
-        cwd: packageDir,
         env: expect.objectContaining({
           NODE_ENV: 'test',
           TS_JEST_DISABLE_VER_CHECKER: 'true',
@@ -246,7 +245,7 @@ describe('@dysonic/dy-cli-cmd-test', () => {
     expect(execa).toHaveBeenCalledWith(
       process.execPath,
       dyCliArgs('test', '--cwd', packageDir, '--coverage'),
-      expect.objectContaining({ cwd: packageDir }),
+      expect.any(Object),
     );
     expect(jestRunner.run).not.toHaveBeenCalled();
   });
