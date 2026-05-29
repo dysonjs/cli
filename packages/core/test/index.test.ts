@@ -18,6 +18,7 @@ import {
   loadNearestExternalRunCommandsConfig,
   log,
   resolveProjectName,
+  resolveSelfCliInvocation,
   resolveTargetDir,
   runPackageScript,
   runProjectCommand,
@@ -383,15 +384,36 @@ describe('@dysonic/dy-cli-core', () => {
     expect(detectPackageManager(child)).toBe('npm');
   });
 
-  test('runProjectCommand should execute dy-cli through the detected package manager', async () => {
+  test('resolveSelfCliInvocation re-invokes the running process with an absolute entry', () => {
+    const invocation = resolveSelfCliInvocation();
+
+    expect(invocation.command).toBe(process.execPath);
+    expect(invocation.baseArgs[invocation.baseArgs.length - 1]).toBe(path.resolve(process.argv[1]));
+  });
+
+  test('resolveSelfCliInvocation drops diagnostic exec flags that collide across child processes', () => {
+    const originalExecArgv = process.execArgv;
+    process.execArgv = ['--require', '/loader.js', '--inspect-brk=9229', '--cpu-prof'];
+
+    try {
+      const invocation = resolveSelfCliInvocation();
+
+      expect(invocation.baseArgs).toEqual([
+        '--require',
+        '/loader.js',
+        path.resolve(process.argv[1]),
+      ]);
+    } finally {
+      process.execArgv = originalExecArgv;
+    }
+  });
+
+  test('runProjectCommand should re-invoke the running dy-cli for each target package', async () => {
     const root = createTempDir('dy-cli-project-command');
     const child = path.join(root, 'packages', 'demo-app');
     const mockedExeca = execa as unknown as jest.Mock;
 
     fs.mkdirpSync(child);
-    fs.writeJSONSync(path.join(root, 'package.json'), {
-      packageManager: 'pnpm@10.8.0',
-    });
     mockedExeca.mockClear();
     mockedExeca.mockResolvedValueOnce(undefined);
 
@@ -412,9 +434,11 @@ describe('@dysonic/dy-cli-core', () => {
       { NODE_ENV: 'production' },
     );
 
+    const { command, baseArgs } = resolveSelfCliInvocation();
+
     expect(mockedExeca).toHaveBeenCalledWith(
-      'pnpm',
-      ['exec', 'dy-cli', 'build', '--types'],
+      command,
+      [...baseArgs, 'build', '--cwd', child, '--types'],
       expect.objectContaining({
         cwd: child,
         env: expect.objectContaining({

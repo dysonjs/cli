@@ -61,15 +61,6 @@ export class PublishCommand extends AbstractCommand<PublishCommandConfig, Publis
     const beta = Boolean(args.beta ?? false);
     const projectContext = resolveProjectContext(cwd, config);
 
-    this.validateModeArgs({
-      workspace,
-      dryRun: Boolean(args.dryRun ?? publishConfig?.dryRun ?? false),
-      tag: args.tag ?? publishConfig?.tag,
-      access,
-      otp: args.otp ?? publishConfig?.otp,
-      registry: args.registry ?? publishConfig?.registry,
-    });
-
     return {
       cwd,
       dryRun: Boolean(args.dryRun ?? publishConfig?.dryRun ?? false),
@@ -84,17 +75,6 @@ export class PublishCommand extends AbstractCommand<PublishCommandConfig, Publis
       workspaceConcurrency: publishConfig?.workspaceConcurrency ?? 8,
       projectContext,
     };
-  }
-
-  private validateModeArgs(args: {
-    workspace: boolean;
-    dryRun: boolean;
-    tag?: string;
-    access?: PublishAccess;
-    otp?: string;
-    registry?: string;
-  }): void {
-    void args.workspace;
   }
 
   private resolveAccess(access?: string): PublishAccess | undefined {

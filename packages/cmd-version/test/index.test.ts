@@ -142,6 +142,48 @@ describe('@dysonic/dy-cli-cmd-version', () => {
     });
   });
 
+  test('should iterate the prerelease counter on a subsequent beta bump', async () => {
+    const workspace = createTempDir('dy-cli-version-pre-iterate');
+    const packageDir = path.join(workspace, 'packages/button');
+    const command = new VersionCommand();
+
+    await fs.ensureDir(packageDir);
+    await fs.outputJSON(path.join(workspace, '.dy-cli/release/state.json'), {
+      schemaVersion: 1,
+      mode: 'pre',
+      tag: 'beta',
+    });
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      workspaces: ['packages/*'],
+    });
+    await fs.writeJSON(path.join(packageDir, 'package.json'), {
+      name: '@demo/button',
+      version: '1.0.3-beta.0',
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      [
+        'export default {',
+        '  project: {',
+        "    type: 'monorepo',",
+        "    versionStrategy: 'fixed',",
+        '  },',
+        '  commands: {',
+        '    version: {},',
+        '  },',
+        '};',
+      ].join('\n'),
+    );
+
+    await command.parseAsync(['node', 'test', '--cwd', workspace, '--patch']);
+
+    expect(await fs.readJSON(path.join(packageDir, 'package.json'))).toMatchObject({
+      version: '1.0.3-beta.1',
+    });
+  });
+
   test('should set the current package version in a single project', async () => {
     const workspace = createTempDir('dy-cli-version-single');
     const command = new VersionCommand();

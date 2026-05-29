@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import execa from 'execa';
 
+import { DyCliError } from '../errors/dy-cli-error';
 import { ProjectContext } from '../interfaces';
 
 export type PackageManagerName = 'npm' | 'pnpm';
@@ -96,20 +97,47 @@ export async function runProjectScript(
   }
 }
 
+// 会在子进程间相互冲突的诊断标志:调试端口会被重复占用、profile 文件会互相覆盖,转发它们没有意义
+const DIAGNOSTIC_EXEC_ARG = /^--(inspect|debug|cpu-prof|heap-prof|prof|diagnostic-dir)/;
+
+/**
+ * Resolves the command needed to re-invoke the dy-cli process that is currently running.
+ *
+ * Workspace orchestration must re-enter the same entrypoint (compiled binary or ts-node source)
+ * rather than resolving `dy-cli` from node_modules. A self-hosted repo pins an older `dy-cli` in
+ * its dev dependencies, so resolving from PATH would run that stale binary for child commands.
+ *
+ * - The entry is resolved to an absolute path so re-invocation no longer depends on the child
+ *   process inheriting the same working directory (e.g. CI passes a relative entry path).
+ * - Diagnostic exec flags (debugger ports, profiler output) are dropped so they do not collide
+ *   across the spawned child processes; loader flags such as `-r`/`--require` are preserved.
+ */
+export function resolveSelfCliInvocation(): { command: string; baseArgs: string[] } {
+  const entry = process.argv[1];
+  if (!entry) {
+    throw new DyCliError('INVALID_ARGUMENT', 'Unable to resolve the dy-cli entry to re-invoke.');
+  }
+
+  const execArgv = process.execArgv.filter((flag) => !DIAGNOSTIC_EXEC_ARG.test(flag));
+
+  return {
+    command: process.execPath,
+    baseArgs: [...execArgv, path.resolve(entry)],
+  };
+}
+
 export async function runProjectCommand(
   projectContext: ProjectContext,
   commandName: string,
   args: string[] = [],
   env: NodeJS.ProcessEnv = {},
 ) {
-  for (const packageDir of projectContext.targetPackageDirs) {
-    const packageManager = detectPackageManager(packageDir);
-    const commandArgs =
-      packageManager === 'npm'
-        ? ['exec', '--', 'dy-cli', commandName, ...args]
-        : ['exec', 'dy-cli', commandName, ...args];
+  const { command, baseArgs } = resolveSelfCliInvocation();
 
-    await execa(packageManager, commandArgs, {
+  for (const packageDir of projectContext.targetPackageDirs) {
+    // `--cwd` 前置在透传参数之前,避免将来 args 以 `--` 收尾时被透传吃掉;
+    // 同时显式设置 execa 的 cwd 作为兜底,即使 `--cwd` 解析失败也仍指向正确的包目录
+    await execa(command, [...baseArgs, commandName, '--cwd', packageDir, ...args], {
       cwd: packageDir,
       env: {
         ...process.env,

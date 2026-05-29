@@ -1,4 +1,9 @@
-import { AbstractTask, DyCliError, PublishCommandConfig } from '@dysonic/dy-cli-core';
+import {
+  AbstractTask,
+  createDefaultProjectContext,
+  DyCliError,
+  PublishCommandConfig,
+} from '@dysonic/dy-cli-core';
 import execa from 'execa';
 import fs from 'fs-extra';
 import path from 'path';
@@ -66,17 +71,7 @@ export class PublishProjectTask extends AbstractTask<PublishCommandConfig> {
       betaTag: 'beta',
       workspaceRoot: undefined,
       workspaceConcurrency: 8,
-      projectContext: {
-        cwd: process.cwd(),
-        rootDir: process.cwd(),
-        type: 'single',
-        packageDir: 'packages',
-        versionStrategy: undefined,
-        packageDirs: [],
-        targetPackageDirs: [process.cwd()],
-        currentPackageDir: process.cwd(),
-        isRoot: true,
-      },
+      projectContext: createDefaultProjectContext(),
     };
   }
 

@@ -8,6 +8,8 @@ import * as jestRunner from 'jest';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import execa from 'execa';
 
+import { resolveSelfCliInvocation } from '@dysonic/dy-cli-core';
+
 import { TestCommand } from '../src';
 
 jest.mock('jest', () => ({
@@ -18,6 +20,10 @@ jest.mock('execa', () => jest.fn(() => Promise.resolve()));
 
 function createTempDir(name: string) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `${name}-`));
+}
+
+function dyCliArgs(...args: string[]) {
+  return [...resolveSelfCliInvocation().baseArgs, ...args];
 }
 
 describe('@dysonic/dy-cli-cmd-test', () => {
@@ -201,8 +207,8 @@ describe('@dysonic/dy-cli-cmd-test', () => {
     await command.parseAsync(['node', 'test', '--cwd', packageDir, '--workspace', '--coverage']);
 
     expect(execa).toHaveBeenCalledWith(
-      'npm',
-      ['exec', '--', 'dy-cli', 'test', '--coverage'],
+      process.execPath,
+      dyCliArgs('test', '--cwd', packageDir, '--coverage'),
       expect.objectContaining({
         cwd: packageDir,
         env: expect.objectContaining({
@@ -238,11 +244,9 @@ describe('@dysonic/dy-cli-cmd-test', () => {
     await command.parseAsync(['node', 'test', '--cwd', workspace, '--coverage']);
 
     expect(execa).toHaveBeenCalledWith(
-      'npm',
-      ['exec', '--', 'dy-cli', 'test', '--coverage'],
-      expect.objectContaining({
-        cwd: packageDir,
-      }),
+      process.execPath,
+      dyCliArgs('test', '--cwd', packageDir, '--coverage'),
+      expect.objectContaining({ cwd: packageDir }),
     );
     expect(jestRunner.run).not.toHaveBeenCalled();
   });
