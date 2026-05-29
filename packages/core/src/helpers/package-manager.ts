@@ -51,6 +51,33 @@ export async function installDependencies(
   });
 }
 
+/**
+ * 在版本号变更后同步 lockfile。
+ *
+ * `dy-cli version` 会改写各 package.json 里内部依赖的版本号,但不会触碰 lockfile;若不同步,
+ * lockfile 里 importer 的 specifier 会与 package.json 不一致,导致使用 `--frozen-lockfile`
+ * 的安装(典型为发布流程的 CI)直接失败。仅在工作区已存在对应 lockfile 时才更新,避免在未使用
+ * 该包管理器的项目里凭空生成一个 lockfile。
+ */
+export async function syncLockfile(cwd: string, packageManagerOverride?: PackageManagerName) {
+  const packageManager = packageManagerOverride ?? detectPackageManager(cwd);
+  const lockfileName = packageManager === 'npm' ? 'package-lock.json' : 'pnpm-lock.yaml';
+
+  if (!fs.existsSync(path.join(cwd, lockfileName))) {
+    return;
+  }
+
+  const args =
+    packageManager === 'npm' ? ['install', '--package-lock-only'] : ['install', '--lockfile-only'];
+
+  await execa(packageManager, args, {
+    cwd,
+    env: {
+      ...process.env,
+    },
+  });
+}
+
 export async function runManagedPackageScript(
   cwd: string,
   scriptName: string,

@@ -10,6 +10,7 @@ import {
   exitPrereleaseMode,
   getGitReleaseNotes,
   ReleaseState,
+  syncLockfile,
   VersionCommandConfig,
   VersionReleaseType,
 } from '@dysonic/dy-cli-core';
@@ -128,6 +129,9 @@ export class VersionProjectTask extends AbstractTask<VersionCommandConfig> {
         );
       }),
     );
+
+    // 版本号已写入各 package.json,同步 lockfile 以免发布时 `--frozen-lockfile` 安装失败
+    await syncLockfile(this.config.projectContext.rootDir);
   }
 
   private async readWorkspacePackageVersions(): Promise<WorkspacePackageVersion[]> {
