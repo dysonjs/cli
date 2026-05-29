@@ -30,7 +30,11 @@ async function snapshotProjectTree(
       continue;
     }
 
-    snapshot[relativePath] = (await fs.readFile(absolutePath, 'utf8')).replace(/\r\n/g, '\n');
+    // 脚手架会把当前 dy-cli 版本注入到生成项目的 `@dysonic/dy-cli` 依赖里;归一化成占位符,
+    // 让快照与版本无关(注入行为另由 `toBe(createPackageJSON.version)` 断言覆盖),避免每次发版都需要 -u。
+    snapshot[relativePath] = (await fs.readFile(absolutePath, 'utf8'))
+      .replace(/\r\n/g, '\n')
+      .replace(/("@dysonic\/dy-cli": ")[^"]+(")/g, '$1<cliVersion>$2');
   }
 
   return snapshot;
