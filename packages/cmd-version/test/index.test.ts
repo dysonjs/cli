@@ -101,6 +101,47 @@ describe('@dysonic/dy-cli-cmd-version', () => {
     );
   });
 
+  test('should sync the lockfile at the workspace root after a fixed monorepo bump', async () => {
+    const workspace = createTempDir('dy-cli-version-lockfile-sync');
+    const packageDir = path.join(workspace, 'packages/button');
+    const command = new VersionCommand();
+
+    await fs.ensureDir(packageDir);
+    await fs.writeJSON(path.join(workspace, 'package.json'), {
+      name: 'demo-workspace',
+      private: true,
+      packageManager: 'pnpm@10.8.0',
+      workspaces: ['packages/*'],
+    });
+    await fs.writeFile(path.join(workspace, 'pnpm-lock.yaml'), "lockfileVersion: '9.0'\n");
+    await fs.writeJSON(path.join(packageDir, 'package.json'), {
+      name: '@demo/button',
+      version: '1.0.2',
+    });
+    await fs.writeFile(
+      path.join(workspace, 'dy.config.ts'),
+      [
+        'export default {',
+        '  project: {',
+        "    type: 'monorepo',",
+        "    versionStrategy: 'fixed',",
+        '  },',
+        '  commands: {',
+        '    version: {},',
+        '  },',
+        '};',
+      ].join('\n'),
+    );
+
+    await command.parseAsync(['node', 'test', '--cwd', packageDir, '--patch']);
+
+    expect(execa as unknown as jest.Mock).toHaveBeenCalledWith(
+      'pnpm',
+      ['install', '--lockfile-only'],
+      expect.objectContaining({ cwd: workspace }),
+    );
+  });
+
   test('should enter prerelease mode and persist dy-cli release state when --patch --beta is provided', async () => {
     const workspace = createTempDir('dy-cli-version-pre');
     const packageDir = path.join(workspace, 'packages/button');

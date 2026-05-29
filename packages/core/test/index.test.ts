@@ -22,6 +22,7 @@ import {
   resolveTargetDir,
   runPackageScript,
   runProjectCommand,
+  syncLockfile,
 } from '../src';
 
 jest.mock('execa', () => jest.fn().mockResolvedValue(undefined));
@@ -445,5 +446,51 @@ describe('@dysonic/dy-cli-core', () => {
         }),
       }),
     );
+  });
+
+  test('syncLockfile regenerates the pnpm lockfile when one exists', async () => {
+    const root = createTempDir('dy-cli-sync-lockfile-pnpm');
+    const mockedExeca = execa as unknown as jest.Mock;
+
+    fs.writeJSONSync(path.join(root, 'package.json'), { packageManager: 'pnpm@10.8.0' });
+    fs.writeFileSync(path.join(root, 'pnpm-lock.yaml'), "lockfileVersion: '9.0'\n");
+    mockedExeca.mockClear();
+
+    await syncLockfile(root);
+
+    expect(mockedExeca).toHaveBeenCalledWith(
+      'pnpm',
+      ['install', '--lockfile-only'],
+      expect.objectContaining({ cwd: root }),
+    );
+  });
+
+  test('syncLockfile uses --package-lock-only for npm projects', async () => {
+    const root = createTempDir('dy-cli-sync-lockfile-npm');
+    const mockedExeca = execa as unknown as jest.Mock;
+
+    fs.writeJSONSync(path.join(root, 'package.json'), { packageManager: 'npm@10.0.0' });
+    fs.writeFileSync(path.join(root, 'package-lock.json'), '{}\n');
+    mockedExeca.mockClear();
+
+    await syncLockfile(root);
+
+    expect(mockedExeca).toHaveBeenCalledWith(
+      'npm',
+      ['install', '--package-lock-only'],
+      expect.objectContaining({ cwd: root }),
+    );
+  });
+
+  test('syncLockfile is a no-op when no lockfile is present', async () => {
+    const root = createTempDir('dy-cli-sync-lockfile-absent');
+    const mockedExeca = execa as unknown as jest.Mock;
+
+    fs.writeJSONSync(path.join(root, 'package.json'), { packageManager: 'pnpm@10.8.0' });
+    mockedExeca.mockClear();
+
+    await syncLockfile(root);
+
+    expect(mockedExeca).not.toHaveBeenCalled();
   });
 });
