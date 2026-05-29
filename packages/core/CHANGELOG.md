@@ -1,5 +1,11 @@
 # @dysonic/dy-cli-core
 
+## 1.0.10
+
+### Patch Changes
+
+- fix(cmd-version): sync lockfile after fixed monorepo version bump
+
 ## 1.0.9
 
 ### Patch Changes

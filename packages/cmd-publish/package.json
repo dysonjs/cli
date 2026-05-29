@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-publish",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "license": "MIT",
   "description": "Built-in publish command for dy-cli package publishing",
   "repository": {
@@ -19,7 +19,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@dysonic/dy-cli-core": "1.0.9",
+    "@dysonic/dy-cli-core": "1.0.10",
     "execa": "5.1.1",
     "fs-extra": "10.1.0"
   },
