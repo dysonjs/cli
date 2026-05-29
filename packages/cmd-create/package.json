@@ -1,6 +1,6 @@
 {
   "name": "@dysonic/dy-cli-cmd-create",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "license": "MIT",
   "packageManager": "pnpm@10.8.0",
   "description": "Built-in create command for scaffolding monorepo and single-package projects",
@@ -20,7 +20,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@dysonic/dy-cli-core": "1.0.8",
+    "@dysonic/dy-cli-core": "1.0.9",
     "fs-extra": "10.1.0"
   },
   "devDependencies": {

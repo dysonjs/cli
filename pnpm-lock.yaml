@@ -72,28 +72,28 @@ importers:
   packages/cli:
     dependencies:
       '@dysonic/dy-cli-cmd-add':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../cmd-add
       '@dysonic/dy-cli-cmd-build':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../cmd-build
       '@dysonic/dy-cli-cmd-create':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../cmd-create
       '@dysonic/dy-cli-cmd-install':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../cmd-install
       '@dysonic/dy-cli-cmd-publish':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../cmd-publish
       '@dysonic/dy-cli-cmd-test':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../cmd-test
       '@dysonic/dy-cli-cmd-version':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../cmd-version
       '@dysonic/dy-cli-core':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../core
       commander:
         specifier: 12.1.0
@@ -102,7 +102,7 @@ importers:
   packages/cmd-add:
     dependencies:
       '@dysonic/dy-cli-core':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../core
       execa:
         specifier: 5.1.1
@@ -124,7 +124,7 @@ importers:
   packages/cmd-build:
     dependencies:
       '@dysonic/dy-cli-core':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../core
       '@rollup/plugin-commonjs':
         specifier: 25.0.0
@@ -194,7 +194,7 @@ importers:
   packages/cmd-create:
     dependencies:
       '@dysonic/dy-cli-core':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../core
       fs-extra:
         specifier: 10.1.0
@@ -207,7 +207,7 @@ importers:
   packages/cmd-install:
     dependencies:
       '@dysonic/dy-cli-core':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../core
     devDependencies:
       '@types/execa':
@@ -226,7 +226,7 @@ importers:
   packages/cmd-publish:
     dependencies:
       '@dysonic/dy-cli-core':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../core
       execa:
         specifier: 5.1.1
@@ -242,7 +242,7 @@ importers:
   packages/cmd-test:
     dependencies:
       '@dysonic/dy-cli-core':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../core
       jest:
         specifier: 27.5.1
@@ -255,7 +255,7 @@ importers:
   packages/cmd-version:
     dependencies:
       '@dysonic/dy-cli-core':
-        specifier: 1.0.8
+        specifier: 1.0.9
         version: link:../core
       fs-extra:
         specifier: 10.1.0
